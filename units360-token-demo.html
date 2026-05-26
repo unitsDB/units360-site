@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units360.ai — Live AI Token Metering Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg:       #070c18;
+    --surface:  #0d1526;
+    --surface2: #131e35;
+    --surface3: #1a2844;
+    --border:   #1e3058;
+    --border2:  #243660;
+    --teal:     #00d4ff;
+    --teal-dim: #0098bb;
+    --teal-glow:#00d4ff33;
+    --blue:     #3b82f6;
+    --purple:   #8b5cf6;
+    --amber:    #f59e0b;
+    --amber-glow:#f59e0b33;
+    --red:      #ef4444;
+    --red-glow: #ef444433;
+    --green:    #10b981;
+    --green-glow:#10b98133;
+    --text:     #f0f6ff;
+    --text-dim: #4a6080;
+    --text-mid: #8099bb;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    user-select: none;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── HEADER ───────────────────────────────────── */
+  #header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    color: #000;
+    box-shadow: 0 0 12px var(--teal-glow);
+  }
+
+  .live-token-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 8px var(--teal);
+    animation: blink 1.4s ease-in-out infinite;
+  }
+
+  .live-dot.red   { background: var(--red);   box-shadow: 0 0 8px var(--red); }
+  .live-dot.amber { background: var(--amber);  box-shadow: 0 0 8px var(--amber); }
+  .live-dot.green { background: var(--green);  box-shadow: 0 0 8px var(--green); }
+
+  #live-token-val { color: var(--teal); transition: color 0.4s; }
+  #live-token-val.amber { color: var(--amber); }
+  #live-token-val.red   { color: var(--red); }
+  #live-token-val.green { color: var(--green); }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid var(--teal-dim);
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: var(--teal-glow);
+  }
+
+  /* ── MAIN ─────────────────────────────────────── */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* ── FLOW AREA ────────────────────────────────── */
+  #flow-area {
+    position: relative;
+    flex-shrink: 0;
+    padding: 16px 28px 0;
+    height: 170px;
+  }
+
+  #flow-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* ── BOTTOM DATA AREA ─────────────────────────── */
+  #data-area {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 10px 28px 14px;
+    min-height: 0;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* ── STAT PANEL ────────────────────────────────── */
+  .panel-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  #token-counter {
+    font-size: 52px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -3px;
+    line-height: 1;
+    color: var(--teal);
+    transition: color 0.5s;
+  }
+
+  #token-counter.amber { color: var(--amber); }
+  #token-counter.red   { color: var(--red);   }
+  #token-counter.green { color: var(--green);  }
+
+  .token-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin-top: -4px;
+  }
+
+  .token-limit { color: var(--text-mid); font-weight: 500; }
+  .token-pct   { color: var(--text-mid); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .token-pct.amber { color: var(--amber); }
+  .token-pct.red   { color: var(--red); }
+
+  /* Progress bar */
+  .progress-track {
+    background: var(--surface3);
+    border-radius: 6px;
+    height: 10px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+
+  #progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--blue));
+    transition: width 0.08s linear, background 0.5s;
+    position: relative;
+  }
+
+  #progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+    border-radius: 6px;
+  }
+
+  #progress-fill.amber { background: linear-gradient(90deg, var(--amber), #f97316); }
+  #progress-fill.red   { background: linear-gradient(90deg, var(--red), #f97316); }
+
+  /* Warn markers */
+  .progress-marker {
+    position: absolute;
+    top: -1px; bottom: -1px;
+    width: 2px;
+    background: var(--amber);
+    opacity: 0.7;
+    left: 80%;
+  }
+
+  /* Chart */
+  #chart {
+    flex: 1;
+    border-radius: 8px;
+    min-height: 0;
+    display: block;
+    width: 100%;
+  }
+
+  /* ── STORY PANEL ───────────────────────────────── */
+  .act-pips {
+    display: flex;
+    gap: 5px;
+  }
+
+  .act-pip {
+    height: 3px;
+    flex: 1;
+    border-radius: 3px;
+    background: var(--surface3);
+    transition: background 0.4s, box-shadow 0.4s;
+  }
+
+  .act-pip.done    { background: var(--blue); }
+  .act-pip.active  { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+
+  .act-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    transition: color 0.4s;
+  }
+
+  .act-eyebrow.amber { color: var(--amber); }
+  .act-eyebrow.red   { color: var(--red);   }
+  .act-eyebrow.green { color: var(--green);  }
+
+  #act-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    color: var(--text);
+  }
+
+  #act-subtitle {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal-dim);
+    font-style: italic;
+    transition: color 0.4s;
+  }
+
+  #act-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-mid);
+    flex: 1;
+  }
+
+  /* Event log */
+  #event-log {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    line-height: 1.5;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+    height: 86px;
+  }
+
+  .log-entry {
+    display: flex;
+    gap: 8px;
+    animation: slideInLog 0.25s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .log-time { color: var(--text-dim); flex-shrink: 0; }
+  .log-msg  { color: var(--text-mid); overflow: hidden; text-overflow: ellipsis; }
+  .log-msg.info    { color: var(--teal); }
+  .log-msg.success { color: var(--green); }
+  .log-msg.warning { color: var(--amber); }
+  .log-msg.error   { color: var(--red); }
+
+  /* ── CONTROLS ─────────────────────────────────── */
+  #controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 62px;
+    padding: 0 28px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text-mid);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+
+  .btn:hover:not(:disabled) {
+    border-color: var(--teal);
+    color: var(--teal);
+    background: var(--teal-glow);
+  }
+
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn.primary {
+    background: var(--teal);
+    color: #000;
+    border-color: var(--teal);
+    font-weight: 700;
+    padding: 8px 22px;
+  }
+  .btn.primary:hover { background: #00bfdf; }
+
+  .btn.danger {
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .btn.danger:hover { background: var(--red-glow); }
+
+  .speed-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-mid);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  #speed-select {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+
+  /* ── OVERLAYS ─────────────────────────────────── */
+  #alert-toast {
+    position: absolute;
+    top: 14px;
+    right: 0;
+    background: rgba(15, 25, 45, 0.96);
+    border: 1px solid var(--amber);
+    border-radius: 10px;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--amber);
+    box-shadow: 0 0 20px var(--amber-glow), 0 4px 24px rgba(0,0,0,0.4);
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 20;
+    white-space: nowrap;
+  }
+
+  #alert-toast.visible { opacity: 1; transform: translateX(0); }
+
+  .toast-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--amber-glow);
+    border: 1px solid var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    animation: pulse-amber 1.5s ease-in-out infinite;
+  }
+
+  #invoice-card {
+    position: fixed;
+    bottom: 76px;
+    right: 28px;
+    background: var(--surface);
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 16px 18px;
+    width: 240px;
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+    transition: all 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 20;
+    box-shadow: 0 0 24px var(--green-glow), 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  #invoice-card.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+  .inv-header {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .inv-check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #000;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+  }
+
+  .inv-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-mid);
+    padding: 3.5px 0;
+    border-bottom: 1px solid var(--surface3);
+  }
+
+  .inv-row:last-of-type { border-bottom: none; }
+
+  .inv-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    padding-top: 9px;
+    margin-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── COMMENTARY BAR ──────────────────────────── */
+  #commentary {
+    flex-shrink: 0;
+    margin: 6px 28px 0;
+    padding: 10px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--teal);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 12.5px;
+    line-height: 1.58;
+    color: var(--text-mid);
+    transition: border-color 0.5s;
+  }
+
+  #commentary.amber { border-left-color: var(--amber); }
+  #commentary.red   { border-left-color: var(--red); }
+  #commentary.green { border-left-color: var(--green); }
+
+  .commentary-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .commentary-callout {
+    display: inline;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── ANIMATIONS ───────────────────────────────── */
+  @keyframes blink {
+    0%, 100% { opacity:1; }
+    50%       { opacity:0.4; }
+  }
+
+  @keyframes slideInLog {
+    from { opacity:0; transform: translateX(-8px); }
+    to   { opacity:1; transform: translateX(0); }
+  }
+
+  @keyframes pulse-amber {
+    0%, 100% { box-shadow: 0 0 0 0 var(--amber-glow); }
+    50%       { box-shadow: 0 0 0 5px transparent; }
+  }
+
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 6px var(--red); }
+    50%       { box-shadow: 0 0 18px var(--red), 0 0 30px var(--red-glow); }
+  }
+
+  @keyframes enforceShake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-3px); }
+    40%     { transform: translateX(3px); }
+    60%     { transform: translateX(-2px); }
+    80%     { transform: translateX(2px); }
+  }
+
+  @keyframes floatUp {
+    from { opacity:0.9; transform: translateY(0); }
+    to   { opacity:0;   transform: translateY(-30px); }
+  }
+
+  @keyframes dashAnim {
+    to { stroke-dashoffset: -20; }
+  }
+
+  /* Intro screen */
+  #intro {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    z-index: 100;
+    transition: opacity 0.6s, transform 0.6s;
+  }
+
+  #intro.hidden {
+    opacity: 0;
+    transform: scale(0.97);
+    pointer-events: none;
+  }
+
+  .intro-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
+  }
+
+  .intro-logo-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900; color: #000;
+    box-shadow: 0 0 30px var(--teal-glow);
+  }
+
+  .intro-sub {
+    font-size: 15px;
+    color: var(--text-mid);
+    text-align: center;
+    max-width: 440px;
+    line-height: 1.6;
+  }
+
+  .intro-use-case {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--teal-dim);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  .start-btn {
+    background: var(--teal);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 36px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: -0.3px;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px var(--teal-glow);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .start-btn:hover {
+    background: #00bfdf;
+    box-shadow: 0 0 32px var(--teal-glow);
+    transform: translateY(-1px);
+  }
+
+  .intro-acts {
+    display: flex;
+    gap: 8px;
+  }
+
+  .intro-act-chip {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+  }
+
+  .intro-act-chip.highlight {
+    border-color: var(--teal-dim);
+    color: var(--teal);
+    background: var(--teal-glow);
+  }
+
+  /* ── SCENE SVG ─────────────────────────────────── */
+  .scene-svg {
+    width: 100%;
+    height: 138px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    overflow: visible;
+    display: block;
+  }
+
+  #session-layer-2, #session-layer-3 {
+    transition: opacity 0.7s ease;
+  }
+
+  @keyframes screen-pulse {
+    0%,100% { opacity: 0.06; }
+    50%      { opacity: 0.12; }
+  }
+
+  #screen-glow { animation: screen-pulse 2.2s ease-in-out infinite; }
+
+  @keyframes blink-cursor {
+    0%,49% { opacity: 1; }
+    50%,100%{ opacity: 0; }
+  }
+
+  .cursor-blink { animation: blink-cursor 0.75s step-end infinite; }
+
+  @keyframes typing-wave {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-1.5px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Back nav -->
+<a href="index.html" style="
+  position:fixed;top:14px;left:18px;z-index:9999;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:100px;
+  background:rgba(13,21,38,0.82);backdrop-filter:blur(16px);
+  border:1px solid rgba(30,48,88,0.9);
+  color:#8099bb;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
+  text-decoration:none;transition:color .2s,border-color .2s;
+" onmouseover="this.style.color='#f0f6ff';this.style.borderColor='#3b82f6'"
+   onmouseout="this.style.color='#8099bb';this.style.borderColor='rgba(30,48,88,0.9)'">
+  ← Units360.ai
+</a>
+
+<!-- ─── INTRO SCREEN ──────────────────────────────────── -->
+<div id="intro">
+  <div class="intro-logo">
+    <div class="intro-logo-icon">U</div>
+    Units360.ai
+  </div>
+  <div class="intro-sub">
+    Watch how a real AI SaaS company meters token usage — from first API call to auto-generated invoice — with zero engineering overhead.
+  </div>
+  <div class="intro-use-case">
+    🤖 &nbsp; Industry Use Case: <strong style="margin-left:4px">AI &amp; LLM Platforms</strong>
+  </div>
+  <div class="intro-acts">
+    <div class="intro-act-chip highlight">Define</div>
+    <div class="intro-act-chip">→</div>
+    <div class="intro-act-chip highlight">Consume</div>
+    <div class="intro-act-chip">→</div>
+    <div class="intro-act-chip highlight">Alert</div>
+    <div class="intro-act-chip">→</div>
+    <div class="intro-act-chip highlight">Enforce</div>
+    <div class="intro-act-chip">→</div>
+    <div class="intro-act-chip highlight">Invoice</div>
+  </div>
+  <button class="start-btn" id="startBtn">▶ &nbsp; Start Demo</button>
+</div>
+
+<!-- ─── APP ──────────────────────────────────────────── -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="logo">
+      <div class="logo-icon">U</div>
+      Units360.ai
+      <span style="color:var(--text-dim);font-weight:400;font-size:14px;margin-left:4px">/ Token Metering</span>
+    </div>
+    <div class="live-token-pill">
+      <div class="live-dot" id="live-dot"></div>
+      <span id="live-token-val">0</span>
+      <span style="color:var(--text-dim)">/ 100,000 tokens</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+      <div class="badge">Demo · AI SaaS</div>
+      <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.3px;">Token metering for an AI coding assistant startup</div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main id="main">
+
+    <!-- FLOW AREA -->
+    <div id="flow-area">
+      <svg id="flow-svg" viewBox="0 0 1000 150" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <!-- Gradients for nodes -->
+          <radialGradient id="gAI"     cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#5b21b6"/></radialGradient>
+          <radialGradient id="gAPI"    cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#0077aa"/></radialGradient>
+          <radialGradient id="gLedger" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></radialGradient>
+          <radialGradient id="gAnalytics" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></radialGradient>
+
+          <!-- Glow filters -->
+          <filter id="glowTeal"  x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowAmber" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowRed"   x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowGreen" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+
+        <!-- ── PATH BACKGROUNDS (animated dashes) ── -->
+        <!-- Path 0: AI App → Units360 API -->
+        <path id="path-bg-0" d="M 155 75 Q 242 45 320 75" stroke="#1e3058" stroke-width="2" fill="none" stroke-dasharray="8 5" opacity="0.5"/>
+        <path id="path-anim-0" d="M 155 75 Q 242 45 320 75" stroke="#00d4ff" stroke-width="1.5" fill="none" stroke-dasharray="8 5" opacity="0" style="animation: dashAnim 0.8s linear infinite;"/>
+
+        <!-- Path 1: Units360 API → Ledger -->
+        <path id="path-bg-1" d="M 455 75 Q 542 45 620 75" stroke="#1e3058" stroke-width="2" fill="none" stroke-dasharray="8 5" opacity="0.5"/>
+        <path id="path-anim-1" d="M 455 75 Q 542 45 620 75" stroke="#00d4ff" stroke-width="1.5" fill="none" stroke-dasharray="8 5" opacity="0" style="animation: dashAnim 0.8s linear infinite;"/>
+
+        <!-- Path 2: Ledger → Analytics -->
+        <path id="path-bg-2" d="M 735 75 Q 812 45 875 75" stroke="#1e3058" stroke-width="2" fill="none" stroke-dasharray="8 5" opacity="0.5"/>
+        <path id="path-anim-2" d="M 735 75 Q 812 45 875 75" stroke="#10b981" stroke-width="1.5" fill="none" stroke-dasharray="8 5" opacity="0" style="animation: dashAnim 0.8s linear infinite;"/>
+
+        <!-- ── NODES ── -->
+
+        <!-- Node 0: AI App (cx=90) -->
+        <g id="node-0">
+          <!-- Halo -->
+          <circle cx="90" cy="75" r="52" fill="#8b5cf620" stroke="#8b5cf6" stroke-width="1" opacity="0.4"/>
+          <!-- Main circle -->
+          <circle cx="90" cy="75" r="40" fill="url(#gAI)" stroke="#8b5cf6" stroke-width="1.5"/>
+          <!-- Icon: simple laptop shape -->
+          <rect x="72" y="65" width="36" height="22" rx="3" fill="none" stroke="#e0d0ff" stroke-width="1.5"/>
+          <line x1="67" y1="87" x2="113" y2="87" stroke="#e0d0ff" stroke-width="1.5" stroke-linecap="round"/>
+          <rect x="81" y="89" width="18" height="2" rx="1" fill="#e0d0ff"/>
+          <!-- Label -->
+          <text x="90" y="127" text-anchor="middle" fill="#8b5cf6" font-size="10" font-weight="700" font-family="Inter, sans-serif">AI App</text>
+          <text x="90" y="139" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter, sans-serif">gpt-4 / claude</text>
+        </g>
+
+        <!-- Node 1: Units360 API (cx=387) -->
+        <g id="node-1">
+          <circle cx="387" cy="75" r="55" fill="#00d4ff18" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>
+          <circle cx="387" cy="75" r="42" fill="url(#gAPI)" stroke="#00d4ff" stroke-width="1.5"/>
+          <!-- Icon: lightning bolt -->
+          <polygon points="393,57 381,78 389,78 383,95 397,72 389,72" fill="#fff" opacity="0.9"/>
+          <!-- Label -->
+          <text x="387" y="128" text-anchor="middle" fill="#00d4ff" font-size="10" font-weight="700" font-family="Inter, sans-serif">Units360 API</text>
+          <text x="387" y="140" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter, sans-serif">Metering Engine</text>
+        </g>
+
+        <!-- Node 2: Token Ledger (cx=677) -->
+        <g id="node-2">
+          <circle cx="677" cy="75" r="52" fill="#f59e0b18" stroke="#f59e0b" stroke-width="1" opacity="0.4"/>
+          <circle cx="677" cy="75" r="40" fill="url(#gLedger)" stroke="#f59e0b" stroke-width="1.5"/>
+          <!-- Icon: database cylinders -->
+          <ellipse cx="677" cy="62" rx="16" ry="5" fill="none" stroke="#fff5d6" stroke-width="1.3"/>
+          <line x1="661" y1="62" x2="661" y2="80" stroke="#fff5d6" stroke-width="1.3"/>
+          <line x1="693" y1="62" x2="693" y2="80" stroke="#fff5d6" stroke-width="1.3"/>
+          <ellipse cx="677" cy="71" rx="16" ry="5" fill="none" stroke="#fff5d6" stroke-width="1.3"/>
+          <ellipse cx="677" cy="80" rx="16" ry="5" fill="#f59e0b60" stroke="#fff5d6" stroke-width="1.3"/>
+          <!-- Label -->
+          <text x="677" y="127" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="700" font-family="Inter, sans-serif">Token Ledger</text>
+          <text x="677" y="139" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter, sans-serif">Real-time balance</text>
+        </g>
+
+        <!-- Node 3: Analytics (cx=917) -->
+        <g id="node-3">
+          <circle cx="917" cy="75" r="52" fill="#10b98118" stroke="#10b981" stroke-width="1" opacity="0.4"/>
+          <circle cx="917" cy="75" r="40" fill="url(#gAnalytics)" stroke="#10b981" stroke-width="1.5"/>
+          <!-- Icon: bar chart -->
+          <rect x="902" y="74" width="7" height="14" rx="1.5" fill="#d1fae5" opacity="0.9"/>
+          <rect x="912" y="65" width="7" height="23" rx="1.5" fill="#d1fae5" opacity="0.9"/>
+          <rect x="922" y="69" width="7" height="19" rx="1.5" fill="#d1fae5" opacity="0.9"/>
+          <!-- Label -->
+          <text x="917" y="127" text-anchor="middle" fill="#10b981" font-size="10" font-weight="700" font-family="Inter, sans-serif">Analytics</text>
+          <text x="917" y="139" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter, sans-serif">Auto-provisioned</text>
+        </g>
+
+        <!-- ── PARTICLE LAYER (particles injected here by JS) ── -->
+        <g id="particle-layer"></g>
+
+        <!-- ── ENFORCE BLOCK INDICATOR on Node 1 ── -->
+        <g id="block-indicator" opacity="0">
+          <circle cx="387" cy="75" r="50" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <text x="387" y="80" text-anchor="middle" fill="#ef4444" font-size="28" font-weight="900" font-family="Inter, sans-serif">✕</text>
+        </g>
+
+      </svg>
+
+      <!-- Alert toast -->
+      <div id="alert-toast">
+        <div class="toast-icon">⚠</div>
+        80% token limit reached — customer notified
+      </div>
+    </div>
+
+    <!-- COMMENTARY BAR -->
+    <div id="commentary">
+      <span class="commentary-icon" id="commentary-icon">💡</span>
+      <span id="commentary-text"><span class="commentary-callout">Most companies spend 2–3 weeks writing custom metering infrastructure.</span> Units360.ai replaces that with a 5-minute setup — no Kafka, no ClickHouse, no DevOps sprint required. Define your unit once; the platform handles everything else.</span>
+    </div>
+
+    <!-- DATA AREA -->
+    <div id="data-area">
+
+      <!-- Stat panel -->
+      <div class="panel">
+
+        <!-- ── SCENE: User + Laptop + Clock ── -->
+        <svg class="scene-svg" id="scene-svg" viewBox="0 0 500 138" preserveAspectRatio="xMidYMid meet">
+
+          <!-- Background -->
+          <rect x="0" y="0" width="500" height="138" fill="#0d1526" rx="8"/>
+
+          <!-- Subtle grid lines (wall) -->
+          <line x1="0"   y1="115" x2="335" y2="115" stroke="#131e35" stroke-width="0.5"/>
+          <line x1="335" y1="0"   x2="335" y2="138" stroke="#131e35" stroke-width="0.5"/>
+
+          <!-- ─── DESK ─── -->
+          <rect x="38" y="107" width="275" height="9" rx="2" fill="#1a2844" stroke="#243660" stroke-width="1"/>
+          <line x1="38"  y1="107" x2="313" y2="107" stroke="#2d4070" stroke-width="0.5"/>
+          <rect x="48"  y="116" width="5" height="18" rx="1" fill="#131e35"/>
+          <rect x="298" y="116" width="5" height="18" rx="1" fill="#131e35"/>
+
+          <!-- ─── CHAIR ─── -->
+          <rect x="66" y="100" width="60" height="7" rx="2" fill="#131e35" stroke="#1e3058" stroke-width="0.5"/>
+          <rect x="77" y="79"  width="9"  height="22" rx="2" fill="#131e35" stroke="#1e3058" stroke-width="0.5"/>
+
+          <!-- ─── PERSON ─── -->
+          <!-- Body / torso -->
+          <path d="M 80 85 Q 100 92 120 85 L 117 107 L 83 107 Z" fill="#1a2844" stroke="#243660" stroke-width="0.5"/>
+          <!-- Left arm resting on desk -->
+          <path d="M 83 91 Q 68 102 58 107" stroke="#1a2844" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <circle cx="55" cy="107" r="4.5" fill="#0e1828" stroke="#243660" stroke-width="0.5"/>
+          <!-- Right arm reaching to keyboard -->
+          <path id="person-right-arm" d="M 117 91 Q 148 103 172 107" stroke="#1a2844" stroke-width="8" stroke-linecap="round" fill="none" style="animation: typing-wave 0.28s ease-in-out infinite;"/>
+          <circle cx="175" cy="107" r="4.5" fill="#0e1828" stroke="#243660" stroke-width="0.5"/>
+          <!-- Neck -->
+          <rect x="96" y="80" width="9" height="7" rx="2" fill="#0e1828"/>
+          <!-- Head -->
+          <circle cx="100" cy="67" r="16" fill="#0e1828" stroke="#3d2d6e" stroke-width="1.5"/>
+          <!-- Hair -->
+          <ellipse cx="100" cy="54" rx="14" ry="7"  fill="#2d1f50"/>
+          <ellipse cx="100" cy="59" rx="7"  ry="5"  fill="#2d1f50"/>
+          <!-- Eye whites (screen reflection) -->
+          <ellipse cx="94"  cy="68" rx="3.5" ry="2.8" fill="#00d4ff" opacity="0.65"/>
+          <ellipse cx="106" cy="68" rx="3.5" ry="2.8" fill="#00d4ff" opacity="0.65"/>
+          <!-- Pupils -->
+          <ellipse cx="95"  cy="68" rx="1.5" ry="1.8" fill="#000b18" opacity="0.7"/>
+          <ellipse cx="107" cy="68" rx="1.5" ry="1.8" fill="#000b18" opacity="0.7"/>
+          <!-- Nose -->
+          <path d="M 100 72 L 98 77 L 102 77" stroke="#3d2d6e" stroke-width="0.8" fill="none"/>
+          <!-- Subtle smile -->
+          <path d="M 95 81 Q 100 84 106 81" stroke="#3d2d6e" stroke-width="0.8" fill="none"/>
+          <!-- Screen reflection glow on face -->
+          <ellipse cx="103" cy="67" rx="13" ry="13" fill="#00d4ff" opacity="0.05" id="screen-glow"/>
+
+          <!-- ─── LAPTOP ─── -->
+          <!-- Session shadow layers (appear in Act 2+) -->
+          <rect id="session-layer-3" x="183" y="57" width="100" height="52" rx="3" fill="#0a0e18" stroke="#8b5cf6" stroke-width="1" opacity="0"/>
+          <rect id="session-layer-2" x="177" y="56" width="100" height="52" rx="3" fill="#0a0e18" stroke="#8b5cf6" stroke-width="1" opacity="0"/>
+          <!-- Main laptop screen -->
+          <rect x="170" y="54" width="100" height="53" rx="3" fill="#060c18" stroke="#00d4ff" stroke-width="1.8"/>
+          <rect x="170" y="54" width="100" height="53" rx="3" fill="none" stroke="#00d4ff" stroke-width="0.4" opacity="0.5"/>
+          <!-- Screen ambient glow -->
+          <ellipse cx="220" cy="80" rx="42" ry="22" fill="#00d4ff" opacity="0.05"/>
+
+          <!-- macOS-style title bar -->
+          <rect x="172" y="56" width="96" height="11" rx="2" fill="#0d1526"/>
+          <circle cx="178" cy="61.5" r="2.2" fill="#ef4444" opacity="0.75"/>
+          <circle cx="184" cy="61.5" r="2.2" fill="#f59e0b" opacity="0.75"/>
+          <circle cx="190" cy="61.5" r="2.2" fill="#10b981" opacity="0.75"/>
+          <text x="221" y="65" text-anchor="middle" fill="#2d4070" font-size="5" font-family="Inter,sans-serif">LLM Chat · Session</text>
+
+          <!-- Chat messages on screen -->
+          <!-- User bubble (right, blue) -->
+          <rect x="204" y="71" width="60" height="7" rx="3" fill="#3b82f6" opacity="0.75"/>
+          <text x="234" y="76.5" text-anchor="middle" fill="#c7e0ff" font-size="4" font-family="Inter,sans-serif">Write unit tests for my API</text>
+          <!-- AI reply 1 -->
+          <rect x="173" y="82" width="70" height="6" rx="3" fill="#1e3058"/>
+          <rect x="173" y="91" width="55" height="6" rx="3" fill="#1e3058"/>
+          <!-- Typing indicator (dots) -->
+          <g id="typing-indicator">
+            <circle cx="177" cy="103" r="2" fill="#00d4ff" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="0.9s" begin="0s"    repeatCount="indefinite"/></circle>
+            <circle cx="183" cy="103" r="2" fill="#00d4ff" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="0.9s" begin="0.3s"   repeatCount="indefinite"/></circle>
+            <circle cx="189" cy="103" r="2" fill="#00d4ff" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="0.9s" begin="0.6s"   repeatCount="indefinite"/></circle>
+          </g>
+
+          <!-- Session badge (top of laptop) -->
+          <rect x="198" y="46" width="52" height="13" rx="6.5" fill="#0d1526" stroke="#00d4ff" stroke-width="1"/>
+          <text id="session-badge-text" x="224" y="55" text-anchor="middle" fill="#00d4ff" font-size="6.5" font-weight="700" font-family="Inter,sans-serif">× 1 session</text>
+
+          <!-- Keyboard base -->
+          <rect x="167" y="107" width="107" height="6" rx="2" fill="#131e35" stroke="#1e3058" stroke-width="1"/>
+          <rect x="170" y="108" width="101" height="3.5" rx="1" fill="#1a2844"/>
+
+          <!-- ─── TOKEN BUBBLES (rising from screen) ─── -->
+          <g id="scene-bubbles"></g>
+
+          <!-- ─── CLOCK PANEL ─── -->
+          <g id="scene-clock-group">
+            <!-- Panel bg -->
+            <rect x="342" y="8"  width="152" height="124" rx="8" fill="#0a0e18" stroke="#1e3058" stroke-width="1"/>
+
+            <!-- Clock face -->
+            <circle cx="418" cy="62" r="44" fill="#0d1526" stroke="#1e3058" stroke-width="2"/>
+            <circle cx="418" cy="62" r="41" fill="none" stroke="#131e35" stroke-width="0.5"/>
+
+            <!-- Tick marks injected by JS -->
+            <g id="clock-ticks"></g>
+
+            <!-- Brand text inside clock -->
+            <text x="418" y="49" text-anchor="middle" fill="#243660" font-size="4.5" font-family="Inter,sans-serif" letter-spacing="2.5" font-weight="600">UNITS360</text>
+
+            <!-- Hands — endpoints set by JS via direct x2/y2 math (no transforms) -->
+            <line id="hand-hour"     x1="418" y1="62" x2="418" y2="40" stroke="#64748b" stroke-width="3.5" stroke-linecap="round"/>
+            <line id="hand-min"      x1="418" y1="62" x2="418" y2="31" stroke="#e0f2fe" stroke-width="2"   stroke-linecap="round"/>
+            <line id="hand-sec"      x1="418" y1="62" x2="418" y2="27" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round"/>
+            <line id="hand-sec-tail" x1="418" y1="62" x2="418" y2="70" stroke="#ef4444" stroke-width="2"   stroke-linecap="round"/>
+            <!-- Center cap -->
+            <circle cx="418" cy="62" r="3.5" fill="#00d4ff"/>
+            <circle cx="418" cy="62" r="1.5" fill="#060c18"/>
+
+            <!-- Digital readout below clock -->
+            <rect x="392" y="112" width="52" height="15" rx="4" fill="#0a0e18" stroke="#1e3058" stroke-width="0.5"/>
+            <text id="demo-time" x="418" y="122" text-anchor="middle" fill="#00d4ff" font-size="8" font-weight="700" font-family="JetBrains Mono,monospace">00:00:00</text>
+
+            <!-- "TIME" label -->
+            <text x="418" y="132" text-anchor="middle" fill="#4a6080" font-size="6" font-family="Inter,sans-serif" letter-spacing="2">TIME</text>
+          </g>
+
+        </svg>
+        <!-- ── END SCENE ── -->
+
+        <div class="panel-label" style="margin-top:4px">Token Consumption</div>
+        <div id="token-counter">0</div>
+        <div class="token-meta">
+          <span class="token-limit">/ 100,000 token limit</span>
+          <span class="token-pct" id="token-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progress-fill"></div>
+          <div class="progress-marker" title="80% warning threshold"></div>
+        </div>
+        <canvas id="chart"></canvas>
+      </div>
+
+      <!-- Story panel -->
+      <div class="panel">
+        <div class="act-pips">
+          <div class="act-pip" id="pip-0"></div>
+          <div class="act-pip" id="pip-1"></div>
+          <div class="act-pip" id="pip-2"></div>
+          <div class="act-pip" id="pip-3"></div>
+          <div class="act-pip" id="pip-4"></div>
+        </div>
+        <div class="act-eyebrow" id="act-eyebrow">ACT 1 OF 5</div>
+        <div id="act-title">Define Your Units</div>
+        <div id="act-subtitle">No code. No DevOps.</div>
+        <div id="act-desc">In under 5 minutes, define your metering model: one unit = one LLM token. Monthly limit: 100,000 tokens per customer. No database schema, no Kafka, no DevOps team.</div>
+        <div id="event-log">
+          <div class="log-entry">
+            <span class="log-time">00:00:00</span>
+            <span class="log-msg info">units360 runtime initializing...</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Invoice card (fixed, never clipped) -->
+  <div id="invoice-card">
+    <div class="inv-header">
+      <div class="inv-check">✓</div>
+      Invoice Generated
+    </div>
+    <div class="inv-row"><span>Customer</span><span style="color:var(--text)">Acme AI Corp</span></div>
+    <div class="inv-row"><span>Period</span><span>May 2026</span></div>
+    <div class="inv-row"><span>Tokens consumed</span><span style="color:var(--text)">100,000</span></div>
+    <div class="inv-row"><span>Rate</span><span>$0.49 / 1K tokens</span></div>
+    <div class="inv-row"><span>Status</span><span style="color:var(--green)">● Sent</span></div>
+    <div class="inv-total"><span>Total Due</span><span style="color:var(--green)">$49.00</span></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div id="controls">
+    <button class="btn" id="prevBtn" disabled>◄ Prev</button>
+    <button class="btn primary" id="playBtn">▶ &nbsp;Play</button>
+    <button class="btn" id="nextBtn">Next ►</button>
+    <div class="divider"></div>
+    <div class="speed-wrap">
+      Speed:
+      <select id="speed-select">
+        <option value="0.5">0.5×</option>
+        <option value="1" selected>1×</option>
+        <option value="2">2×</option>
+        <option value="3">3×</option>
+      </select>
+    </div>
+    <div class="divider"></div>
+    <button class="btn danger" id="resetBtn">↺ Reset</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════════════
+const LIMIT   = 100000;
+const WARN_AT = 0.80;
+
+// SVG quadratic bezier paths: [P0, ctrl, P2]
+const PATHS = [
+  { p0:{x:155,y:75}, cp:{x:242,y:45}, p2:{x:320,y:75} }, // AI App → API
+  { p0:{x:455,y:75}, cp:{x:542,y:45}, p2:{x:620,y:75} }, // API → Ledger
+  { p0:{x:735,y:75}, cp:{x:812,y:45}, p2:{x:875,y:75} }, // Ledger → Analytics
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  ACTS
+// ═══════════════════════════════════════════════════════════════
+const ACTS = [
+  {
+    id: 'define',
+    eyebrow: 'ACT 1 OF 5',
+    title: 'Define Your Units',
+    subtitle: 'No code. No DevOps.',
+    desc: 'In under 5 minutes, define your metering model in Units360.ai: one unit = one LLM token. Monthly limit: 100,000 tokens per customer. No database schema. No Kafka. No DevOps team required.',
+    tokenRate: 0,
+    activeSegments: [],
+    duration: 4500,
+    color: 'teal',
+    commentaryIcon: '💡',
+    commentary: '<span class="commentary-callout">Most companies spend 2–3 weeks writing custom metering infrastructure.</span> Units360.ai replaces that with a 5-minute setup — no Kafka, no ClickHouse, no DevOps sprint. Define your unit once; the platform handles everything else.',
+    logs: [
+      { t:600,  msg: 'unit_type: "llm_token" → defined', type: 'info' },
+      { t:1400, msg: 'limit: 100,000 / month per account', type: 'info' },
+      { t:2300, msg: 'alert_threshold: 80% configured', type: 'info' },
+      { t:3400, msg: 'runtime provisioned ✓ → ready', type: 'success' },
+    ],
+  },
+  {
+    id: 'consume',
+    eyebrow: 'ACT 2 OF 5',
+    title: 'API Requests Flow In',
+    subtitle: 'Real-time metering. Zero configuration.',
+    desc: 'Your AI app goes live. Every API call is tracked the moment it happens — tokens consumed, account balances updated instantly. No custom code on your end. No engineering sprint.',
+    tokenRate: 6000,
+    activeSegments: [0, 1, 2],
+    duration: 13000,
+    color: 'teal',
+    commentaryIcon: '⚡',
+    commentary: '<span class="commentary-callout">Every API call from your AI app hits the Units360 metering endpoint in real time.</span> Tokens are counted, account balances are updated, and the data flows instantly to the ledger and analytics dashboard — at any scale, with zero engineering work on your side.',
+    logs: null, // dynamically generated
+  },
+  {
+    id: 'threshold',
+    eyebrow: 'ACT 3 OF 5',
+    title: 'Threshold Alert Fires',
+    subtitle: '80,000 tokens — auto-flagged.',
+    desc: 'At 80% of the monthly limit, Units360.ai fires an automatic webhook. The customer receives an email notification. Your ops dashboard flags the account. No manual watching required.',
+    tokenRate: 2750,
+    activeSegments: [0, 1],
+    duration: 8000,
+    color: 'amber',
+    commentaryIcon: '🔔',
+    commentary: '<span class="commentary-callout">Units360.ai monitors every account automatically — no manual dashboard-watching required.</span> When a customer hits 80% of their plan, a webhook fires instantly: the customer is emailed, your ops team is alerted, and the account is flagged. You never miss an upsell moment.',
+    logs: [
+      { t:300,  msg: '⚠ ALERT: 80% threshold breached', type: 'warning' },
+      { t:900,  msg: 'webhook fired → customer notified', type: 'warning' },
+      { t:1700, msg: 'account flagged: "approaching_limit"', type: 'warning' },
+      { t:2800, msg: 'ops dashboard alert raised', type: 'warning' },
+    ],
+  },
+  {
+    id: 'enforce',
+    eyebrow: 'ACT 4 OF 5',
+    title: 'Limits Auto-Enforced',
+    subtitle: 'API returns 429. Revenue protected.',
+    desc: 'At 100,000 tokens, all incoming API calls are automatically rejected with HTTP 429. No custom middleware. No on-call engineer. Your business rules enforced at the infrastructure level.',
+    tokenRate: 0,
+    activeSegments: [],
+    duration: 5500,
+    color: 'red',
+    commentaryIcon: '🛡️',
+    commentary: '<span class="commentary-callout">When the limit is hit, the API enforces it automatically — no custom middleware, no on-call engineer.</span> Every request beyond the limit gets HTTP 429. Your business rules are enforced at the infrastructure level. Revenue is protected, and you wrote zero lines of enforcement code.',
+    logs: [
+      { t:200,  msg: '🔴 ENFORCE: limit reached → 429 mode active', type: 'error' },
+      { t:700,  msg: 'POST /v1/meter → 429 Too Many Requests', type: 'error' },
+      { t:1200, msg: 'POST /v1/meter → 429 Too Many Requests', type: 'error' },
+      { t:1900, msg: 'POST /v1/meter → 429 Too Many Requests', type: 'error' },
+      { t:2800, msg: 'account_status: "limit_reached" set', type: 'error' },
+    ],
+  },
+  {
+    id: 'invoice',
+    eyebrow: 'ACT 5 OF 5',
+    title: 'Invoice Generated',
+    subtitle: 'Usage → Revenue. Automatically.',
+    desc: 'Period closed. Units360.ai generates a complete usage report and invoice — accurate to the token. Stripe payment queued. No manual calculations. No billing disputes. Ever.',
+    tokenRate: 0,
+    activeSegments: [2],
+    duration: 6500,
+    color: 'green',
+    commentaryIcon: '💰',
+    commentary: '<span class="commentary-callout">Usage data automatically becomes revenue — accurate to the token, zero manual effort.</span> Units360.ai closes the billing period, generates a full usage report, creates the customer invoice, and queues the Stripe payment. No spreadsheets. No disputes. No reconciliation headaches.',
+    logs: [
+      { t:400,  msg: 'billing period closed: May 2026', type: 'info' },
+      { t:1100, msg: 'usage report: 100,000 tokens consumed', type: 'info' },
+      { t:2100, msg: 'invoice $49.00 generated → sent ✓', type: 'success' },
+      { t:3300, msg: 'Stripe payment queued → processing', type: 'success' },
+    ],
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+const state = {
+  actIndex:    0,
+  tokens:      0,
+  playing:     false,
+  speed:       1,
+  actElapsed:  0,
+  warned:      false,
+  enforced:    false,
+  invoiced:    false,
+  particles:   [],
+  chartData:   [],
+  logEntries:  [],
+  lastTime:    null,
+  pSpawnTimer: 0,
+  logTimers:   [],
+  raf:         null,
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  DOM REFS
+// ═══════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const pLayer = $('particle-layer');
+const chartCanvas = $('chart');
+const ctx = chartCanvas.getContext('2d');
+
+// ═══════════════════════════════════════════════════════════════
+//  BEZIER MATH
+// ═══════════════════════════════════════════════════════════════
+function bezierQ(t, p0, cp, p2) {
+  const mt = 1 - t;
+  return {
+    x: mt*mt*p0.x + 2*mt*t*cp.x + t*t*p2.x,
+    y: mt*mt*p0.y + 2*mt*t*cp.y + t*t*p2.y,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════════════════════════
+function spawnParticle(segIndex, rejected = false) {
+  const path = PATHS[segIndex];
+  const color = rejected ? '#ef4444' : (segIndex === 2 ? '#10b981' : '#00d4ff');
+  const size  = 3.5 + Math.random() * 1.5;
+
+  const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  el.setAttribute('r', size);
+  el.setAttribute('fill', color);
+  el.setAttribute('opacity', '0.9');
+  el.style.filter = `drop-shadow(0 0 ${rejected ? 5 : 3}px ${color})`;
+  pLayer.appendChild(el);
+
+  state.particles.push({
+    el, segIndex, path,
+    t: rejected ? 1 : 0,
+    speed: (rejected ? -1 : 1) * (0.012 + Math.random() * 0.008),
+    rejected,
+    color,
+    done: false,
+  });
+}
+
+function updateParticles(dtMs) {
+  state.particles = state.particles.filter(p => {
+    p.t += p.speed * state.speed * (dtMs / 16.67);
+    const finished = p.rejected ? p.t <= 0 : p.t >= 1;
+    if (finished) { p.el.remove(); return false; }
+    const pt = bezierQ(Math.max(0, Math.min(1, p.t)), p.path.p0, p.path.cp, p.path.p2);
+    p.el.setAttribute('cx', pt.x);
+    p.el.setAttribute('cy', pt.y);
+    return true;
+  });
+}
+
+function clearParticles() {
+  state.particles.forEach(p => p.el.remove());
+  state.particles = [];
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CHART
+// ═══════════════════════════════════════════════════════════════
+function resizeChart() {
+  const rect = chartCanvas.parentElement.getBoundingClientRect();
+  // scene svg (~138) + label (~20) + counter (~56) + meta (~22) + progress (~22) + gaps (~30) = ~288
+  const h = Math.max(60, rect.height - 310);
+  chartCanvas.width  = chartCanvas.offsetWidth * window.devicePixelRatio;
+  chartCanvas.height = h * window.devicePixelRatio;
+  chartCanvas.style.height = h + 'px';
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+}
+
+function drawChart() {
+  const w = chartCanvas.offsetWidth;
+  const h = chartCanvas.offsetHeight;
+  if (!w || !h) return;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const data = state.chartData;
+  if (data.length < 2) return;
+
+  const maxT = Math.max(data[data.length-1].t, 1);
+  const maxV = LIMIT;
+
+  // Helper
+  const tx = t => (t / maxT) * (w - 10) + 5;
+  const ty = v => h - 10 - ((v / maxV) * (h - 20));
+
+  // Warning line at 80%
+  const warnY = ty(LIMIT * WARN_AT);
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = 'rgba(245,158,11,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, warnY);
+  ctx.lineTo(w, warnY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(245,158,11,0.5)';
+  ctx.font = '9px Inter, sans-serif';
+  ctx.fillText('80%', w - 26, warnY - 3);
+
+  // Gradient fill
+  const pct = state.tokens / LIMIT;
+  const gradColor = pct >= 1 ? '#ef4444' : pct >= WARN_AT ? '#f59e0b' : '#00d4ff';
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, gradColor + '44');
+  grad.addColorStop(1, gradColor + '04');
+
+  ctx.beginPath();
+  ctx.moveTo(tx(data[0].t), h);
+  data.forEach(d => ctx.lineTo(tx(d.t), ty(d.v)));
+  ctx.lineTo(tx(data[data.length-1].t), h);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  data.forEach((d, i) => {
+    i === 0 ? ctx.moveTo(tx(d.t), ty(d.v)) : ctx.lineTo(tx(d.t), ty(d.v));
+  });
+  ctx.strokeStyle = gradColor;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Current value dot
+  const last = data[data.length-1];
+  ctx.beginPath();
+  ctx.arc(tx(last.t), ty(last.v), 4, 0, Math.PI*2);
+  ctx.fillStyle = gradColor;
+  ctx.fill();
+  ctx.strokeStyle = '#0d1526';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  LOG
+// ═══════════════════════════════════════════════════════════════
+let globalTime = 0;
+
+function addLog(msg, type = 'info') {
+  const log = $('event-log');
+  const t = new Date();
+  const timeStr = [t.getHours(), t.getMinutes(), t.getSeconds()]
+    .map(n => String(n).padStart(2,'0')).join(':');
+
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = `<span class="log-time">${timeStr}</span><span class="log-msg ${type}">${msg}</span>`;
+  log.appendChild(entry);
+
+  // Keep last 5
+  while (log.children.length > 5) log.removeChild(log.firstChild);
+}
+
+function scheduleActLogs(act) {
+  state.logTimers.forEach(clearTimeout);
+  state.logTimers = [];
+  if (!act.logs) return;
+  act.logs.forEach(entry => {
+    const id = setTimeout(() => {
+      if (state.actIndex === ACTS.indexOf(act) && state.playing) {
+        addLog(entry.msg, entry.type);
+      }
+    }, entry.t / state.speed);
+    state.logTimers.push(id);
+  });
+}
+
+// dynamic log for consume act
+let consumeLogTimer = null;
+const consumeLogs = [
+  ['POST /v1/meter → 200 OK  {tokens: 512}',    'success'],
+  ['POST /v1/meter → 200 OK  {tokens: 1,024}',  'success'],
+  ['balance updated: +2,048 tokens',            'info'],
+  ['POST /v1/meter → 200 OK  {tokens: 768}',    'success'],
+  ['POST /v1/meter → 200 OK  {tokens: 256}',    'success'],
+  ['analytics event recorded',                  'info'],
+  ['POST /v1/meter → 200 OK  {tokens: 1,536}',  'success'],
+  ['balance checkpoint: 40% consumed',          'info'],
+  ['POST /v1/meter → 200 OK  {tokens: 896}',    'success'],
+  ['rate: ~350 req/min',                        'info'],
+];
+let consumeLogIdx = 0;
+
+function startConsumeLogs() {
+  consumeLogIdx = 0;
+  function next() {
+    if (state.actIndex !== 1 || !state.playing) return;
+    const [msg, type] = consumeLogs[consumeLogIdx % consumeLogs.length];
+    addLog(msg, type);
+    consumeLogIdx++;
+    consumeLogTimer = setTimeout(next, (600 + Math.random() * 400) / state.speed);
+  }
+  consumeLogTimer = setTimeout(next, 300 / state.speed);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  UI UPDATES
+// ═══════════════════════════════════════════════════════════════
+function updateUI() {
+  const pct   = state.tokens / LIMIT;
+  const color = pct >= 1 ? 'red' : pct >= WARN_AT ? 'amber' : state.actIndex === 4 ? 'green' : 'teal';
+  const rounded = Math.round(state.tokens);
+  const pctStr  = Math.round(pct * 100) + '%';
+
+  // Header pill
+  $('live-token-val').textContent = rounded.toLocaleString();
+  $('live-token-val').className   = color;
+  $('live-dot').className         = `live-dot ${color === 'teal' ? '' : color}`;
+
+  // Counter
+  $('token-counter').textContent  = rounded.toLocaleString();
+  $('token-counter').className    = color;
+
+  // Pct
+  $('token-pct').textContent = pctStr;
+  $('token-pct').className   = `token-pct ${color !== 'teal' && color !== 'green' ? color : ''}`;
+
+  // Progress bar
+  $('progress-fill').style.width = Math.min(100, pct * 100) + '%';
+  $('progress-fill').className   = `${color !== 'teal' && color !== 'green' ? color : ''}`;
+
+  // Pips
+  for (let i = 0; i < 5; i++) {
+    const pip = $(`pip-${i}`);
+    pip.className = 'act-pip' + (i < state.actIndex ? ' done' : i === state.actIndex ? ' active' : '');
+  }
+
+  // Story
+  const act = ACTS[state.actIndex];
+  $('act-eyebrow').textContent = act.eyebrow;
+  $('act-eyebrow').className   = `act-eyebrow ${act.color !== 'teal' ? act.color : ''}`;
+  $('act-title').textContent   = act.title;
+  $('act-subtitle').textContent = act.subtitle;
+  $('act-desc').textContent    = act.desc;
+
+  // Buttons
+  $('prevBtn').disabled = state.actIndex === 0;
+  $('nextBtn').disabled = state.actIndex === ACTS.length - 1;
+  $('playBtn').textContent = state.playing ? '⏸ Pause' : '▶ Play';
+  $('playBtn').className   = state.playing ? 'btn' : 'btn primary';
+
+  // Path animations
+  PATHS.forEach((_, i) => {
+    const anim = $(`path-anim-${i}`);
+    const active = act.activeSegments.includes(i);
+    anim.style.opacity = active ? '0.8' : '0';
+  });
+
+  // Node 1 enforce indicator
+  $('block-indicator').style.opacity = state.enforced ? '1' : '0';
+
+  // Alert toast
+  if (state.warned) $('alert-toast').classList.add('visible');
+  else $('alert-toast').classList.remove('visible');
+
+  // Invoice card
+  if (state.invoiced) $('invoice-card').classList.add('visible');
+  else $('invoice-card').classList.remove('visible');
+
+  // Commentary bar
+  const commentary = $('commentary');
+  const commentaryText = $('commentary-text');
+  commentary.className = act.color !== 'teal' ? act.color : '';
+  $('commentary-icon').textContent = act.commentaryIcon || '💡';
+  commentaryText.innerHTML = act.commentary || '';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CLOCK + SCENE
+// ═══════════════════════════════════════════════════════════════
+let demoSeconds     = 0;
+let sceneBubbles    = [];
+let sceneBubbleTimer = 0;
+let lastSessionCount = 0;
+
+// -- Clock tick marks (generated once on init)
+function initClock() {
+  const g = $('clock-ticks');
+  if (!g) return;
+  const CX = 418, CY = 62;
+  for (let i = 0; i < 60; i++) {
+    const angle  = (i / 60) * Math.PI * 2 - Math.PI / 2;
+    const isHour = i % 5 === 0;
+    const r1 = isHour ? 33 : 37;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', (CX + r1 * Math.cos(angle)).toFixed(2));
+    line.setAttribute('y1', (CY + r1 * Math.sin(angle)).toFixed(2));
+    line.setAttribute('x2', (CX + 41 * Math.cos(angle)).toFixed(2));
+    line.setAttribute('y2', (CY + 41 * Math.sin(angle)).toFixed(2));
+    line.setAttribute('stroke', isHour ? '#3d5070' : '#1e2f48');
+    line.setAttribute('stroke-width', isHour ? '2' : '0.7');
+    line.setAttribute('stroke-linecap', 'round');
+    g.appendChild(line);
+  }
+  // 12 / 3 / 6 / 9 numerals
+  [{n:'12',dx:0,dy:-28},{n:'3',dx:28,dy:5},{n:'6',dx:0,dy:33},{n:'9',dx:-28,dy:5}]
+    .forEach(({n,dx,dy}) => {
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', CX + dx); t.setAttribute('y', CY + dy);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#2d4060');
+      t.setAttribute('font-size','7'); t.setAttribute('font-family','Inter,sans-serif');
+      t.setAttribute('font-weight','700'); t.textContent = n;
+      $('scene-clock-group').appendChild(t);
+    });
+}
+
+// -- Move a clock hand by setting its x2/y2 endpoint directly (no SVG transforms).
+//    angleDeg=0 → 12 o'clock (up). Increases clockwise.
+const CX_CLOCK = 418, CY_CLOCK = 62;
+function setHandXY(id, angleDeg, length) {
+  const rad = (angleDeg - 90) * Math.PI / 180; // -90 so 0° = up
+  const el  = $(id);
+  if (!el) return;
+  el.setAttribute('x2', (CX_CLOCK + length * Math.cos(rad)).toFixed(2));
+  el.setAttribute('y2', (CY_CLOCK + length * Math.sin(rad)).toFixed(2));
+}
+
+// -- Clock update — called from its OWN always-running loop (never stops)
+function updateClock(rawDt) {
+  // Always advance: fast when demo playing, slow (1×) when paused/stopped
+  const mult = state.playing ? state.speed * 28 : 1;
+  demoSeconds += (rawDt / 1000) * mult;
+
+  const s = demoSeconds % 60;
+  const m = (demoSeconds / 60) % 60;
+  const h = (demoSeconds / 3600) % 12;
+
+  setHandXY('hand-hour',     h * 30 + m * 0.5,    22);
+  setHandXY('hand-min',      m * 6  + s * 0.1,    31);
+  setHandXY('hand-sec',      s * 6,                35);
+  setHandXY('hand-sec-tail', s * 6 + 180,          8);  // counterweight (opposite)
+
+  const pad = n => String(Math.floor(n)).padStart(2,'0');
+  const el = $('demo-time');
+  if (el) el.textContent = `${pad(h % 12)}:${pad(m)}:${pad(s)}`;
+}
+
+// -- Dedicated always-running clock loop (independent of demo play state)
+let _clockPrev = null;
+function clockLoop(ts) {
+  if (_clockPrev !== null) updateClock(Math.min(ts - _clockPrev, 100));
+  _clockPrev = ts;
+  requestAnimationFrame(clockLoop);
+}
+
+// -- How many sessions are open (drives bubble rate + badge)
+function getSessionCount() {
+  if (state.actIndex === 0) return 0;            // Act 1: not started yet
+  if (state.actIndex === 1) {
+    const pct = state.actElapsed / ACTS[1].duration;
+    if (pct > 0.60) return 3;
+    if (pct > 0.28) return 2;
+    return 1;
+  }
+  if (state.actIndex === 2) return 1;            // threshold — 1 session slowing
+  if (state.actIndex === 3) return 0;            // enforce — blocked
+  if (state.actIndex === 4) return 0;            // invoice — done
+  return 0;
+}
+
+// -- Update session badge + shadow layers
+function updateSessionDisplay() {
+  const count = getSessionCount();
+  if (count === lastSessionCount) return;
+  lastSessionCount = count;
+
+  const badge = $('session-badge-text');
+  if (badge) badge.textContent = count <= 1 ? `× ${count} session` : `× ${count} sessions`;
+
+  const l2 = $('session-layer-2');
+  const l3 = $('session-layer-3');
+  if (l2) l2.style.opacity = count >= 2 ? '0.55' : '0';
+  if (l3) l3.style.opacity = count >= 3 ? '0.35' : '0';
+
+  // Log the session escalation
+  if (count === 2 && state.playing) addLog('⚡ 2nd LLM session opened — rate doubling', 'info');
+  if (count === 3 && state.playing) addLog('⚡ 3rd session opened — token rate ×3', 'warning');
+}
+
+// -- Spawn a rising token bubble from the laptop screen
+function spawnSceneBubble() {
+  const count = getSessionCount();
+  if (count === 0) return;
+  const layer = $('scene-bubbles');
+  if (!layer) return;
+
+  const colors = ['#00d4ff', '#8b5cf6', '#10b981'];
+  const spawnCount = Math.min(count, 3);
+
+  for (let i = 0; i < spawnCount; i++) {
+    const startX = 186 + i * 18 + (Math.random() - 0.5) * 14;
+    const startY = 65 + (Math.random() - 0.5) * 12;
+    const color  = colors[i % colors.length];
+
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r',    '4.5');
+    circle.setAttribute('cx',   startX);
+    circle.setAttribute('cy',   startY);
+    circle.setAttribute('fill', color);
+    circle.style.filter = `drop-shadow(0 0 3px ${color})`;
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x',                  startX);
+    label.setAttribute('y',                  startY + 1.5);
+    label.setAttribute('text-anchor',        'middle');
+    label.setAttribute('dominant-baseline',  'middle');
+    label.setAttribute('font-size',          '4.5');
+    label.setAttribute('font-weight',        '800');
+    label.setAttribute('fill',               '#000');
+    label.setAttribute('font-family',        'Inter, sans-serif');
+    label.textContent = 'T';
+
+    el.appendChild(circle);
+    el.appendChild(label);
+    layer.appendChild(el);
+
+    sceneBubbles.push({
+      el, circle, label,
+      x: startX, y: startY,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -(0.7 + Math.random() * 0.6),
+      opacity: 1,
+    });
+  }
+}
+
+// -- Animate scene bubbles every frame
+function updateSceneBubbles(dtMs) {
+  const f = state.playing ? state.speed * (dtMs / 16.67) : 0;
+  sceneBubbles = sceneBubbles.filter(b => {
+    b.x += b.vx * f;
+    b.y += b.vy * f;
+    b.opacity -= 0.016 * f;
+    if (b.opacity <= 0) { b.el.remove(); return false; }
+    b.circle.setAttribute('cx', b.x);
+    b.circle.setAttribute('cy', b.y);
+    b.circle.setAttribute('opacity', b.opacity);
+    b.label.setAttribute('x', b.x);
+    b.label.setAttribute('y', b.y + 1.5);
+    b.label.setAttribute('opacity', b.opacity);
+    return true;
+  });
+}
+
+// -- Clear all scene bubbles on reset
+function clearSceneBubbles() {
+  sceneBubbles.forEach(b => b.el.remove());
+  sceneBubbles = [];
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CHART DATA COLLECTION
+// ═══════════════════════════════════════════════════════════════
+let chartTime = 0;
+let chartSampleTimer = 0;
+
+// ═══════════════════════════════════════════════════════════════
+//  MAIN LOOP
+// ═══════════════════════════════════════════════════════════════
+function tick(ts) {
+  state.raf = requestAnimationFrame(tick);
+
+  if (!state.lastTime) { state.lastTime = ts; return; }
+  const rawDt = Math.min(ts - state.lastTime, 100);
+  state.lastTime = ts;
+
+  if (!state.playing) return;
+
+  const dt = rawDt * state.speed;
+  const act = ACTS[state.actIndex];
+
+  // Advance act timer
+  state.actElapsed += dt;
+
+  // Advance tokens
+  if (act.tokenRate > 0) {
+    state.tokens = Math.min(LIMIT, state.tokens + act.tokenRate * (dt / 1000));
+  }
+
+  // Chart sample every ~200ms real-time
+  chartSampleTimer += rawDt;
+  if (chartSampleTimer > 150) {
+    chartTime += chartSampleTimer;
+    state.chartData.push({ t: chartTime, v: state.tokens });
+    if (state.chartData.length > 300) state.chartData.shift();
+    chartSampleTimer = 0;
+  }
+
+  // Particles
+  if (act.activeSegments.length > 0) {
+    state.pSpawnTimer += dt;
+    const interval = act.id === 'consume' ? 260 : 500;
+    if (state.pSpawnTimer > interval) {
+      act.activeSegments.forEach(seg => spawnParticle(seg, false));
+      state.pSpawnTimer = 0;
+    }
+  }
+
+  // Enforce rejected particles
+  if (act.id === 'enforce') {
+    state.pSpawnTimer += dt;
+    if (state.pSpawnTimer > 350) {
+      spawnParticle(0, true);
+      state.pSpawnTimer = 0;
+    }
+  }
+
+  // Warning trigger
+  if (!state.warned && state.tokens >= LIMIT * WARN_AT) {
+    state.warned = true;
+    addLog('⚠ 80% threshold breached — alerting', 'warning');
+  }
+
+  // Enforce trigger
+  if (!state.enforced && state.tokens >= LIMIT) {
+    state.enforced = true;
+    addLog('🔴 Limit reached — 429 mode active', 'error');
+    clearParticles();
+  }
+
+  // Scene: bubble spawn timer
+  if (state.playing) {
+    sceneBubbleTimer += dt;
+    const bubbleInterval = act.id === 'consume' ? 320 : 700;
+    if (sceneBubbleTimer > bubbleInterval) {
+      spawnSceneBubble();
+      sceneBubbleTimer = 0;
+    }
+  }
+
+  updateSceneBubbles(rawDt);
+  updateSessionDisplay();
+  updateParticles(rawDt);
+  drawChart();
+  updateUI();
+
+  // Auto-advance act
+  if (state.actElapsed >= act.duration) {
+    const nextIdx = state.actIndex + 1;
+    if (nextIdx < ACTS.length) goToAct(nextIdx);
+    else {
+      state.playing = false;
+      updateUI();
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ACT NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function goToAct(idx, preserveTokens = true) {
+  if (consumeLogTimer) clearTimeout(consumeLogTimer);
+  state.logTimers.forEach(clearTimeout);
+  clearParticles();
+
+  state.actIndex   = idx;
+  state.actElapsed = 0;
+  state.pSpawnTimer = 0;
+
+  const act = ACTS[idx];
+
+  // Reset overlays for non-relevant acts
+  if (idx < 2) {
+    state.warned   = false;
+    state.enforced = false;
+    state.invoiced = false;
+    if (!preserveTokens) state.tokens = 0;
+  }
+  if (idx < 4) state.invoiced = false;
+  if (idx === 3) { state.tokens = LIMIT; state.warned = true; } // guarantee enforce fires
+  if (idx === 4) { state.invoiced = true; state.enforced = false; }
+
+  if (act.logs) scheduleActLogs(act);
+  if (act.id === 'consume') startConsumeLogs();
+
+  updateUI();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CONTROLS
+// ═══════════════════════════════════════════════════════════════
+$('startBtn').addEventListener('click', () => {
+  $('intro').classList.add('hidden');
+  setTimeout(() => { $('intro').style.display = 'none'; }, 700);
+  resizeChart();
+  state.playing = true;
+  state.lastTime = null;
+  goToAct(0, false);
+  scheduleActLogs(ACTS[0]);
+  requestAnimationFrame(tick);
+});
+
+$('playBtn').addEventListener('click', () => {
+  state.playing = !state.playing;
+  if (state.playing) {
+    state.lastTime = null;
+    const act = ACTS[state.actIndex];
+    if (act.id === 'consume') startConsumeLogs();
+  }
+  updateUI();
+});
+
+$('prevBtn').addEventListener('click', () => {
+  if (state.actIndex > 0) {
+    const prev = state.actIndex - 1;
+    // Rewind tokens roughly
+    const tokenCheckpoints = [0, 0, LIMIT * WARN_AT, LIMIT * WARN_AT, LIMIT, LIMIT];
+    state.tokens = tokenCheckpoints[prev] || 0;
+    state.chartData = state.chartData.filter(d => d.v <= state.tokens);
+    state.warned   = state.tokens >= LIMIT * WARN_AT;
+    state.enforced = state.tokens >= LIMIT && prev >= 3;
+    goToAct(prev, true);
+  }
+});
+
+$('nextBtn').addEventListener('click', () => {
+  if (state.actIndex < ACTS.length - 1) {
+    // Fast-forward tokens to where they should be at start of next act
+    const tokenCheckpoints = [0, 0, LIMIT * WARN_AT, LIMIT, LIMIT, LIMIT];
+    state.tokens = tokenCheckpoints[state.actIndex + 1];
+    state.warned   = state.tokens >= LIMIT * WARN_AT;
+    state.enforced = state.tokens >= LIMIT && state.actIndex >= 2;
+    goToAct(state.actIndex + 1, true);
+  }
+});
+
+$('resetBtn').addEventListener('click', () => {
+  if (consumeLogTimer) clearTimeout(consumeLogTimer);
+  state.logTimers.forEach(clearTimeout);
+  clearParticles();
+  clearSceneBubbles();
+  state.playing      = false;
+  state.tokens       = 0;
+  state.actIndex     = 0;
+  state.actElapsed   = 0;
+  state.warned       = false;
+  state.enforced     = false;
+  state.invoiced     = false;
+  state.chartData    = [];
+  state.logEntries   = [];
+  chartTime          = 0;
+  chartSampleTimer   = 0;
+  demoSeconds        = 0;
+  _clockPrev         = null; // avoids huge dt jump on resume
+  lastSessionCount   = 0;
+  sceneBubbleTimer   = 0;
+  // Reset badge + layers
+  const badge = $('session-badge-text');
+  if (badge) badge.textContent = '× 1 session';
+  const l2 = $('session-layer-2'); if (l2) l2.style.opacity = '0';
+  const l3 = $('session-layer-3'); if (l3) l3.style.opacity = '0';
+  $('event-log').innerHTML = '<div class="log-entry"><span class="log-time">00:00:00</span><span class="log-msg info">units360 runtime initializing...</span></div>';
+  updateUI();
+  updateClock(0);
+  drawChart();
+});
+
+$('speed-select').addEventListener('change', e => {
+  state.speed = parseFloat(e.target.value);
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if ($('intro').style.display !== 'none') return;
+  if (e.key === ' ' || e.key === 'k') { $('playBtn').click(); e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'n') $('nextBtn').click();
+  if (e.key === 'ArrowLeft'  || e.key === 'p') $('prevBtn').click();
+  if (e.key === 'r') $('resetBtn').click();
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  RESIZE
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  resizeChart();
+  drawChart();
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+initClock();         // draw tick marks + numerals
+requestAnimationFrame(clockLoop); // clock always ticks — independent of demo
+updateUI();
+</script>
+</body>
+</html>

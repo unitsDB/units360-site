@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Units360.ai — The Operating System for the Usage Economy</title>
+  <meta name="description" content="Define any unit of service. Deploy live APIs and analytics dashboards in minutes. No DevOps. No infrastructure headaches.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Variables ── */
+    :root {
+      --bg:          #03040e;
+      --bg2:         #060817;
+      --accent:      #4f8ef7;
+      --accent2:     #7c5ef7;
+      --teal:        #00d4b4;
+      --gold:        #ffd700;
+      --orange:      #ffa500;
+      --red:         #ff6464;
+      --text:        #e8eaf6;
+      --muted:       #6b7498;
+      --glass-bg:    rgba(12, 17, 45, 0.55);
+      --glass-bd:    rgba(100, 130, 220, 0.18);
+      --radius-lg:   22px;
+      --radius-pill: 100px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── WebGL Canvas ── */
+    #webgl {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Z-layer wrapper ── */
+    .layer { position: relative; z-index: 1; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 5vw;
+      background: rgba(3,4,14,0.65);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--glass-bd);
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      padding: .55rem 1.4rem;
+      border-radius: var(--radius-pill);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s, transform .2s;
+    }
+    .nav-cta:hover { opacity:.85; transform:translateY(-1px); }
+    @media(max-width:640px){ .nav-links { display:none; } }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 7rem 2rem 4rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-bd);
+      backdrop-filter: blur(12px);
+      padding: .35rem 1.1rem;
+      border-radius: var(--radius-pill);
+      font-size: .78rem;
+      color: var(--teal);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp .8s .2s forwards;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      background: var(--teal);
+      border-radius: 50%;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%,100%{ opacity:1; transform:scale(1); }
+      50%{ opacity:.4; transform:scale(1.6); }
+    }
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -.035em;
+      max-width: 14ch;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp .8s .4s forwards;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 45%, var(--accent2) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradShift 5s linear infinite;
+    }
+    @keyframes gradShift {
+      0%{ background-position:0% center; }
+      100%{ background-position:200% center; }
+    }
+    .hero-sub {
+      font-size: clamp(.95rem, 1.8vw, 1.15rem);
+      color: var(--muted);
+      max-width: 52ch;
+      line-height: 1.75;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp .8s .6s forwards;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp .8s .8s forwards;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--teal));
+      color: #03040e;
+      border: none;
+      padding: .85rem 2.2rem;
+      border-radius: var(--radius-pill);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(79,142,247,.4); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--glass-bd);
+      padding: .85rem 2.2rem;
+      border-radius: var(--radius-pill);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .95rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-ghost:hover { border-color:var(--accent); background:rgba(79,142,247,.07); }
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .4rem;
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp .8s 1.4s forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollDown 2.2s ease-in-out infinite;
+    }
+    @keyframes scrollDown {
+      0%  { opacity:0; transform:scaleY(0) translateY(-100%); }
+      40% { opacity:1; transform:scaleY(1) translateY(0); }
+      100%{ opacity:0; transform:scaleY(1) translateY(100%); }
+    }
+    @keyframes fadeUp {
+      from{ opacity:0; transform:translateY(28px); }
+      to  { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── Explainer (scroll-driven) ── */
+    #explainer { height: 500vh; }
+    .explainer-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Glassmorphism Text Panels */
+    .tpanel {
+      position: absolute;
+      max-width: 420px;
+      padding: 2rem 2.25rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-bd);
+      border-radius: var(--radius-lg);
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .55s ease, transform .55s ease;
+      pointer-events: none;
+    }
+    .tpanel.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+    .tpanel.pos-center {
+      left:50%; transform:translateX(-50%) translateY(24px);
+      max-width:520px; text-align:center;
+    }
+    .tpanel.pos-center.show { transform:translateX(-50%) translateY(0); }
+    .tpanel.pos-left  { left:5vw; }
+    .tpanel.pos-right { right:5vw; }
+    @media(max-width:768px){
+      .tpanel{ left:50% !important; right:auto !important;
+               transform:translateX(-50%) translateY(24px) !important;
+               max-width:90vw !important; }
+      .tpanel.show{ transform:translateX(-50%) translateY(0) !important; }
+    }
+    .ptag {
+      display:inline-block;
+      font-size:.68rem; font-weight:700;
+      letter-spacing:.12em; text-transform:uppercase;
+      color:var(--teal); margin-bottom:.7rem;
+    }
+    .ptitle {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:clamp(1.4rem,2.5vw,1.9rem);
+      font-weight:700; line-height:1.2;
+      letter-spacing:-.025em; margin-bottom:.75rem;
+    }
+    .pbody { color:var(--muted); font-size:.9rem; line-height:1.75; }
+    .pmetrics {
+      display:flex; gap:2rem; margin-top:1.25rem;
+    }
+    .pmetric-val {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:1.4rem; font-weight:700; color:var(--teal);
+    }
+    .pmetric-lbl { font-size:.72rem; color:var(--muted); margin-top:.1rem; }
+
+    /* ── Section shared ── */
+    .sec-label {
+      text-align:center; font-size:.7rem; font-weight:700;
+      letter-spacing:.16em; text-transform:uppercase;
+      color:var(--teal); margin-bottom:.9rem;
+    }
+    .sec-title {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:clamp(1.7rem,3.8vw,2.8rem);
+      font-weight:700; text-align:center;
+      letter-spacing:-.03em; margin-bottom:1rem;
+    }
+    .sec-sub {
+      text-align:center; color:var(--muted);
+      max-width:52ch; margin:0 auto 3.5rem;
+      font-size:.95rem; line-height:1.75;
+    }
+
+    /* ── Industries ── */
+    #industries { padding:8rem 5vw; }
+    .industry-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+      gap:1.25rem; max-width:1100px; margin:0 auto;
+    }
+    .icard {
+      background:var(--glass-bg);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--glass-bd);
+      border-radius:var(--radius-lg);
+      padding:1.75rem 1.5rem;
+      cursor:pointer;
+      transition:transform .3s, border-color .3s, box-shadow .3s;
+      position:relative; overflow:hidden;
+    }
+    .icard::after {
+      content:'';
+      position:absolute; inset:0;
+      background:radial-gradient(circle at 50% 0%, var(--ic,rgba(79,142,247,.12)) 0%, transparent 68%);
+      opacity:0; transition:opacity .3s;
+    }
+    .icard:hover, .icard.active {
+      transform:translateY(-5px);
+      border-color:var(--ic-solid, var(--accent));
+      box-shadow:0 18px 40px rgba(0,0,0,.35);
+    }
+    .icard:hover::after, .icard.active::after { opacity:1; }
+    .icard-icon  { font-size:1.8rem; margin-bottom:.9rem; display:block; }
+    .icard-title {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:1rem; font-weight:700; margin-bottom:.45rem;
+    }
+    .icard-desc  { font-size:.82rem; color:var(--muted); line-height:1.65; }
+    .icard-unit  {
+      margin-top:.9rem; padding:.4rem .7rem;
+      background:rgba(255,255,255,.04);
+      border-radius:8px;
+      font-family:'Space Grotesk',monospace;
+      font-size:.72rem; color:var(--teal);
+    }
+
+    /* ── Why ── */
+    #why { padding:8rem 5vw; }
+    .why-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(270px,1fr));
+      gap:1.25rem; max-width:1100px; margin:0 auto;
+    }
+    .wcard {
+      background:var(--glass-bg);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--glass-bd);
+      border-radius:var(--radius-lg);
+      padding:2rem;
+      opacity:0; transform:translateY(28px);
+      transition:opacity .6s ease, transform .6s ease;
+    }
+    .wcard.show { opacity:1; transform:translateY(0); }
+    .wcard-icon {
+      width:42px; height:42px; border-radius:12px;
+      background:linear-gradient(135deg, var(--accent), var(--teal));
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; margin-bottom:1.1rem;
+    }
+    .wcard-title {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:1rem; font-weight:700; margin-bottom:.45rem;
+    }
+    .wcard-body { font-size:.875rem; color:var(--muted); line-height:1.72; }
+
+    /* ── Comparison teaser ── */
+    #compare-teaser {
+      padding:6rem 5vw;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .compare-box {
+      background:var(--glass-bg);
+      backdrop-filter:blur(28px);
+      border:1px solid var(--glass-bd);
+      border-radius:var(--radius-lg);
+      padding:3rem; max-width:860px; width:100%;
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:3rem; align-items:center;
+    }
+    @media(max-width:640px){ .compare-box{ grid-template-columns:1fr; } }
+    .compare-quote {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:clamp(1.2rem,2.5vw,1.7rem);
+      font-weight:700; line-height:1.3;
+      letter-spacing:-.025em;
+    }
+    .compare-quote span { color:var(--teal); }
+    .compare-table { width:100%; border-collapse:collapse; }
+    .compare-table th {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:.72rem; font-weight:700;
+      letter-spacing:.08em; text-transform:uppercase;
+      color:var(--muted); padding:.5rem .75rem;
+      text-align:left; border-bottom:1px solid var(--glass-bd);
+    }
+    .compare-table td {
+      font-size:.82rem; padding:.6rem .75rem;
+      border-bottom:1px solid rgba(100,130,220,.07);
+      color:var(--muted);
+    }
+    .compare-table td:first-child { color:var(--text); }
+    .yes { color:var(--teal) !important; font-weight:600; }
+    .no  { color:#4a5070 !important; }
+    .compare-link {
+      display:inline-block; margin-top:1.5rem;
+      font-size:.82rem; color:var(--accent);
+      text-decoration:none; transition:opacity .2s;
+    }
+    .compare-link:hover { opacity:.7; }
+
+    /* ── Signup ── */
+    #signup { padding:8rem 2rem; }
+    .signup-wrap {
+      max-width:600px; margin:0 auto; text-align:center;
+    }
+    .signup-box {
+      background:var(--glass-bg);
+      backdrop-filter:blur(32px);
+      border:1px solid var(--glass-bd);
+      border-radius:var(--radius-lg);
+      padding:3rem 2.5rem;
+      margin-top:2.5rem;
+    }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+    @media(max-width:480px){ .form-row{ grid-template-columns:1fr; } }
+    .fgroup { margin-bottom:1rem; }
+    .finput, .fselect {
+      width:100%;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--glass-bd);
+      border-radius:12px;
+      padding:.82rem 1.15rem;
+      color:var(--text);
+      font-family:'Inter',sans-serif; font-size:.9rem;
+      outline:none; transition:border-color .2s;
+    }
+    .finput::placeholder { color:var(--muted); }
+    .finput:focus, .fselect:focus { border-color:var(--accent); }
+    .fselect { appearance:none; cursor:pointer; }
+    .fselect option { background:#060817; }
+    .fsubmit {
+      width:100%;
+      background:linear-gradient(135deg,var(--accent),var(--teal));
+      color:#03040e; border:none;
+      padding:1rem; border-radius:12px;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:.95rem; font-weight:700;
+      cursor:pointer; margin-top:.5rem;
+      transition:transform .2s, box-shadow .2s;
+    }
+    .fsubmit:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(79,142,247,.4); }
+    .fnote { font-size:.75rem; color:var(--muted); margin-top:.9rem; }
+    .success { display:none; text-align:center; padding:1.5rem 0; }
+    .success-icon { font-size:2.8rem; margin-bottom:.75rem; }
+
+    /* ── Footer ── */
+    footer {
+      padding:2.5rem 5vw;
+      border-top:1px solid var(--glass-bd);
+      display:flex; align-items:center;
+      justify-content:space-between; flex-wrap:wrap; gap:1rem;
+    }
+    .flinks { display:flex; gap:2rem; flex-wrap:wrap; }
+    .flinks a { color:var(--muted); text-decoration:none; font-size:.82rem; transition:color .2s; }
+    .flinks a:hover { color:var(--text); }
+    .fcopy { font-size:.78rem; color:var(--muted); }
+
+    /* ── Live Demos ── */
+    #demos { padding:8rem 5vw; }
+    .demo-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+      gap:1.5rem; max-width:1100px; margin:0 auto;
+    }
+    .dcard {
+      background:var(--glass-bg);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--glass-bd);
+      border-radius:var(--radius-lg);
+      padding:2rem 2rem 1.75rem;
+      display:flex; flex-direction:column; gap:1rem;
+      text-decoration:none; color:inherit;
+      transition:transform .3s, border-color .3s, box-shadow .3s;
+      position:relative; overflow:hidden;
+    }
+    .dcard::before {
+      content:'';
+      position:absolute; inset:0;
+      background:radial-gradient(circle at 50% 0%, var(--dc,rgba(79,142,247,.12)) 0%, transparent 65%);
+      opacity:0; transition:opacity .3s;
+    }
+    .dcard:hover { transform:translateY(-5px); border-color:var(--dc-solid,var(--accent)); box-shadow:0 18px 40px rgba(0,0,0,.4); }
+    .dcard:hover::before { opacity:1; }
+    .dcard-eyebrow { font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); }
+    .dcard-title { font-family:'Space Grotesk',sans-serif; font-size:1.35rem; font-weight:700; line-height:1.25; letter-spacing:-.02em; }
+    .dcard-desc { font-size:.875rem; color:var(--muted); line-height:1.72; flex:1; }
+    .dcard-tag {
+      display:inline-block;
+      padding:.35rem .75rem;
+      background:rgba(255,255,255,.04);
+      border-radius:8px;
+      font-family:'Space Grotesk',monospace;
+      font-size:.72rem; color:var(--teal);
+    }
+    .dcard-cta {
+      display:inline-flex; align-items:center; gap:.4rem;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:.85rem; font-weight:600;
+      color:var(--accent); margin-top:.25rem;
+    }
+    .dcard-cta::after { content:'→'; transition:transform .2s; }
+    .dcard:hover .dcard-cta::after { transform:translateX(4px); }
+  </style>
+</head>
+<body>
+
+<!-- WebGL Canvas -->
+<canvas id="webgl"></canvas>
+
+<!-- Nav -->
+<nav>
+  <div class="logo">Units360.ai</div>
+  <div class="nav-links">
+    <a href="#explainer">How It Works</a>
+    <a href="#industries">Use Cases</a>
+    <a href="#demos">Live Demos</a>
+    <a href="#compare-teaser">Compare</a>
+  </div>
+  <button class="nav-cta" onclick="smoothTo('signup')">Get Early Access</button>
+</nav>
+
+<!-- Hero -->
+<section id="hero" class="layer">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    Now in Beta — Join the waitlist
+  </div>
+  <h1>The <span class="grad-text">Operating System</span> for the Usage Economy</h1>
+  <p class="hero-sub">
+    Define any unit of service. Deploy live APIs and analytics dashboards
+    in minutes — not months. No DevOps. No infrastructure overhead. Just your product.
+  </p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="#signup" onclick="event.preventDefault();smoothTo('signup')">Start for Free</a>
+    <a class="btn-ghost"   href="#explainer" onclick="event.preventDefault();smoothTo('explainer')">See How It Works</a>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Explainer (scroll-pinned) -->
+<section id="explainer" class="layer">
+  <div class="explainer-sticky">
+
+    <!-- Panel: Problem -->
+    <div class="tpanel pos-center" id="p-chaos">
+      <span class="ptag">The Problem</span>
+      <h2 class="ptitle">Everything is becoming unitized.</h2>
+      <p class="pbody">
+        API calls. AI tokens. Energy. Ride credits. Consultation hours.
+        Every business runs on units — scattered across disconnected systems.
+        No single source of truth. No real-time intelligence.
+      </p>
+    </div>
+
+    <!-- Panel: Unit -->
+    <div class="tpanel pos-left" id="p-unit">
+      <span class="ptag">Core Concept 01</span>
+      <h2 class="ptitle">Define your Unit.</h2>
+      <p class="pbody">
+        A Unit is anything measurable — tokens, kWh, API calls, credits, hours.
+        Define it once in our low-code builder or import a YAML template.
+        UnitsDB handles everything else.
+      </p>
+      <div class="pmetrics">
+        <div>
+          <div class="pmetric-val">∞</div>
+          <div class="pmetric-lbl">Unit types supported</div>
+        </div>
+        <div>
+          <div class="pmetric-val">&lt; 5 min</div>
+          <div class="pmetric-lbl">Time to define</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Account -->
+    <div class="tpanel pos-right" id="p-account">
+      <span class="ptag">Core Concept 02</span>
+      <h2 class="ptitle">Manage your Accounts.</h2>
+      <p class="pbody">
+        Accounts are the entities consuming your units — customers, tenants, devices.
+        Each gets an isolated real-time balance, CRUD APIs, and live dashboard.
+        Auto-generated. Auto-deployed.
+      </p>
+      <div class="pmetrics">
+        <div>
+          <div class="pmetric-val">Live</div>
+          <div class="pmetric-lbl">Balance tracking</div>
+        </div>
+        <div>
+          <div class="pmetric-val">Auto</div>
+          <div class="pmetric-lbl">API generation</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Transaction -->
+    <div class="tpanel pos-left" id="p-transaction">
+      <span class="ptag">Core Concept 03</span>
+      <h2 class="ptitle">Record every Transaction.</h2>
+      <p class="pbody">
+        Transactions are events that move units. Ingest via CloudEvents JSON —
+        balances update instantly. Every event stored, queryable,
+        and visualized. Ask your data in plain English.
+      </p>
+      <div class="pmetrics">
+        <div>
+          <div class="pmetric-val">Real-time</div>
+          <div class="pmetric-lbl">Ingestion</div>
+        </div>
+        <div>
+          <div class="pmetric-val">JSONB</div>
+          <div class="pmetric-lbl">Full payload storage</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: MDT -->
+    <div class="tpanel pos-center" id="p-mdt">
+      <span class="ptag">The Blueprint</span>
+      <h2 class="ptitle">One template. Infinite deployments.</h2>
+      <p class="pbody">
+        Your Unit + Account + Transaction model becomes a Meta Data Template.
+        Deploy it as a live Runtime Engine — with APIs, dashboards, and alerts —
+        in a single click. No DevOps. No configuration.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Industries -->
+<section id="industries" class="layer">
+  <div class="sec-label">Use Cases</div>
+  <h2 class="sec-title">Any unit. Any industry.</h2>
+  <p class="sec-sub">Click an industry to see how Units360.ai adapts to your domain.</p>
+
+  <div class="industry-grid">
+    <div class="icard" style="--ic:rgba(124,94,247,.15);--ic-solid:#7c5ef7"
+         onclick="pickIndustry('llm',this)">
+      <span class="icard-icon">🤖</span>
+      <div class="icard-title">AI &amp; LLM Platforms</div>
+      <div class="icard-desc">Track token consumption, enforce limits, and bill by inference cost in real time.</div>
+      <div class="icard-unit">unit: tokens_consumed</div>
+    </div>
+
+    <div class="icard" style="--ic:rgba(0,212,180,.15);--ic-solid:#00d4b4"
+         onclick="pickIndustry('utilities',this)">
+      <span class="icard-icon">⚡</span>
+      <div class="icard-title">Utilities &amp; Energy</div>
+      <div class="icard-desc">Meter consumption per property, enforce limits, and generate invoices automatically.</div>
+      <div class="icard-unit">unit: kilowatt_hours</div>
+    </div>
+
+    <div class="icard" style="--ic:rgba(255,165,0,.15);--ic-solid:#ffa500"
+         onclick="pickIndustry('logistics',this)">
+      <span class="icard-icon">🚛</span>
+      <div class="icard-title">Mobility &amp; Logistics</div>
+      <div class="icard-desc">Track ride credits, delivery units, and driver rewards across your entire fleet.</div>
+      <div class="icard-unit">unit: ride_credits</div>
+    </div>
+
+    <div class="icard" style="--ic:rgba(255,215,0,.15);--ic-solid:#ffd700"
+         onclick="pickIndustry('fintech',this)">
+      <span class="icard-icon">💳</span>
+      <div class="icard-title">Fintech &amp; Banking</div>
+      <div class="icard-desc">Power virtual currencies, loyalty points, and prepaid credit systems with a full ledger.</div>
+      <div class="icard-unit">unit: reward_points</div>
+    </div>
+
+    <div class="icard" style="--ic:rgba(255,100,100,.15);--ic-solid:#ff6464"
+         onclick="pickIndustry('healthcare',this)">
+      <span class="icard-icon">🏥</span>
+      <div class="icard-title">Healthcare</div>
+      <div class="icard-desc">Allocate service hours, track consultations, and manage resource credits per patient.</div>
+      <div class="icard-unit">unit: consultation_hours</div>
+    </div>
+  </div>
+</section>
+
+<!-- Why -->
+<section id="why" class="layer">
+  <div class="sec-label">Why Units360.ai</div>
+  <h2 class="sec-title">Built different. By design.</h2>
+  <p class="sec-sub">Everything competitors require you to build and operate — we provision for you.</p>
+  <div class="why-grid">
+    <div class="wcard">
+      <div class="wcard-icon">⚡</div>
+      <div class="wcard-title">Live APIs in Minutes</div>
+      <div class="wcard-body">Define your model once. UnitsDB auto-generates OpenAPI-compliant REST endpoints. No Swagger writing. No server setup.</div>
+    </div>
+    <div class="wcard">
+      <div class="wcard-icon">📊</div>
+      <div class="wcard-title">Analytics, Auto-Provisioned</div>
+      <div class="wcard-body">Every deployment includes a full Apache Superset dashboard — pre-built and pre-wired. Ask your data questions in plain English.</div>
+    </div>
+    <div class="wcard">
+      <div class="wcard-icon">🔒</div>
+      <div class="wcard-title">Isolated Infrastructure</div>
+      <div class="wcard-body">Each Runtime Engine runs on its own cloud infrastructure. No shared tenancy. No Kafka or ClickHouse to configure or maintain.</div>
+    </div>
+    <div class="wcard">
+      <div class="wcard-icon">🧩</div>
+      <div class="wcard-title">Low-Code, Any Industry</div>
+      <div class="wcard-body">The YAML MDT builder works for developers and business users alike. Import a template and go live in under 5 minutes.</div>
+    </div>
+    <div class="wcard">
+      <div class="wcard-icon">🔔</div>
+      <div class="wcard-title">Smart Threshold Alerts</div>
+      <div class="wcard-body">Set alerts on any unit balance. Fire webhooks to any endpoint. Know about overuse before your customers ever notice.</div>
+    </div>
+    <div class="wcard">
+      <div class="wcard-icon">🤖</div>
+      <div class="wcard-title">AI-Native Intelligence</div>
+      <div class="wcard-body">Conversational NLP queries on your data. AI agents that monitor consumption and predict churn — available Q3 2026.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison Teaser -->
+<section id="compare-teaser" class="layer">
+  <div class="compare-box">
+    <div>
+      <div class="sec-label" style="text-align:left">See the Difference</div>
+      <p class="compare-quote">
+        "OpenMeter requires a<br>DevOps team.<br>
+        <span>Units360.ai requires<br>a browser."</span>
+      </p>
+      <a href="#" class="compare-link">View full comparison →</a>
+    </div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Units360.ai</th>
+          <th>OpenMeter</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Low-code setup</td><td class="yes">✓</td><td class="no">✗</td></tr>
+        <tr><td>Auto-provisioned infra</td><td class="yes">✓</td><td class="no">✗</td></tr>
+        <tr><td>Built-in dashboards</td><td class="yes">✓</td><td class="no">✗</td></tr>
+        <tr><td>NLP data queries</td><td class="yes">✓</td><td class="no">✗</td></tr>
+        <tr><td>Open source</td><td class="no">✗</td><td class="yes">✓</td></tr>
+        <tr><td>Full billing engine</td><td style="color:var(--muted)">In progress</td><td class="yes">✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Live Demos -->
+<section id="demos" class="layer">
+  <div class="sec-label">Interactive Demos</div>
+  <h2 class="sec-title">See Units360.ai in action.</h2>
+  <p class="sec-sub">Explore live simulations of real deployments — no login required.</p>
+
+  <div class="demo-grid">
+
+    <a class="dcard" href="units360-token-demo.html"
+       style="--dc:rgba(124,94,247,.15);--dc-solid:#7c5ef7">
+      <span class="dcard-eyebrow">AI &amp; LLM Platforms</span>
+      <div class="dcard-title">Live AI Token Metering</div>
+      <div class="dcard-desc">
+        Watch real-time token consumption across multiple LLM providers.
+        Rate limiting, cost tracking, balance burn-down, and threshold alerts — all live.
+      </div>
+      <div class="dcard-tag">unit: tokens_consumed</div>
+      <span class="dcard-cta">Launch Demo</span>
+    </a>
+
+    <a class="dcard" href="units360-energy-demo.html"
+       style="--dc:rgba(0,212,180,.15);--dc-solid:#00d4b4">
+      <span class="dcard-eyebrow">Utilities &amp; Energy</span>
+      <div class="dcard-title">Solar Net Metering Dashboard</div>
+      <div class="dcard-desc">
+        Track solar generation vs. grid consumption per property in real time.
+        Net metering ledger, export credits, and usage alerts — auto-provisioned.
+      </div>
+      <div class="dcard-tag">unit: kilowatt_hours</div>
+      <span class="dcard-cta">Launch Demo</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- Signup -->
+<section id="signup" class="layer">
+  <div class="signup-wrap">
+    <div class="sec-label">Early Access</div>
+    <h2 class="sec-title">Your usage economy starts here.</h2>
+    <p class="sec-sub" style="margin-bottom:0">Join the beta. Define your first unit in under 5 minutes.</p>
+    <div class="signup-box">
+      <form id="signup-form">
+        <div class="form-row">
+          <input class="finput" type="text"  placeholder="First name" required>
+          <input class="finput" type="text"  placeholder="Last name"  required>
+        </div>
+        <div class="fgroup">
+          <input class="finput" type="email" placeholder="Work email" required>
+        </div>
+        <div class="fgroup">
+          <input class="finput" type="text"  placeholder="Company name">
+        </div>
+        <div class="fgroup">
+          <select class="fselect" required>
+            <option value="" disabled selected>What's your primary use case?</option>
+            <option>AI &amp; LLM Platform</option>
+            <option>SaaS / Cloud Product</option>
+            <option>Utilities &amp; Energy</option>
+            <option>Mobility &amp; Logistics</option>
+            <option>Fintech &amp; Banking</option>
+            <option>Healthcare</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <button type="submit" class="fsubmit">Get Early Access →</button>
+        <p class="fnote">No credit card required. We'll reach out within 24 hours.</p>
+      </form>
+      <div class="success" id="success">
+        <div class="success-icon">✅</div>
+        <h3 style="font-family:'Space Grotesk';margin-bottom:.5rem">You're on the list!</h3>
+        <p style="color:var(--muted);font-size:.88rem;line-height:1.7">
+          We'll be in touch within 24 hours.<br>In the meantime, explore the docs or share this page.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="layer">
+  <div class="logo">Units360.ai</div>
+  <div class="flinks">
+    <a href="#">Features</a>
+    <a href="#">Compare</a>
+    <a href="#">Use Cases</a>
+    <a href="#">Docs</a>
+    <a href="#">About</a>
+    <a href="/about#investors" style="opacity:.5; font-size:.75rem; letter-spacing:.04em;">Investors</a>
+  </div>
+  <div class="fcopy">© 2026 Units360.ai · Leafcraft Studios</div>
+</footer>
+
+<!-- ── Scripts ── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════════
+function smoothTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior:'smooth' });
+}
+
+// ══════════════════════════════════════════════════════
+//  THREE.JS  —  RENDERER + SCENE + CAMERA
+// ══════════════════════════════════════════════════════
+gsap.registerPlugin(ScrollTrigger);
+
+const canvas   = document.getElementById('webgl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(68, innerWidth/innerHeight, 0.1, 1000);
+camera.position.z = 30;
+
+// ── Colours ──
+const COLS = {
+  blue:   new THREE.Color('#4f8ef7'),
+  teal:   new THREE.Color('#00d4b4'),
+  purple: new THREE.Color('#7c5ef7'),
+  gold:   new THREE.Color('#ffd700'),
+  orange: new THREE.Color('#ffa500'),
+  red:    new THREE.Color('#ff6464'),
+  white:  new THREE.Color('#c8cde8'),
+};
+
+// ══════════════════════════════════════════════════════
+//  PARTICLE SYSTEM
+// ══════════════════════════════════════════════════════
+const N = 800;
+const pos  = new Float32Array(N * 3);  // current positions
+const tgt  = new Float32Array(N * 3);  // lerp targets
+const col  = new Float32Array(N * 3);  // vertex colours
+const vel  = new Float32Array(N * 3);  // drift (chaos only)
+
+function rnd(a, b){ return a + Math.random() * (b - a); }
+
+// Init random scatter
+for (let i = 0; i < N; i++) {
+  const i3 = i * 3;
+  pos[i3]   = rnd(-55, 55);
+  pos[i3+1] = rnd(-42, 42);
+  pos[i3+2] = rnd(-18, 18);
+  tgt[i3]   = pos[i3];
+  tgt[i3+1] = pos[i3+1];
+  tgt[i3+2] = pos[i3+2];
+  vel[i3]   = rnd(-0.022, 0.022);
+  vel[i3+1] = rnd(-0.018, 0.018);
+  vel[i3+2] = rnd(-0.008, 0.008);
+  COLS.blue.toArray(col, i3);
+}
+
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+pGeo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+
+const pMat = new THREE.PointsMaterial({
+  size: 0.13,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.9,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  sizeAttenuation: true,
+});
+const points = new THREE.Points(pGeo, pMat);
+scene.add(points);
+
+// ── Line connections ──
+const MAX_LINES = 500;
+const lPos = new Float32Array(MAX_LINES * 6);
+const lGeo = new THREE.BufferGeometry();
+lGeo.setAttribute('position', new THREE.BufferAttribute(lPos, 3));
+const lMat = new THREE.LineBasicMaterial({
+  color: 0x4f8ef7,
+  transparent: true,
+  opacity: 0.10,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+});
+const lineSegs = new THREE.LineSegments(lGeo, lMat);
+scene.add(lineSegs);
+
+// ── Central glow orbs ──
+const orbData = [
+  { pos:[-10, 4, 0],  col: COLS.blue   },
+  { pos:[ 10,-2, 0],  col: COLS.teal   },
+  { pos:[  0, 9,-4],  col: COLS.purple },
+];
+const orbs = orbData.map(d => {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.4, 16, 16),
+    new THREE.MeshBasicMaterial({ color:d.col, transparent:true, opacity:0, blending:THREE.AdditiveBlending })
+  );
+  mesh.position.set(...d.pos);
+  scene.add(mesh);
+  return mesh;
+});
+
+// Ambient glow sphere
+const ambMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(5, 32, 32),
+  new THREE.MeshBasicMaterial({ color:0x4f8ef7, transparent:true, opacity:0, blending:THREE.AdditiveBlending, side:THREE.BackSide })
+);
+scene.add(ambMesh);
+
+// ══════════════════════════════════════════════════════
+//  STATE MACHINE
+// ══════════════════════════════════════════════════════
+let STATE      = 'chaos';
+let LERP_SPEED = 0.024;
+
+function setColors(fn) {
+  for (let i = 0; i < N; i++) fn(i, i*3);
+  pGeo.attributes.color.needsUpdate = true;
+}
+function setOrbs(o) { orbs.forEach(m => { m.material.opacity = o * 0.45; }); }
+function setAmb(o, hex){ ambMesh.material.opacity = o; if(hex) ambMesh.material.color.set(hex); }
+
+// ── State definitions ──
+const STATES = {
+
+  chaos() {
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      tgt[i3]   = rnd(-52, 52);
+      tgt[i3+1] = rnd(-40, 40);
+      tgt[i3+2] = rnd(-16, 16);
+      COLS.blue.clone().lerp(COLS.purple, Math.random()).toArray(col, i3);
+    }
+    setOrbs(0); setAmb(0);
+  },
+
+  unit() {
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      const phi   = Math.acos(-1 + (2*i)/N);
+      const theta = Math.sqrt(N * Math.PI) * phi;
+      const r     = 8 + Math.sin(i * 0.09) * 2;
+      tgt[i3]   = r * Math.cos(theta) * Math.sin(phi);
+      tgt[i3+1] = r * Math.sin(theta) * Math.sin(phi);
+      tgt[i3+2] = r * Math.cos(phi) * 0.55;
+      COLS.teal.clone().lerp(COLS.blue, Math.random()).toArray(col, i3);
+    }
+    setOrbs(0.6); setAmb(0.05, 0x00d4b4);
+  },
+
+  account() {
+    const centres = [[-14,5,0],[14,5,0],[0,-12,2]];
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      const c  = centres[i % 3];
+      const a  = (i / N) * Math.PI * 14;
+      const r  = 5 * Math.pow(Math.random(), 0.5);
+      tgt[i3]   = c[0] + r * Math.cos(a);
+      tgt[i3+1] = c[1] + r * Math.sin(a);
+      tgt[i3+2] = c[2] + rnd(-3, 3);
+      COLS.blue.clone().lerp(COLS.purple, (i%3)/2).toArray(col, i3);
+    }
+    setOrbs(0.45); setAmb(0.04, 0x7c5ef7);
+  },
+
+  transaction() {
+    const centres = [[-14,5,0],[14,5,0],[0,-12,2]];
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      if (i % 5 === 0) {
+        // streaming particle between clusters
+        const from = centres[i % 3];
+        const to   = centres[(i+1) % 3];
+        const t    = (i / N) * 3 % 1;
+        tgt[i3]   = from[0] + (to[0]-from[0]) * t;
+        tgt[i3+1] = from[1] + (to[1]-from[1]) * t + Math.sin(t*Math.PI) * 3;
+        tgt[i3+2] = rnd(-2, 2);
+        COLS.teal.toArray(col, i3);
+      } else {
+        const c  = centres[i % 3];
+        const a  = (i / N) * Math.PI * 14;
+        const r  = 4.5 * Math.pow(Math.random(), 0.5);
+        tgt[i3]   = c[0] + r * Math.cos(a);
+        tgt[i3+1] = c[1] + r * Math.sin(a);
+        tgt[i3+2] = c[2] + rnd(-2, 2);
+        COLS.blue.clone().lerp(COLS.teal, 0.5).toArray(col, i3);
+      }
+    }
+    setOrbs(0.5); setAmb(0.045, 0x00d4b4);
+  },
+
+  mdt() {
+    const LAYERS = 6;
+    for (let i = 0; i < N; i++) {
+      const i3    = i * 3;
+      const layer = Math.floor((i / N) * LAYERS);
+      const angle = (i / (N / LAYERS)) * Math.PI * 2;
+      const r     = 3.5 + layer * 2.2;
+      const y     = (layer - LAYERS/2) * 3.2;
+      tgt[i3]   = r * Math.cos(angle + layer * 0.6);
+      tgt[i3+1] = y + Math.sin(angle * 3) * 1.2;
+      tgt[i3+2] = r * Math.sin(angle + layer * 0.6) * 0.45;
+      COLS.blue.clone().lerp(COLS.teal, layer / LAYERS).toArray(col, i3);
+    }
+    setOrbs(0.7); setAmb(0.06, 0x4f8ef7);
+  },
+
+  // ── Industry states ──
+  llm() {
+    const nodes = 10;
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      const n  = Math.floor(i / (N/nodes));
+      const a  = (n / nodes) * Math.PI * 2;
+      const r  = 9 + (n%2) * 5;
+      tgt[i3]   = r*Math.cos(a) + rnd(-1.8,1.8);
+      tgt[i3+1] = r*Math.sin(a)*0.5 + rnd(-1.8,1.8);
+      tgt[i3+2] = rnd(-5, 5);
+      COLS.purple.clone().lerp(COLS.blue, Math.random()).toArray(col, i3);
+    }
+    setAmb(0.055, 0x7c5ef7);
+  },
+
+  utilities() {
+    const cols = 29, rows = 28;
+    for (let i = 0; i < N; i++) {
+      const i3  = i * 3;
+      const c   = i % cols;
+      const r   = Math.floor(i / cols) % rows;
+      const x   = (c - cols/2) * 1.6;
+      const y   = (r - rows/2) * 1.5;
+      tgt[i3]   = x;
+      tgt[i3+1] = y + Math.sin(c * 0.42) * 2.2;
+      tgt[i3+2] = Math.sin((c+r)*0.3) * 2.5;
+      COLS.teal.clone().lerp(COLS.blue, r/rows).toArray(col, i3);
+    }
+    setAmb(0.05, 0x00d4b4);
+  },
+
+  logistics() {
+    const ROUTES = 7;
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      const rt = i % ROUTES;
+      const t  = ((i / N) * ROUTES) % 1;
+      const a  = (rt / ROUTES) * Math.PI * 2;
+      const r  = 7 + rt * 2.2;
+      tgt[i3]   = r * Math.cos(a + t*Math.PI*0.6) + rnd(-1.2,1.2);
+      tgt[i3+1] = r * Math.sin(a + t*Math.PI*0.6)*0.6 + rnd(-1.2,1.2);
+      tgt[i3+2] = rnd(-3, 3);
+      COLS.gold.clone().lerp(COLS.teal, Math.random()*0.4).toArray(col, i3);
+    }
+    setAmb(0.04, 0xffa500);
+  },
+
+  fintech() {
+    const STREAMS = 12;
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      const s  = i % STREAMS;
+      const x  = (s - STREAMS/2) * 2.6;
+      const y  = ((i / STREAMS) % 32 - 16) * 1.25;
+      tgt[i3]   = x + Math.sin(y*0.22 + s) * 1.1;
+      tgt[i3+1] = y;
+      tgt[i3+2] = Math.cos(y*0.18 + s*0.5) * 3;
+      COLS.gold.toArray(col, i3);
+    }
+    setAmb(0.045, 0xffd700);
+  },
+
+  healthcare() {
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      const x  = (i / N) * 56 - 28;
+      const y  = Math.sin(x*0.55)*3.5 + Math.sin(x*1.3)*1.2 + rnd(-1.2,1.2);
+      tgt[i3]   = x;
+      tgt[i3+1] = y;
+      tgt[i3+2] = rnd(-5, 5);
+      COLS.red.clone().lerp(COLS.white, Math.random()*0.28).toArray(col, i3);
+    }
+    setAmb(0.045, 0xff6464);
+  },
+};
+
+function transitionTo(name) {
+  if (!STATES[name]) return;
+  STATE = name;
+  STATES[name]();
+  pGeo.attributes.color.needsUpdate = true;
+}
+
+// ══════════════════════════════════════════════════════
+//  ANIMATION LOOP
+// ══════════════════════════════════════════════════════
+let clock = 0;
+
+(function loop(){
+  requestAnimationFrame(loop);
+  clock += 0.007;
+
+  const isChaos = STATE === 'chaos';
+
+  for (let i = 0; i < N; i++) {
+    const i3 = i * 3;
+    if (isChaos) {
+      pos[i3]   += vel[i3];
+      pos[i3+1] += vel[i3+1];
+      pos[i3+2] += vel[i3+2];
+      if (Math.abs(pos[i3])   > 28) vel[i3]   *= -1;
+      if (Math.abs(pos[i3+1]) > 22) vel[i3+1] *= -1;
+      if (Math.abs(pos[i3+2]) > 10) vel[i3+2] *= -1;
+    } else {
+      pos[i3]   += (tgt[i3]   - pos[i3])   * LERP_SPEED;
+      pos[i3+1] += (tgt[i3+1] - pos[i3+1]) * LERP_SPEED;
+      pos[i3+2] += (tgt[i3+2] - pos[i3+2]) * LERP_SPEED;
+    }
+  }
+  pGeo.attributes.position.needsUpdate = true;
+
+  // Gentle system rotation
+  points.rotation.y = clock * 0.05;
+  points.rotation.x = Math.sin(clock * 0.03) * 0.07;
+
+  // Line connections — sample every 4th particle for performance
+  let lc = 0;
+  const THRESH = 8.5;
+  const STEP   = 4;
+  outer: for (let i = 0; i < N; i += STEP) {
+    for (let j = i + STEP; j < N; j += STEP) {
+      if (lc >= MAX_LINES) break outer;
+      const dx = pos[i*3]-pos[j*3], dy = pos[i*3+1]-pos[j*3+1], dz = pos[i*3+2]-pos[j*3+2];
+      if (dx*dx + dy*dy + dz*dz < THRESH*THRESH) {
+        const l6 = lc * 6;
+        lPos[l6]   = pos[i*3];   lPos[l6+1] = pos[i*3+1]; lPos[l6+2] = pos[i*3+2];
+        lPos[l6+3] = pos[j*3];   lPos[l6+4] = pos[j*3+1]; lPos[l6+5] = pos[j*3+2];
+        lc++;
+      }
+    }
+  }
+  lGeo.setDrawRange(0, lc * 2);
+  lGeo.attributes.position.needsUpdate = true;
+
+  // Pulse orbs
+  orbs.forEach((m, idx) => {
+    m.position.y += Math.sin(clock + idx * 1.3) * 0.006;
+  });
+
+  renderer.render(scene, camera);
+})();
+
+// Init
+transitionTo('chaos');
+
+// ══════════════════════════════════════════════════════
+//  SCROLL TRIGGERS  —  EXPLAINER PANELS
+// ══════════════════════════════════════════════════════
+const PANELS = {
+  chaos:       document.getElementById('p-chaos'),
+  unit:        document.getElementById('p-unit'),
+  account:     document.getElementById('p-account'),
+  transaction: document.getElementById('p-transaction'),
+  mdt:         document.getElementById('p-mdt'),
+};
+
+function showPanel(id) {
+  Object.values(PANELS).forEach(p => p.classList.remove('show'));
+  if (PANELS[id]) PANELS[id].classList.add('show');
+}
+
+// Reveal first panel when explainer section enters view
+ScrollTrigger.create({
+  trigger: '#explainer',
+  start: 'top 80%',
+  once: true,
+  onEnter() { showPanel('chaos'); transitionTo('chaos'); },
+});
+
+// Drive state by scroll progress through the 500vh section
+ScrollTrigger.create({
+  trigger: '#explainer',
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate(self) {
+    const p = self.progress;
+    if      (p < 0.15 && STATE !== 'chaos')       { transitionTo('chaos');       showPanel('chaos'); }
+    else if (p >= 0.15 && p < 0.35 && STATE !== 'unit') { transitionTo('unit'); showPanel('unit'); }
+    else if (p >= 0.35 && p < 0.55 && STATE !== 'account') { transitionTo('account'); showPanel('account'); }
+    else if (p >= 0.55 && p < 0.75 && STATE !== 'transaction') { transitionTo('transaction'); showPanel('transaction'); }
+    else if (p >= 0.75 && STATE !== 'mdt') { transitionTo('mdt'); showPanel('mdt'); }
+  },
+  onLeave()      { Object.values(PANELS).forEach(p => p.classList.remove('show')); },
+  onEnterBack()  { showPanel('mdt'); },
+});
+
+// ── Why cards scroll reveal ──
+document.querySelectorAll('.wcard').forEach((card, i) => {
+  ScrollTrigger.create({
+    trigger: card,
+    start: 'top 88%',
+    onEnter() {
+      setTimeout(() => card.classList.add('show'), i * 90);
+    },
+  });
+});
+
+// ══════════════════════════════════════════════════════
+//  INDUSTRY INTERACTION
+// ══════════════════════════════════════════════════════
+function pickIndustry(name, el) {
+  document.querySelectorAll('.icard').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  LERP_SPEED = 0.018;
+  transitionTo(name);
+  setTimeout(() => { LERP_SPEED = 0.024; }, 1800);
+}
+
+// ══════════════════════════════════════════════════════
+//  MOUSE PARALLAX
+// ══════════════════════════════════════════════════════
+let mX = 0, mY = 0;
+document.addEventListener('mousemove', e => {
+  mX = (e.clientX / innerWidth  - 0.5) * 2;
+  mY = (e.clientY / innerHeight - 0.5) * 2;
+});
+gsap.ticker.add(() => {
+  camera.position.x += (mX * 2.2 - camera.position.x) * 0.025;
+  camera.position.y += (-mY * 1.6 - camera.position.y) * 0.025;
+  camera.lookAt(0, 0, 0);
+});
+
+// ══════════════════════════════════════════════════════
+//  FORM SUBMIT
+// ══════════════════════════════════════════════════════
+document.getElementById('signup-form').addEventListener('submit', e => {
+  e.preventDefault();
+  e.target.style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+});
+
+// ══════════════════════════════════════════════════════
+//  RESIZE
+// ══════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>

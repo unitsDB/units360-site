@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units360 · Energy & Utilities Demo</title>
+<style>
+:root {
+  --bg: #070c18; --surface: #0d1526; --surface2: #131e35;
+  --teal: #00d4ff; --teal-glow: #00d4ff33;
+  --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444; --green: #10b981;
+  --solar: #fbbf24; --solar-glow: #fbbf2440;
+  --text: #e0f2fe; --muted: #64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh;max-width:1280px;margin:0 auto;padding:10px 16px 0}
+
+/* ── OVERLAY ── */
+#overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(7,12,24,0.92);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .35s}
+#overlay.show{opacity:1;pointer-events:auto}
+#overlay-eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+#overlay-title{font-size:clamp(28px,5vw,54px);font-weight:800;letter-spacing:-1px;color:var(--text);text-align:center}
+#overlay-time{font-size:clamp(16px,3vw,28px);color:var(--teal);margin-top:10px;font-weight:300;letter-spacing:2px}
+#overlay-sub{font-size:14px;color:var(--muted);margin-top:14px;letter-spacing:1px}
+
+/* ── HEADER ── */
+#header{display:flex;align-items:center;gap:10px;padding:4px 0 8px;flex-shrink:0}
+#logo{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+#logo span{color:var(--teal)}
+#badge{font-size:10px;padding:3px 8px;border:1px solid var(--teal);border-radius:4px;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase}
+#header-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px}
+#demo-title{font-size:13px;color:var(--muted);letter-spacing:.5px}
+#demo-sub{font-size:11px;color:var(--muted);opacity:.6}
+#clock-wrap{display:flex;align-items:center;gap:8px;margin-left:auto}
+#clock-time-label{font-size:12px;color:var(--teal);font-variant-numeric:tabular-nums;letter-spacing:.5px;min-width:70px;text-align:right}
+#clock-svg{width:56px;height:56px;flex-shrink:0}
+
+/* ── MAIN ── */
+#main{display:flex;gap:12px;flex:1;min-height:0}
+#left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
+#right-panel{display:flex;flex-direction:column;flex:1;min-width:280px;max-width:420px;background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;overflow:hidden}
+
+/* ── SCENE SVG ── */
+#scene-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid #1e2d4a;flex-shrink:0;height:160px}
+#scene-svg{width:100%;height:100%;display:block}
+
+/* ── FLOW ── */
+#flow-wrap{background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;padding:10px 14px 8px;flex-shrink:0}
+#flow-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+#flow-svg{width:100%;display:block}
+
+/* ── kWh ROW ── */
+#kwh-row{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;padding:8px 14px;flex-shrink:0}
+#kwh-balance{font-size:clamp(22px,3.5vw,38px);font-weight:800;font-variant-numeric:tabular-nums;transition:color .6s;min-width:120px}
+#kwh-balance.pos{color:var(--green)}
+#kwh-balance.neg{color:var(--red)}
+#kwh-balance.zero{color:var(--muted)}
+#kwh-meta{display:flex;flex-direction:column;gap:2px}
+#kwh-status{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .6s}
+#kwh-status.pos{color:var(--green)}
+#kwh-status.neg{color:var(--red)}
+#kwh-status.warn{color:var(--amber)}
+#kwh-unit{font-size:10px;color:var(--muted)}
+#kwh-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+#kwh-rate-pill{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;letter-spacing:.5px;transition:background .5s,color .5s}
+#kwh-rate-pill.pos{background:#10b98120;color:var(--green);border:1px solid #10b98140}
+#kwh-rate-pill.neg{background:#ef444420;color:var(--red);border:1px solid #ef444440}
+#kwh-rate-pill.zero{background:#1e2d4a;color:var(--muted);border:1px solid #1e2d4a}
+#kwh-today{font-size:10px;color:var(--muted)}
+
+/* ── PROGRESS ── */
+#prog-wrap{flex-shrink:0;padding:0 2px}
+#prog-bar{height:3px;background:#1e2d4a;border-radius:2px;overflow:hidden}
+#prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:2px;transition:width .1s linear}
+#prog-acts{display:flex;justify-content:space-between;margin-top:4px}
+.prog-act{font-size:9px;color:var(--muted);letter-spacing:.3px;cursor:pointer;transition:color .2s}
+.prog-act:hover{color:var(--teal)}
+.prog-act.active{color:var(--teal)}
+
+/* ── TERMINAL ── */
+#term-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+#term-dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444}
+#term-dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b}
+#term-dot-g{width:10px;height:10px;border-radius:50%;background:#10b981}
+#term-title{font-size:11px;color:var(--muted);margin-left:4px;letter-spacing:.5px}
+#term-mode-badge{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;transition:all .4s}
+#term-mode-badge.mdt{background:#00d4ff20;color:var(--teal);border:1px solid #00d4ff40}
+#term-mode-badge.event{background:#3b82f620;color:var(--blue);border:1px solid #3b82f640}
+#term-mode-badge.invoice{background:#10b98120;color:var(--green);border:1px solid #10b98140}
+
+#term-tabs{display:flex;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+.term-tab{font-size:10px;padding:6px 14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.term-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+
+#term-body{flex:1;overflow:hidden;position:relative;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+
+/* MDT form view */
+#mdt-view{position:absolute;inset:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.mdt-section{background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;overflow:hidden}
+.mdt-section-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);padding:6px 10px;background:#00d4ff0a;border-bottom:1px solid #1e2d4a}
+.mdt-fields{display:flex;flex-direction:column;gap:0}
+.mdt-field{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #0d1526}
+.mdt-field:last-child{border-bottom:none}
+.mdt-field-label{font-size:10px;color:var(--muted);min-width:88px;letter-spacing:.3px}
+.mdt-field-value{font-size:11px;color:var(--text);font-family:'SF Mono','Fira Code',monospace;flex:1;min-height:16px}
+.mdt-field-value .cursor{display:inline-block;width:7px;height:12px;background:var(--teal);margin-left:1px;animation:blink 1s step-end infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.mdt-field-value.done{color:var(--teal)}
+
+/* CloudEvent stream view */
+#event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column}
+#event-stream{flex:1;overflow:hidden;position:relative;padding:8px 0}
+.event-block{padding:6px 14px;border-bottom:1px solid #0d152640;animation:slideIn .3s ease;font-size:11px;line-height:1.5}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.ev-key{color:#7dd3fc}.ev-str{color:#86efac}.ev-num{color:#fbbf24}.ev-bool{color:#f472b6}.ev-null{color:var(--muted)}.ev-brace{color:var(--muted)}
+#event-ticker{padding:6px 14px;border-top:1px solid #1e2d4a;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
+#event-count{color:var(--teal);font-weight:600}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+/* Invoice view */
+#invoice-view{position:absolute;inset:0;overflow:hidden;padding:10px 14px;display:flex;flex-direction:column;gap:0}
+.inv-json-line{font-size:11px;line-height:1.6;white-space:pre}
+.inv-json-line.reveal{animation:slideIn .25s ease}
+
+/* ── COMMENTARY ── */
+#commentary{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;background:var(--surface);border-top:1px solid #1e2d4a;border-left:3px solid var(--teal);flex-shrink:0;min-height:38px;transition:border-color .4s}
+#commentary.amber{border-left-color:var(--amber)}
+#commentary.red{border-left-color:var(--red)}
+#commentary.green{border-left-color:var(--green)}
+#commentary-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+#commentary-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
+#commentary-text strong{color:var(--teal)}
+#commentary.amber #commentary-text strong{color:var(--amber)}
+#commentary.red #commentary-text strong{color:var(--red)}
+#commentary.green #commentary-text strong{color:var(--green)}
+
+/* ── ACT HEADER ── */
+#act-header{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
+#act-eyebrow{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+#act-title{font-size:15px;font-weight:700;color:var(--text);transition:color .4s}
+#act-title.amber{color:var(--amber)}
+#act-title.red{color:var(--red)}
+#act-title.green{color:var(--green)}
+#act-desc{font-size:11px;color:var(--muted);margin-left:auto}
+
+/* ── CONTROLS ── */
+#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid #1e2d4a;margin-top:4px}
+.ctrl-btn{background:var(--surface2);border:1px solid #1e2d4a;color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.ctrl-btn:hover{border-color:var(--teal);color:var(--teal)}
+.ctrl-btn:active{transform:scale(.97)}
+#btn-play{background:var(--teal);border-color:var(--teal);color:#070c18;font-weight:600;min-width:64px}
+#btn-play:hover{background:#00b8e0;border-color:#00b8e0}
+#speed-label{font-size:11px;color:var(--muted);margin-left:4px}
+#speed-val{font-size:11px;color:var(--teal);min-width:24px}
+.ctrl-sep{width:1px;height:18px;background:#1e2d4a;margin:0 4px}
+#kbd-hint{font-size:10px;color:var(--muted);margin-left:auto;letter-spacing:.3px}
+
+/* ── INFO DRAWER ── */
+#btn-info{background:linear-gradient(135deg,#00d4ff18,#3b82f618);border-color:#00d4ff50;color:var(--teal);font-weight:600;gap:5px}
+#btn-info:hover{background:linear-gradient(135deg,#00d4ff30,#3b82f630);border-color:var(--teal)}
+
+#info-backdrop{position:fixed;inset:0;z-index:160;background:rgba(4,8,18,.65);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .3s}
+#info-backdrop.show{opacity:1;pointer-events:auto}
+
+#info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:170;
+  background:#070d1c;border-left:1px solid #1e2d4a;
+  transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden}
+#info-drawer.open{transform:translateX(0)}
+
+#drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid #1e2d4a;flex-shrink:0;
+  background:linear-gradient(135deg,#0d1a2e,#0a1425)}
+#drawer-logo{font-size:16px;font-weight:800;color:var(--text)}
+#drawer-logo span{color:var(--teal)}
+#drawer-subtitle{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+#drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#1e2d4a;
+  border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#drawer-close:hover{background:#2a3f5f;color:var(--text)}
+
+#drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:0;scroll-behavior:smooth}
+#drawer-body::-webkit-scrollbar{width:4px}
+#drawer-body::-webkit-scrollbar-track{background:transparent}
+#drawer-body::-webkit-scrollbar-thumb{background:#1e2d4a;border-radius:2px}
+
+/* Nav pills */
+#drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+.dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:#1e2d4a;color:var(--muted);
+  cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
+.dnav-pill:hover{background:#2a3f5f;color:var(--text)}
+.dnav-pill.active{background:#00d4ff15;color:var(--teal);border-color:#00d4ff40}
+
+/* Sections */
+.dsec{padding:18px 0;border-bottom:1px solid #0d1526}
+.dsec:last-child{border-bottom:none;padding-bottom:8px}
+.dsec-eyebrow{font-size:8px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:6px;opacity:.7}
+.dsec-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dsec-icon{font-size:18px}
+.dsec-body{font-size:12px;color:#94a3b8;line-height:1.7;display:flex;flex-direction:column;gap:8px}
+.dsec-body p{margin:0}
+.dsec-body strong{color:var(--text);font-weight:600}
+.dsec-body em{color:var(--teal);font-style:normal}
+
+/* Field table */
+.dfield-table{background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;overflow:hidden;margin-top:4px}
+.dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid #0d1526;align-items:flex-start;gap:10px;font-size:11px}
+.dfield-row:last-child{border-bottom:none}
+.dfield-key{color:var(--teal);min-width:110px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
+.dfield-val{color:#94a3b8;line-height:1.5}
+.dfield-val strong{color:var(--text)}
+
+/* Flow diagram in drawer */
+.dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;
+  background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;font-size:11px}
+.dflow-node{padding:4px 10px;border-radius:4px;background:#1e2d4a;color:var(--text);text-align:center;font-size:10px;line-height:1.4}
+.dflow-node.highlight{background:#00d4ff15;border:1px solid #00d4ff40;color:var(--teal)}
+.dflow-arrow{color:var(--muted);font-size:14px}
+
+/* Tag chips */
+.dtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.dtag{font-size:9px;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+.dtag.teal{background:#00d4ff15;color:var(--teal);border:1px solid #00d4ff30}
+.dtag.blue{background:#3b82f615;color:var(--blue);border:1px solid #3b82f630}
+.dtag.green{background:#10b98115;color:var(--green);border:1px solid #10b98130}
+.dtag.amber{background:#f59e0b15;color:var(--amber);border:1px solid #f59e0b30}
+
+/* Code snippet */
+.dcode{background:#040810;border:1px solid #1e2d4a;border-radius:6px;padding:10px 12px;
+  font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:6px}
+.dcode .ck{color:#7dd3fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#64748b}
+
+/* Callout box */
+.dcallout{background:linear-gradient(135deg,#00d4ff08,#3b82f608);border:1px solid #00d4ff25;
+  border-radius:6px;padding:10px 12px;font-size:11px;color:#94a3b8;line-height:1.6;margin-top:6px}
+.dcallout strong{color:var(--teal)}
+
+/* ── GUIDE BUTTON IN HEADER ── */
+#btn-info{background:linear-gradient(135deg,#00d4ff22,#3b82f622);border:1px solid var(--teal);
+  border-radius:20px;color:var(--teal);font-size:11px;font-weight:700;padding:5px 14px;
+  cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;
+  box-shadow:0 0 10px #00d4ff22}
+#btn-info:hover{background:var(--teal);color:#070c18;box-shadow:0 0 18px #00d4ff55}
+#btn-info:active{transform:scale(.97)}
+
+/* ── DASHBOARD ── */
+#ev-dashboard{padding:8px 10px 6px;background:#040810;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+.ev-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px}
+.ev-metric{background:#0d1526;border:1px solid #1e2d4a;border-radius:7px;padding:6px 9px;transition:border-color .4s}
+.ev-metric-top{display:flex;align-items:center;gap:4px;margin-bottom:1px}
+.ev-metric-icon{font-size:11px}
+.ev-metric-label{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.ev-metric-val{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .5s;line-height:1}
+.ev-metric-unit{font-size:8px;color:var(--muted);margin-top:1px}
+.ev-metric.solar{border-color:#fbbf2430}
+.ev-metric.solar .ev-metric-val{color:#fbbf24}
+.ev-metric.grid{border-color:#f59e0b30}
+.ev-metric.grid .ev-metric-val{color:#f59e0b}
+.ev-metric.net-pos{border-color:#10b98130}
+.ev-metric.net-pos .ev-metric-val{color:var(--green)}
+.ev-metric.net-neg{border-color:#ef444430}
+.ev-metric.net-neg .ev-metric-val{color:var(--red)}
+.ev-metric.rate-offpeak{border-color:#3b82f630}
+.ev-metric.rate-offpeak .ev-metric-val{color:var(--blue)}
+.ev-metric.rate-std{border-color:#f59e0b30}
+.ev-metric.rate-std .ev-metric-val{color:var(--amber)}
+.ev-metric.rate-peak{border-color:#ef444460;animation:peak-pulse .9s ease infinite alternate}
+.ev-metric.rate-peak .ev-metric-val{color:var(--red)}
+@keyframes peak-pulse{from{border-color:#ef444430}to{border-color:#ef444490}}
+
+/* TOU bar */
+#ev-tou-wrap{display:flex;flex-direction:column;gap:3px}
+#ev-tou-title{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between}
+#ev-tou-track{height:8px;border-radius:4px;background:#1e2d4a;position:relative;overflow:visible}
+.tou-seg{position:absolute;top:0;height:100%;border-radius:4px}
+.tou-seg.export{background:#fbbf2430;border:1px solid #fbbf2450}
+.tou-seg.offpeak{background:#3b82f620;border:1px solid #3b82f640}
+.tou-seg.peak{background:#ef444430;border:1px solid #ef444450}
+#ev-tou-cursor{position:absolute;top:-2px;width:3px;height:12px;background:var(--teal);
+  border-radius:2px;transform:translateX(-50%);transition:left .5s;box-shadow:0 0 6px var(--teal)}
+#ev-tou-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}
+#ev-tou-rate-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-align:center;margin-top:2px;transition:color .4s}
+
+/* JSON stream redesigned */
+#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid #1e2d4a;
+  font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+#ev-json-hdr .pulse-dot{width:5px;height:5px}
+#event-stream{flex:1;overflow:hidden;padding:0;font-size:10.5px}
+.event-block{padding:5px 10px;font-size:10.5px;line-height:1.55;border-bottom:1px solid #0d152640;transition:opacity .3s}
+.ev-changed{border-radius:2px;outline:1px solid #fbbf2480;background:#fbbf2412;padding:0 2px;transition:all .4s}
+.ev-changed-dir{outline:1px solid #3b82f680;background:#3b82f612;padding:0 2px}
+.ev-changed-bal{outline:1px solid #10b98180;background:#10b98112;padding:0 2px}
+#ev-footer{padding:4px 10px;border-top:1px solid #1e2d4a;font-size:8.5px;color:var(--muted);
+  display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ev-legend{display:inline-flex;align-items:center;gap:3px}
+.ev-leg-box{width:8px;height:8px;border-radius:1px;display:inline-block}
+</style>
+</head>
+<body>
+
+<!-- Back nav -->
+<a href="index.html" style="
+  position:fixed;top:14px;left:18px;z-index:9999;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:100px;
+  background:rgba(13,21,38,0.82);backdrop-filter:blur(16px);
+  border:1px solid rgba(30,48,88,0.9);
+  color:#64748b;font-family:system-ui,sans-serif;font-size:12px;font-weight:500;
+  text-decoration:none;transition:color .2s,border-color .2s;
+" onmouseover="this.style.color='#e0f2fe';this.style.borderColor='#00d4ff'"
+   onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(30,48,88,0.9)'">
+  ← Units360.ai
+</a>
+
+<div id="app">
+
+<!-- Cinematic overlay -->
+<div id="overlay">
+  <div id="overlay-eyebrow">Units360 · Solar Net Metering</div>
+  <div id="overlay-title"></div>
+  <div id="overlay-time"></div>
+  <div id="overlay-sub"></div>
+</div>
+
+<!-- Header -->
+<div id="header">
+  <div id="logo">Units<span>360</span></div>
+  <div id="badge">Demo · Energy</div>
+  <button id="btn-info">ℹ Platform Guide</button>
+  <div id="header-center">
+    <div id="demo-title">Solar Net Metering · Usage Intelligence Platform</div>
+    <div id="demo-sub">Real-time bidirectional kWh metering · Time-of-use pricing · CloudEvents stream</div>
+  </div>
+  <div id="clock-wrap">
+    <div id="clock-time-label">6:00 AM</div>
+    <svg id="clock-svg" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="#0d1526" stroke="#1e2d4a" stroke-width="1.5"/>
+      <!-- tick marks -->
+      <g stroke="#2a3f5f" stroke-width="1">
+        <line x1="28" y1="4"  x2="28" y2="8"/>
+        <line x1="28" y1="48" x2="28" y2="52"/>
+        <line x1="4"  y1="28" x2="8"  y2="28"/>
+        <line x1="48" y1="28" x2="52" y2="28"/>
+      </g>
+      <!-- hands -->
+      <line id="hand-hour" x1="28" y1="28" x2="28" y2="14" stroke="#64748b" stroke-width="3.5" stroke-linecap="round"/>
+      <line id="hand-min"  x1="28" y1="28" x2="28" y2="7"  stroke="#e0f2fe" stroke-width="2"   stroke-linecap="round"/>
+      <line id="hand-sec"  x1="28" y1="28" x2="28" y2="5"  stroke="#ef4444" stroke-width="1.2" stroke-linecap="round"/>
+      <line id="hand-sec-tail" x1="28" y1="28" x2="28" y2="36" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="28" cy="28" r="2.5" fill="#ef4444"/>
+    </svg>
+  </div>
+</div>
+
+<!-- Act header -->
+<div id="act-header">
+  <div id="act-eyebrow">ACT 1 OF 5</div>
+  <div id="act-title">Meter Definition</div>
+  <div id="act-desc">Defining the unit, account &amp; rate plan</div>
+</div>
+
+<!-- Main -->
+<div id="main">
+
+  <!-- Left panel -->
+  <div id="left-panel">
+
+    <!-- Scene -->
+    <div id="scene-wrap">
+      <svg id="scene-svg" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <!-- Sky gradient (dynamic) -->
+        <defs>
+          <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop id="sky-top" offset="0%" stop-color="#0a0e1a"/>
+            <stop id="sky-mid" offset="60%" stop-color="#0d1526"/>
+            <stop id="sky-bot" offset="100%" stop-color="#131e35"/>
+          </linearGradient>
+          <radialGradient id="sun-glow-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="panel-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow-filter">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="sun-glow">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Sky background -->
+        <rect id="sky-rect" width="640" height="160" fill="url(#sky-grad)"/>
+
+        <!-- Horizon glow -->
+        <ellipse id="horizon-glow" cx="320" cy="118" rx="280" ry="25" fill="#00000000"/>
+
+        <!-- Sun halo + body -->
+        <circle id="sun-halo" cx="80" cy="140" r="28" fill="url(#sun-glow-grad)" opacity="0"/>
+        <circle id="sun" cx="80" cy="140" r="12" fill="#fbbf24" opacity="0" filter="url(#sun-glow)"/>
+
+        <!-- Ground -->
+        <rect x="0" y="118" width="640" height="42" fill="#0d1e1a"/>
+        <!-- Ground highlight -->
+        <rect x="0" y="118" width="640" height="3" fill="#10b98115"/>
+
+        <!-- === HOUSE === -->
+        <!-- House body -->
+        <rect x="60" y="72" width="140" height="46" fill="#0f1e33" stroke="#1e3a5a" stroke-width="1"/>
+        <!-- House roof -->
+        <polygon points="50,72 130,38 210,72" fill="#0b1829" stroke="#1e3a5a" stroke-width="1"/>
+
+        <!-- Door -->
+        <rect x="108" y="92" width="24" height="26" rx="2" fill="#0d1526" stroke="#1e2d4a" stroke-width="1"/>
+        <circle cx="128" cy="106" r="2" fill="#00d4ff50"/>
+
+        <!-- Window left -->
+        <rect x="70" y="80" width="22" height="18" rx="2" fill="#070c18" stroke="#1e2d4a" stroke-width="1"/>
+        <line x1="81" y1="80" x2="81" y2="98" stroke="#1e2d4a" stroke-width=".5"/>
+        <line x1="70" y1="89" x2="92" y2="89" stroke="#1e2d4a" stroke-width=".5"/>
+
+        <!-- Window right -->
+        <rect x="165" y="80" width="22" height="18" rx="2" fill="#070c18" stroke="#1e2d4a" stroke-width="1"/>
+        <line x1="176" y1="80" x2="176" y2="98" stroke="#1e2d4a" stroke-width=".5"/>
+        <line x1="165" y1="89" x2="187" y2="89" stroke="#1e2d4a" stroke-width=".5"/>
+
+        <!-- Solar panels on roof (4 panels) -->
+        <g id="solar-panels">
+          <rect x="82"  y="50" width="24" height="14" rx="1" fill="#0a1520" stroke="#1e4060" stroke-width="1"/>
+          <rect x="109" y="47" width="24" height="14" rx="1" fill="#0a1520" stroke="#1e4060" stroke-width="1"/>
+          <rect x="136" y="44" width="24" height="14" rx="1" fill="#0a1520" stroke="#1e4060" stroke-width="1"/>
+          <rect x="160" y="48" width="20" height="13" rx="1" fill="#0a1520" stroke="#1e4060" stroke-width="1"/>
+          <!-- Panel cells grid lines -->
+          <line x1="94"  y1="50" x2="94"  y2="64" stroke="#1e4060" stroke-width=".5"/>
+          <line x1="82"  y1="57" x2="106" y2="57" stroke="#1e4060" stroke-width=".5"/>
+          <line x1="121" y1="47" x2="121" y2="61" stroke="#1e4060" stroke-width=".5"/>
+          <line x1="109" y1="54" x2="133" y2="54" stroke="#1e4060" stroke-width=".5"/>
+          <line x1="148" y1="44" x2="148" y2="58" stroke="#1e4060" stroke-width=".5"/>
+          <line x1="136" y1="51" x2="160" y2="51" stroke="#1e4060" stroke-width=".5"/>
+          <line x1="170" y1="48" x2="170" y2="61" stroke="#1e4060" stroke-width=".5"/>
+          <line x1="160" y1="54.5" x2="180" y2="54.5" stroke="#1e4060" stroke-width=".5"/>
+          <!-- Panel glow overlay (toggled via opacity) -->
+          <rect id="panel-glow-1" x="82"  y="50" width="24" height="14" rx="1" fill="#fbbf24" opacity="0"/>
+          <rect id="panel-glow-2" x="109" y="47" width="24" height="14" rx="1" fill="#fbbf24" opacity="0"/>
+          <rect id="panel-glow-3" x="136" y="44" width="24" height="14" rx="1" fill="#fbbf24" opacity="0"/>
+          <rect id="panel-glow-4" x="160" y="48" width="20" height="13" rx="1" fill="#fbbf24" opacity="0"/>
+        </g>
+
+        <!-- Garage area -->
+        <rect x="220" y="82" width="60" height="36" fill="#0b1829" stroke="#1e3a5a" stroke-width="1"/>
+        <!-- Garage door -->
+        <rect x="224" y="86" width="52" height="32" rx="1" fill="#0d1526" stroke="#1e2d4a" stroke-width="1"/>
+        <line x1="224" y1="96" x2="276" y2="96" stroke="#1e2d4a" stroke-width=".5"/>
+        <line x1="224" y1="106" x2="276" y2="106" stroke="#1e2d4a" stroke-width=".5"/>
+        <line x1="250" y1="86" x2="250" y2="118" stroke="#1e2d4a" stroke-width=".5"/>
+
+        <!-- EV car in garage (partially visible) -->
+        <g id="ev-car" opacity="0.7">
+          <!-- Car body -->
+          <rect x="226" y="100" width="48" height="16" rx="3" fill="#1a3050" stroke="#2a4a70" stroke-width="1"/>
+          <!-- Cabin -->
+          <rect x="235" y="93" width="28" height="9" rx="2" fill="#152540" stroke="#2a4a70" stroke-width="1"/>
+          <!-- Wheels -->
+          <circle cx="237" cy="116" r="4" fill="#0b1525" stroke="#2a4a70" stroke-width="1"/>
+          <circle cx="262" cy="116" r="4" fill="#0b1525" stroke="#2a4a70" stroke-width="1"/>
+          <!-- Charging indicator -->
+          <text x="247" y="108" font-size="8" fill="#00d4ff" text-anchor="middle" opacity="0.8">⚡</text>
+        </g>
+
+        <!-- Connecting cable house → meter (ground level) -->
+        <line x1="200" y1="118" x2="320" y2="118" stroke="#1e3a5a" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- Smart meter box -->
+        <rect x="316" y="100" width="28" height="24" rx="2" fill="#0d1526" stroke="#00d4ff60" stroke-width="1"/>
+        <rect x="320" y="104" width="20" height="10" rx="1" fill="#070c18" stroke="#00d4ff30" stroke-width=".5"/>
+        <text x="330" y="113" font-size="7" fill="#00d4ff" text-anchor="middle">MDT</text>
+        <text x="330" y="121" font-size="6" fill="#64748b" text-anchor="middle">METER</text>
+        <!-- Meter LED -->
+        <circle id="meter-led" cx="330" cy="127" r="2" fill="#10b981" opacity="0.8"/>
+
+        <!-- Cable meter → pole -->
+        <line x1="344" y1="112" x2="480" y2="85" stroke="#1e3a5a" stroke-width="1"/>
+
+        <!-- Power pole -->
+        <line x1="492" y1="40" x2="492" y2="118" stroke="#2a3f5f" stroke-width="3"/>
+        <line x1="476" y1="60" x2="508" y2="60" stroke="#2a3f5f" stroke-width="2"/>
+        <line x1="476" y1="75" x2="508" y2="75" stroke="#2a3f5f" stroke-width="2"/>
+        <!-- Insulators -->
+        <circle cx="476" cy="60" r="2.5" fill="#1e3a5a"/>
+        <circle cx="508" cy="60" r="2.5" fill="#1e3a5a"/>
+        <circle cx="476" cy="75" r="2.5" fill="#1e3a5a"/>
+        <circle cx="508" cy="75" r="2.5" fill="#1e3a5a"/>
+        <!-- Power lines -->
+        <path d="M 476 60 Q 440 68 344 112" fill="none" stroke="#1e2d4a" stroke-width="1"/>
+        <path d="M 508 60 Q 560 55 600 52" fill="none" stroke="#1e2d4a" stroke-width="1"/>
+        <path d="M 476 75 Q 440 80 344 112" fill="none" stroke="#1e2d4a" stroke-width="1"/>
+
+        <!-- Grid symbol -->
+        <rect x="590" y="42" width="36" height="28" rx="3" fill="#0d1526" stroke="#3b82f660" stroke-width="1"/>
+        <text x="608" y="54" font-size="7" fill="#3b82f6" text-anchor="middle">GRID</text>
+        <text x="608" y="63" font-size="8" fill="#3b82f6" text-anchor="middle">⚡</text>
+
+        <!-- Scene particle container -->
+        <g id="scene-particles"></g>
+
+        <!-- Solar ray lines from sun (hidden by default) -->
+        <g id="sun-rays" opacity="0">
+          <line class="sun-ray" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,5" opacity="0.4"/>
+          <line class="sun-ray" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,5" opacity="0.3"/>
+          <line class="sun-ray" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,5" opacity="0.35"/>
+          <line class="sun-ray" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,5" opacity="0.3"/>
+        </g>
+
+        <!-- Status text in scene -->
+        <text id="scene-status" x="320" y="15" font-size="10" fill="var(--teal)" text-anchor="middle" opacity="0" letter-spacing="2" font-weight="600"></text>
+      </svg>
+    </div>
+
+    <!-- Flow diagram -->
+    <div id="flow-wrap">
+      <div id="flow-label">Live Metering Flow</div>
+      <svg id="flow-svg" viewBox="0 0 640 72" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="node-grad-teal" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#00d4ff20"/>
+            <stop offset="100%" stop-color="#00d4ff08"/>
+          </linearGradient>
+          <linearGradient id="node-grad-blue" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3b82f620"/>
+            <stop offset="100%" stop-color="#3b82f608"/>
+          </linearGradient>
+          <linearGradient id="node-grad-green" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#10b98120"/>
+            <stop offset="100%" stop-color="#10b98108"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Path lines -->
+        <path id="path-0" d="M 148 36 Q 197 20 242 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+        <path id="path-1" d="M 348 36 Q 397 20 442 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+        <path id="path-2" d="M 548 36 Q 580 20 610 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+
+        <!-- Reverse paths (for consuming direction) -->
+        <path id="path-r0" d="M 242 36 Q 197 52 148 36" fill="none" stroke="#1e2d4a" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <path id="path-r1" d="M 442 36 Q 397 52 348 36" fill="none" stroke="#1e2d4a" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <path id="path-r2" d="M 610 36 Q 580 52 548 36" fill="none" stroke="#1e2d4a" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <!-- Node 1: Solar Array -->
+        <rect x="4" y="14" width="144" height="44" rx="8" fill="url(#node-grad-teal)" stroke="#1e2d4a" stroke-width="1"/>
+        <text x="76" y="32" font-size="14" text-anchor="middle">☀️</text>
+        <text x="76" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Solar Array</text>
+        <text id="node-kwh-1" x="76" y="56" font-size="8" fill="#64748b" text-anchor="middle">0.0 kW</text>
+
+        <!-- Node 2: Smart Meter -->
+        <rect x="244" y="14" width="104" height="44" rx="8" fill="#0d1526" stroke="#00d4ff40" stroke-width="1"/>
+        <text x="296" y="32" font-size="14" text-anchor="middle">📡</text>
+        <text x="296" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Smart Meter</text>
+        <text id="node-kwh-2" x="296" y="56" font-size="8" fill="#64748b" text-anchor="middle">IDLE</text>
+
+        <!-- Node 3: Units360 API -->
+        <rect x="444" y="14" width="104" height="44" rx="8" fill="url(#node-grad-blue)" stroke="#3b82f640" stroke-width="1"/>
+        <text x="496" y="32" font-size="14" text-anchor="middle">⚡</text>
+        <text x="496" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Units360 API</text>
+        <text id="node-kwh-3" x="496" y="56" font-size="8" fill="#64748b" text-anchor="middle">READY</text>
+
+        <!-- Node 4: Grid Exchange -->
+        <rect x="590" y="14" width="46" height="44" rx="8" fill="url(#node-grad-green)" stroke="#10b98140" stroke-width="1"/>
+        <text x="613" y="32" font-size="14" text-anchor="middle">🔌</text>
+        <text x="613" y="45" font-size="7" fill="#e0f2fe" text-anchor="middle" letter-spacing=".2">Grid</text>
+        <text id="node-kwh-4" x="613" y="56" font-size="7" fill="#64748b" text-anchor="middle">0 kWh</text>
+
+        <!-- Particles container -->
+        <g id="flow-particles"></g>
+      </svg>
+    </div>
+
+    <!-- kWh counter -->
+    <div id="kwh-row">
+      <div>
+        <div id="kwh-balance" class="zero">0.0</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">kWh net balance · June 2024</div>
+      </div>
+      <div id="kwh-meta">
+        <div id="kwh-status" class="zero">STANDBY</div>
+        <div id="kwh-unit">Net Metering · Account RES-CA-94102</div>
+      </div>
+      <div id="kwh-right">
+        <div id="kwh-rate-pill" class="zero">— kWh/s</div>
+        <div id="kwh-today" style="font-size:10px;color:var(--muted)">Time-of-Use: E-TOU-C</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div id="prog-wrap">
+      <div id="prog-bar"><div id="prog-fill"></div></div>
+      <div id="prog-acts">
+        <span class="prog-act active" data-act="0">Define</span>
+        <span class="prog-act" data-act="1">Solar Peak</span>
+        <span class="prog-act" data-act="2">Sunset</span>
+        <span class="prog-act" data-act="3">Peak Alert</span>
+        <span class="prog-act" data-act="4">Invoice</span>
+      </div>
+    </div>
+
+  </div><!-- /left-panel -->
+
+  <!-- Right panel: terminal -->
+  <div id="right-panel">
+    <div id="term-header">
+      <div id="term-dot-r"></div><div id="term-dot-y"></div><div id="term-dot-g"></div>
+      <div id="term-title">Units360 · Meter Terminal</div>
+      <div id="term-mode-badge" class="mdt">MDT</div>
+    </div>
+    <div id="term-tabs">
+      <div class="term-tab active" id="tab-unit">UNIT</div>
+      <div class="term-tab" id="tab-account">ACCOUNT</div>
+      <div class="term-tab" id="tab-txn">TRANSACTION</div>
+    </div>
+    <div id="term-body">
+      <!-- MDT View (Act 1) -->
+      <div id="mdt-view">
+        <div class="mdt-section" id="mdt-unit-section">
+          <div class="mdt-section-hdr">Unit Definition</div>
+          <div class="mdt-fields">
+            <div class="mdt-field"><span class="mdt-field-label">Unit ID</span><span class="mdt-field-value" id="mf-unit-id"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Display Name</span><span class="mdt-field-value" id="mf-display"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Direction</span><span class="mdt-field-value" id="mf-direction"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Reset Period</span><span class="mdt-field-value" id="mf-reset"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Precision</span><span class="mdt-field-value" id="mf-precision"></span></div>
+          </div>
+        </div>
+        <div class="mdt-section" id="mdt-account-section">
+          <div class="mdt-section-hdr">Account Configuration</div>
+          <div class="mdt-fields">
+            <div class="mdt-field"><span class="mdt-field-label">Account ID</span><span class="mdt-field-value" id="mf-acct-id"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Rate Plan</span><span class="mdt-field-value" id="mf-rate"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Solar Export</span><span class="mdt-field-value" id="mf-export"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Peak Hours</span><span class="mdt-field-value" id="mf-peak"></span></div>
+          </div>
+        </div>
+        <div class="mdt-section" id="mdt-txn-section">
+          <div class="mdt-section-hdr">Transaction Rules</div>
+          <div class="mdt-fields">
+            <div class="mdt-field"><span class="mdt-field-label">Export Price</span><span class="mdt-field-value" id="mf-export-price"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Import Price</span><span class="mdt-field-value" id="mf-import-price"></span></div>
+            <div class="mdt-field"><span class="mdt-field-label">Peak Surcharge</span><span class="mdt-field-value" id="mf-surcharge"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CloudEvent Stream View (Acts 2-4) -->
+      <div id="event-view" style="display:none">
+        <!-- Dashboard -->
+        <div id="ev-dashboard">
+          <div class="ev-dash-grid">
+            <div class="ev-metric solar" id="ev-m-solar">
+              <div class="ev-metric-top"><span class="ev-metric-icon">☀️</span><span class="ev-metric-label">Solar Generated</span></div>
+              <div class="ev-metric-val" id="ev-solar-val">0.0</div>
+              <div class="ev-metric-unit">kWh exported today</div>
+            </div>
+            <div class="ev-metric grid" id="ev-m-grid">
+              <div class="ev-metric-top"><span class="ev-metric-icon">🏠</span><span class="ev-metric-label">Grid Consumed</span></div>
+              <div class="ev-metric-val" id="ev-grid-val">0.0</div>
+              <div class="ev-metric-unit">kWh imported today</div>
+            </div>
+            <div class="ev-metric net-pos" id="ev-m-net">
+              <div class="ev-metric-top"><span class="ev-metric-icon">⚖️</span><span class="ev-metric-label">Net Balance</span></div>
+              <div class="ev-metric-val" id="ev-net-val">+0.0</div>
+              <div class="ev-metric-unit">kWh this month</div>
+            </div>
+            <div class="ev-metric rate-offpeak" id="ev-m-rate">
+              <div class="ev-metric-top"><span class="ev-metric-icon">💰</span><span class="ev-metric-label">Current Rate</span></div>
+              <div class="ev-metric-val" id="ev-rate-val">$0.0842</div>
+              <div class="ev-metric-unit" id="ev-rate-unit">Export · Off-Peak</div>
+            </div>
+          </div>
+          <!-- Time-of-Use bar -->
+          <div id="ev-tou-wrap">
+            <div id="ev-tou-title">
+              <span>Time-of-Use Window</span>
+              <span id="event-direction" style="color:var(--teal)">EXPORT ↑</span>
+            </div>
+            <div id="ev-tou-track">
+              <!-- segments: export 6am-7pm = 0-72.9%, standard 7pm-8pm=72.9-83.3%, peak 8pm-10pm=83.3-91.7%, off 10pm-12am=91.7-100% -->
+              <div class="tou-seg export"   style="left:25%;width:52%"></div>
+              <div class="tou-seg offpeak"  style="left:77%;width:6%"></div>
+              <div class="tou-seg peak"     style="left:83%;width:8.3%"></div>
+              <div id="ev-tou-cursor" style="left:50%"></div>
+            </div>
+            <div id="ev-tou-labels"><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>8 PM</span><span>12 AM</span></div>
+            <div id="ev-tou-rate-label" style="color:var(--teal)">☀️ Solar Export · Off-Peak · $0.0842/kWh</div>
+          </div>
+        </div>
+        <!-- JSON stream -->
+        <div id="ev-json-hdr">
+          <div class="pulse-dot" id="event-pulse"></div>
+          <span>Live CloudEvent</span>
+          <span id="event-count" style="color:var(--teal);font-weight:700">0</span>
+          <span style="font-size:8px;margin-left:auto;opacity:.6">streamed to RTE</span>
+        </div>
+        <div id="event-stream"></div>
+        <div id="ev-footer">
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#fbbf2412;outline:1px solid #fbbf2480"></span> qty changed</span>
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#3b82f612;outline:1px solid #3b82f680"></span> direction</span>
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#10b98112;outline:1px solid #10b98180"></span> balance</span>
+        </div>
+      </div>
+
+      <!-- Invoice View (Act 5) -->
+      <div id="invoice-view" style="display:none"></div>
+    </div>
+  </div><!-- /right-panel -->
+
+</div><!-- /main -->
+
+<!-- Commentary -->
+<div id="commentary">
+  <span id="commentary-icon">☀️</span>
+  <span id="commentary-text">Define the <strong>kWh unit</strong> — Units360 configures bidirectional metering for solar net metering.</span>
+</div>
+
+<!-- Controls -->
+<div id="controls">
+  <button class="ctrl-btn" id="btn-prev">⏮ Prev</button>
+  <button class="ctrl-btn" id="btn-play">▶ Play</button>
+  <button class="ctrl-btn" id="btn-next">Next ⏭</button>
+  <div class="ctrl-sep"></div>
+  <span class="ctrl-btn" id="btn-slower" style="cursor:pointer">🐢</span>
+  <span id="speed-label">Speed:</span><span id="speed-val">1×</span>
+  <span class="ctrl-btn" id="btn-faster" style="cursor:pointer">🐇</span>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn" id="btn-reset">↺ Reset</button>
+  <div id="kbd-hint">Space · ← → · R · ? Guide</div>
+</div>
+
+</div><!-- /app -->
+
+<!-- Info Drawer Backdrop -->
+<div id="info-backdrop"></div>
+
+<!-- Info Drawer -->
+<div id="info-drawer">
+
+  <div id="drawer-header">
+    <div>
+      <div id="drawer-logo">Units<span>360</span>.ai</div>
+      <div id="drawer-subtitle">Platform Guide · Energy Edition</div>
+    </div>
+    <button id="drawer-close">✕</button>
+  </div>
+
+  <!-- Nav pills -->
+  <div id="drawer-nav">
+    <span class="dnav-pill active" data-target="sec-what">What is Units360?</span>
+    <span class="dnav-pill" data-target="sec-org">Power Provider</span>
+    <span class="dnav-pill" data-target="sec-unit">Unit</span>
+    <span class="dnav-pill" data-target="sec-account">Account</span>
+    <span class="dnav-pill" data-target="sec-txn">Transaction</span>
+    <span class="dnav-pill" data-target="sec-mdt">MDT</span>
+    <span class="dnav-pill" data-target="sec-rte">RTE</span>
+    <span class="dnav-pill" data-target="sec-cloud">CloudEvents</span>
+  </div>
+
+  <div id="drawer-body">
+
+    <!-- SECTION 1: What is Units360? -->
+    <div class="dsec" id="sec-what">
+      <div class="dsec-eyebrow">Platform Overview</div>
+      <div class="dsec-title"><span class="dsec-icon">🚀</span> What is Units360?</div>
+      <div class="dsec-body">
+        <p>Units360.ai is a <strong>low-code usage metering platform</strong> — the operating system for any business that sells by the unit. Instead of building custom billing infrastructure, you define your unit model once, and Units360 auto-provisions everything else.</p>
+        <p>In this demo, the unit is <em>kWh (kilowatt-hour)</em>. But it works equally for tokens, API calls, ride credits, consultation hours — any measurable service.</p>
+        <div class="dflow" id="flow-steps">
+          <div class="dflow-node highlight" data-step="mdt" onclick="showFlowExplain('mdt',this)">1. Define<br><small>MDT</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node" data-step="rte" onclick="showFlowExplain('rte',this)">2. Deploy<br><small>RTE</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node" data-step="stream" onclick="showFlowExplain('stream',this)">3. Stream<br><small>CloudEvents</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node" data-step="invoice" onclick="showFlowExplain('invoice',this)">4. Invoice<br><small>Auto</small></div>
+        </div>
+        <div id="flow-explain" style="display:none;margin-top:8px;padding:10px 12px;background:#0a1525;border:1px solid #00d4ff30;border-radius:6px;font-size:11px;color:#94a3b8;line-height:1.6">
+          <div id="flow-explain-content"></div>
+        </div>
+        <div class="dtags">
+          <span class="dtag teal">No DevOps required</span>
+          <span class="dtag blue">Auto-generated API</span>
+          <span class="dtag green">Real-time analytics</span>
+          <span class="dtag amber">Usage-based billing</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: The Power Provider (Organization) -->
+    <div class="dsec" id="sec-org">
+      <div class="dsec-eyebrow">Who Uses Units360 Here</div>
+      <div class="dsec-title"><span class="dsec-icon">🏢</span> The Power Provider</div>
+      <div class="dsec-body">
+        <p>In this energy demo, the <strong>Organization</strong> is the <em>Utility / Power Provider</em> — the company that sells electricity to homes and businesses. They are the Units360 customer.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Organization</span><span class="dfield-val"><strong>Pacific Grid Utilities</strong> (example)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their product</span><span class="dfield-val">Electricity delivered to residential &amp; commercial accounts</span></div>
+          <div class="dfield-row"><span class="dfield-key">Unit they sell</span><span class="dfield-val"><strong>kWh</strong> — kilowatt-hours consumed or exported</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate plan used</span><span class="dfield-val">Time-of-Use <strong>E-TOU-C</strong> — price varies by time of day</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their customer</span><span class="dfield-val">Homeowner at <strong>RES-CA-94102</strong> with rooftop solar</span></div>
+        </div>
+        <p>The power provider logs into Units360, creates a <em>Metadata Template (MDT)</em> for kWh, and configures all their rate rules. Units360 then handles all the real-time metering, net balance tracking, and invoice generation automatically.</p>
+        <div class="dcallout"><strong>Net Metering:</strong> When the home's solar panels produce more than it consumes, the excess goes back to the grid — and the utility credits the customer. Units360 tracks both directions in real time using a single bidirectional unit.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Unit -->
+    <div class="dsec" id="sec-unit">
+      <div class="dsec-eyebrow">Core Concept · 1 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">⚡</span> What is a Unit?</div>
+      <div class="dsec-body">
+        <p>A <strong>Unit</strong> is the fundamental thing being measured and billed. It defines <em>what</em> you are counting, how it accumulates, and when it resets.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">unit_id</span><span class="dfield-val"><strong>kWh</strong> — the unique identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">display_name</span><span class="dfield-val">Kilowatt Hour</span></div>
+          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val"><strong>BIDIRECTIONAL</strong> — can go up (export) or down (import)</span></div>
+          <div class="dfield-row"><span class="dfield-key">reset_period</span><span class="dfield-val">Monthly — balance resets on the 1st of each month</span></div>
+          <div class="dfield-row"><span class="dfield-key">precision</span><span class="dfield-val">3 decimal places (e.g., 0.045 kWh per reading)</span></div>
+        </div>
+        <p>Units can be <em>unidirectional</em> (tokens only consumed) or <em>bidirectional</em> (energy exported / imported). The same unit definition handles both directions — the sign of the transaction determines direction.</p>
+        <div class="dtags">
+          <span class="dtag teal">kWh · Tokens · API Calls</span>
+          <span class="dtag blue">Credits · Minutes · GB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Account -->
+    <div class="dsec" id="sec-account">
+      <div class="dsec-eyebrow">Core Concept · 2 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">🏠</span> What is an Account?</div>
+      <div class="dsec-body">
+        <p>An <strong>Account</strong> is the entity whose usage is being tracked — a customer, a device, a site, or a subscription. Each account gets its own running balance of the unit, governed by its rate plan.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">account_id</span><span class="dfield-val"><strong>RES-CA-94102</strong> — unique account identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">type</span><span class="dfield-val">Residential Solar Customer</span></div>
+          <div class="dfield-row"><span class="dfield-key">rate_plan</span><span class="dfield-val"><strong>E-TOU-C</strong> — Time-of-Use, with peak pricing 8–10 PM</span></div>
+          <div class="dfield-row"><span class="dfield-key">solar_export</span><span class="dfield-val">ENABLED — Net Metering program active</span></div>
+          <div class="dfield-row"><span class="dfield-key">peak_hours</span><span class="dfield-val">8:00 PM – 10:00 PM daily</span></div>
+          <div class="dfield-row"><span class="dfield-key">current_balance</span><span class="dfield-val">Live kWh net balance — updated per event</span></div>
+        </div>
+        <p>When a CloudEvent arrives, Units360 looks up the account, applies its rate plan rules, and updates its balance atomically. Multiple accounts can share the same unit definition but have different rate plans.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 5: Transaction -->
+    <div class="dsec" id="sec-txn">
+      <div class="dsec-eyebrow">Core Concept · 3 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">📋</span> What is a Transaction?</div>
+      <div class="dsec-body">
+        <p>A <strong>Transaction</strong> is a single metering event — one reading from the smart meter that says "this account consumed or exported X kWh right now." Transactions are the atomic records that build up the running balance.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">quantity</span><span class="dfield-val"><strong>0.0105 kWh</strong> — the amount in this reading</span></div>
+          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val">EXPORT (positive) or IMPORT (negative)</span></div>
+          <div class="dfield-row"><span class="dfield-key">price_applied</span><span class="dfield-val">$0.0842/kWh export · $0.1240/kWh import · +$0.18 peak</span></div>
+          <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Running net total updated after each event</span></div>
+          <div class="dfield-row"><span class="dfield-key">timestamp</span><span class="dfield-val">ISO 8601 UTC — every event is time-stamped precisely</span></div>
+        </div>
+        <p>Transaction rules — set up in the MDT — define how to price each event based on direction, time of day, and account plan. Units360 applies these rules automatically at ingestion time, with no custom code required.</p>
+        <div class="dcallout"><strong>At month end,</strong> all transactions are summed: exported kWh earn credits, imported kWh incur charges. The net produces the invoice automatically.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 6: MDT -->
+    <div class="dsec" id="sec-mdt">
+      <div class="dsec-eyebrow">Configuration Layer</div>
+      <div class="dsec-title"><span class="dsec-icon">📐</span> MDT — Metadata Template</div>
+      <div class="dsec-body">
+        <p>The <strong>MDT (Metadata Template)</strong> is Units360's low-code configuration builder. It's where the power provider defines everything about their metering model — with no code, no database schemas, no infrastructure setup.</p>
+        <p>Think of the MDT as a blueprint: define it once, and it governs every meter event, every balance update, and every invoice for that unit type.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define the unit (kWh), direction, precision, and reset period</span></div>
+          <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Set account types, rate plans, solar export eligibility, peak windows</span></div>
+          <div class="dfield-row"><span class="dfield-key">Transaction tab</span><span class="dfield-val">Configure pricing rules: export rate, import rate, peak surcharges</span></div>
+        </div>
+        <p>In the demo, you see the MDT form fill in during Act 1 (6 AM). That represents a power provider logging into Units360 and configuring their metering system in <em>minutes</em> — not months of custom development.</p>
+        <div class="dcallout"><strong>MDT outputs:</strong> Once saved, Units360 auto-generates a REST API endpoint, a CloudEvent schema for the smart meter, and a live analytics dashboard. No DevOps team required.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 7: RTE -->
+    <div class="dsec" id="sec-rte">
+      <div class="dsec-eyebrow">Runtime Engine</div>
+      <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
+      <div class="dsec-body">
+        <p>The <strong>RTE (Run Time Engine)</strong> is the live processing layer that runs once an MDT is deployed. It continuously ingests meter events, applies rate rules, updates balances, and maintains the audit ledger — all in real time.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Event ingestion</span><span class="dfield-val">Accepts CloudEvents from smart meters via REST POST</span></div>
+          <div class="dfield-row"><span class="dfield-key">Balance engine</span><span class="dfield-val">Atomic ledger update per event — bidirectional, millisecond-accurate</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate application</span><span class="dfield-val">Reads MDT rules; applies export, import, or peak pricing per event time</span></div>
+          <div class="dfield-row"><span class="dfield-key">Threshold alerts</span><span class="dfield-val">Fires webhooks when balance crosses configured thresholds</span></div>
+          <div class="dfield-row"><span class="dfield-key">Invoice trigger</span><span class="dfield-val">At period end, aggregates all transactions → auto-generates invoice JSON</span></div>
+          <div class="dfield-row"><span class="dfield-key">Analytics feed</span><span class="dfield-val">Live data streamed to the auto-provisioned Superset dashboard</span></div>
+        </div>
+        <div class="dflow">
+          <div class="dflow-node">Smart Meter</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node highlight">RTE</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Ledger</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Dashboard</div>
+        </div>
+        <p>The RTE is provisioned automatically when you click "Deploy" in Units360 — it's a fully managed, isolated cloud infrastructure per organization. No Kafka configuration, no ClickHouse setup, no DevOps work.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 8: CloudEvents -->
+    <div class="dsec" id="sec-cloud">
+      <div class="dsec-eyebrow">Event Protocol</div>
+      <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The JSON Payload</div>
+      <div class="dsec-body">
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong> — an open industry standard for describing event data. Every meter reading the smart meter sends is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
+        <div class="dcode"><span class="cc">// Smart meter → Units360 RTE (one reading)</span>
+POST /api/v1/events/RES-CA-94102
+Content-Type: application/cloudevents+json
+
+{
+  <span class="ck">"specversion"</span>: <span class="cv">"1.0"</span>,
+  <span class="ck">"type"</span>:        <span class="cv">"com.units360.energy.meter"</span>,
+  <span class="ck">"source"</span>:      <span class="cv">"solar/RES-CA-94102"</span>,
+  <span class="ck">"time"</span>:        <span class="cv">"2024-06-21T12:03:45Z"</span>,
+  <span class="ck">"data"</span>: {
+    <span class="ck">"unit"</span>:      <span class="cv">"kWh"</span>,
+    <span class="ck">"qty"</span>:       <span class="cn">0.0105</span>,
+    <span class="ck">"direction"</span>: <span class="cv">"EXPORT"</span>,
+    <span class="ck">"balance"</span>:   <span class="cn">42.7</span>
+  }
+}</div>
+        <div class="dfield-table" style="margin-top:10px">
+          <div class="dfield-row"><span class="dfield-key">specversion</span><span class="dfield-val">Always "1.0" — CloudEvents standard version</span></div>
+          <div class="dfield-row"><span class="dfield-key">type</span><span class="dfield-val">Namespaced event type — identifies the meter category</span></div>
+          <div class="dfield-row"><span class="dfield-key">source</span><span class="dfield-val">Device + account identifier — where the reading came from</span></div>
+          <div class="dfield-row"><span class="dfield-key">time</span><span class="dfield-val">Exact UTC timestamp — used for TOU (time-of-use) pricing lookup</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match the MDT unit_id — "kWh" here</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">The reading amount — RTE adds this to the account balance</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.direction</span><span class="dfield-val">EXPORT = solar generating; IMPORT = consuming from grid</span></div>
+        </div>
+        <p>The RTE validates the payload against the MDT schema, applies the correct rate, updates the balance atomically, and returns a <em>202 Accepted</em> response in under 10ms — at scale, across millions of meters.</p>
+      </div>
+    </div>
+
+  </div><!-- /drawer-body -->
+</div><!-- /info-drawer -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// CONSTANTS & CONFIG
+// ════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const CX = 28, CY = 28; // clock center
+
+// Minutes from midnight for each act [start, end]
+const ACT_TIMES = [
+  [360,  480],  // Act 1: 6:00 AM – 8:00 AM
+  [600,  840],  // Act 2: 10:00 AM – 2:00 PM
+  [900, 1140],  // Act 3: 3:00 PM – 7:00 PM
+  [1200, 1350], // Act 4: 8:00 PM – 10:30 PM
+  [1380, 1439], // Act 5: 11:00 PM – 11:59 PM
+];
+
+const ACTS = [
+  {
+    id:'define', label:'Meter Definition', eyebrow:'ACT 1 OF 5',
+    desc:'Defining the unit, account & rate plan',
+    time:'6:00 AM', kwhRate:0, duration:7000, color:'teal',
+    commentaryIcon:'☀️',
+    commentary:'Define the <strong>kWh unit</strong> — Units360 configures bidirectional metering for solar net metering. The MDT (Metadata Template) sets up export pricing, peak windows, and rate plans in seconds.',
+    overlayTitle:'DAWN · METER DEFINITION',
+    overlayTime:'6:00 AM',
+    overlaySub:'Configuring the Solar Net Metering unit · Account RES-CA-94102',
+    sceneStatus:'',
+    nodeTexts:['0.0 kW', 'IDLE', 'READY', '0 kWh'],
+  },
+  {
+    id:'generate', label:'Solar Peak — Generating', eyebrow:'ACT 2 OF 5',
+    desc:'Solar array at peak output — exporting to grid',
+    time:'12:00 PM', kwhRate:6.3, duration:14000, color:'teal',
+    commentaryIcon:'⚡',
+    commentary:'Solar array at <strong>peak output</strong>. CloudEvents stream to Units360 API in real time — each kWh exported earns a credit. The bidirectional meter tracks export automatically.',
+    overlayTitle:'SOLAR PEAK · GENERATING',
+    overlayTime:'12:00 PM',
+    overlaySub:'Export mode active · Earning grid credits at 6.3 kWh/min',
+    sceneStatus:'GENERATING ↑',
+    nodeTexts:['8.4 kW', 'EXPORT', 'LIVE', '+kWh'],
+  },
+  {
+    id:'sunset', label:'Sunset — Consuming Grid', eyebrow:'ACT 3 OF 5',
+    desc:'Sun setting — switching to grid consumption',
+    time:'6:30 PM', kwhRate:-3.1, duration:10000, color:'amber',
+    commentaryIcon:'🌅',
+    commentary:'As the sun sets, generation drops and the home switches to <strong>grid consumption</strong>. Units360 automatically flips the direction — the same unit, same account, same API. Net balance absorbs the draw.',
+    overlayTitle:'SUNSET · CONSUMING',
+    overlayTime:'6:30 PM',
+    overlaySub:'Import mode · Drawing against banked solar credits',
+    sceneStatus:'CONSUMING ↓',
+    nodeTexts:['1.2 kW', 'IMPORT', 'LIVE', '-kWh'],
+  },
+  {
+    id:'peak', label:'Peak Pricing Alert', eyebrow:'ACT 4 OF 5',
+    desc:'Time-of-use peak window — premium rates active',
+    time:'9:00 PM', kwhRate:-0.5, duration:7000, color:'red',
+    commentaryIcon:'⚠️',
+    commentary:'<strong>Peak pricing window</strong> (8–10 PM). Time-of-use surcharge kicks in. Units360 fires a rate-override event — same kWh unit, new price applied automatically. EV charging deferred.',
+    overlayTitle:'PEAK PRICING · ALERT',
+    overlayTime:'9:00 PM',
+    overlaySub:'E-TOU-C peak window · Surcharge: +$0.18/kWh · EV charging deferred',
+    sceneStatus:'PEAK PRICING ⚠',
+    nodeTexts:['0.8 kW', 'PEAK IMPORT', 'ALERT', 'PEAK'],
+  },
+  {
+    id:'invoice', label:'End of Month · Net Invoice', eyebrow:'ACT 5 OF 5',
+    desc:'Monthly net metering bill — customer earns credit',
+    time:'11:59 PM', kwhRate:0, duration:8000, color:'green',
+    commentaryIcon:'💚',
+    commentary:'Month closes with <strong>534.5 kWh net export</strong>. Units360 generates the invoice automatically — customer receives a <strong>$23.18 credit</strong>. Zero manual reconciliation.',
+    overlayTitle:'MONTH END · NET CREDIT',
+    overlayTime:'11:59 PM',
+    overlaySub:'Net metering invoice generated · Customer earns $23.18 credit',
+    sceneStatus:'INVOICE READY ✓',
+    nodeTexts:['DONE', 'SETTLED', 'INVOICED', '534.5 kWh'],
+  },
+];
+
+const FLOW_PATHS = [
+  // forward (generating): Solar → Meter path
+  { p0:{x:148,y:36}, cp:{x:197,y:20}, p2:{x:242,y:36} },
+  // forward: Meter → Units360
+  { p0:{x:348,y:36}, cp:{x:397,y:20}, p2:{x:442,y:36} },
+  // forward: Units360 → Grid
+  { p0:{x:548,y:36}, cp:{x:580,y:20}, p2:{x:610,y:36} },
+];
+const FLOW_PATHS_REV = [
+  { p0:{x:242,y:36}, cp:{x:197,y:52}, p2:{x:148,y:36} },
+  { p0:{x:442,y:36}, cp:{x:397,y:52}, p2:{x:348,y:36} },
+  { p0:{x:610,y:36}, cp:{x:580,y:52}, p2:{x:548,y:36} },
+];
+
+function bezQ(t, p0, cp, p2) {
+  const mt = 1-t;
+  return { x: mt*mt*p0.x + 2*mt*t*cp.x + t*t*p2.x,
+           y: mt*mt*p0.y + 2*mt*t*cp.y + t*t*p2.y };
+}
+
+// MDT form data
+const MDT_FIELDS = [
+  { id:'mf-unit-id',       val:'kWh',                    delay:200  },
+  { id:'mf-display',       val:'Kilowatt Hour',           delay:700  },
+  { id:'mf-direction',     val:'BIDIRECTIONAL',           delay:1300 },
+  { id:'mf-reset',         val:'Monthly',                 delay:1900 },
+  { id:'mf-precision',     val:'3 decimal places',        delay:2400 },
+  { id:'mf-acct-id',       val:'RES-CA-94102',            delay:3100 },
+  { id:'mf-rate',          val:'Time-of-Use E-TOU-C',     delay:3800 },
+  { id:'mf-export',        val:'ENABLED · Net Metering',  delay:4500 },
+  { id:'mf-peak',          val:'8:00 PM – 10:00 PM',      delay:5100 },
+  { id:'mf-export-price',  val:'$0.0842 / kWh',           delay:5700 },
+  { id:'mf-import-price',  val:'$0.1240 / kWh',           delay:6100 },
+  { id:'mf-surcharge',     val:'+$0.1800 / kWh',          delay:6500 },
+];
+
+// Invoice JSON lines for Act 5
+const INVOICE_LINES = [
+  {txt:'{',                               color:'ev-brace'},
+  {txt:'  "invoice_id": "INV-2024-06-30",',color:'ev-str'},
+  {txt:'  "account":    "RES-CA-94102",', color:'ev-str'},
+  {txt:'  "period":     "June 2024",',    color:'ev-str'},
+  {txt:'  "tariff":     "E-TOU-C",',      color:'ev-str'},
+  {txt:'  "units": {',                    color:'ev-brace'},
+  {txt:'    "exported":   847.3,',        color:'ev-num'},
+  {txt:'    "imported":   312.8,',        color:'ev-num'},
+  {txt:'    "net_export":  534.5',        color:'ev-num'},
+  {txt:'  },',                            color:'ev-brace'},
+  {txt:'  "credits": {',                  color:'ev-brace'},
+  {txt:'    "solar_export":  "$71.34",',  color:'ev-str'},
+  {txt:'    "net_metering":  "534.5 kWh"',color:'ev-str'},
+  {txt:'  },',                            color:'ev-brace'},
+  {txt:'  "charges": {',                  color:'ev-brace'},
+  {txt:'    "peak_import":   "$8.16",',   color:'ev-str'},
+  {txt:'    "base_charge":   "$10.00"',   color:'ev-str'},
+  {txt:'  },',                            color:'ev-brace'},
+  {txt:'  "amount_due":  -23.18,',        color:'ev-num'},
+  {txt:'  "status":      "CREDIT"',       color:'ev-bool'},
+  {txt:'}',                               color:'ev-brace'},
+];
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+const state = {
+  actIndex: 0,
+  actElapsed: 0,
+  playing: false,
+  speed: 1,
+  kwhBalance: 0,
+  eventCount: 0,
+  lastTs: null,
+};
+
+let flowParticles = [];
+let sceneParticles = [];
+let mdtTyping = [];        // active typewriter tasks
+let mdtDone = new Set();   // completed field IDs
+let eventStreamTimer = 0;
+let invoiceLineIdx = 0;
+let overlayTimer = 0;
+let secondHand = 0;        // purely cosmetic second hand
+let _secPrev = null;
+
+// ════════════════════════════════════════════════════════════
+// CLOCK
+// ════════════════════════════════════════════════════════════
+function setHandXY(id, angleDeg, length) {
+  const rad = (angleDeg - 90) * Math.PI / 180;
+  const el = $(id);
+  if (!el) return;
+  el.setAttribute('x2', (CX + length * Math.cos(rad)).toFixed(2));
+  el.setAttribute('y2', (CY + length * Math.sin(rad)).toFixed(2));
+}
+
+function getCurrentMinutes() {
+  const [start, end] = ACT_TIMES[state.actIndex];
+  const t = Math.min(state.actElapsed / ACTS[state.actIndex].duration, 1);
+  return start + (end - start) * t;
+}
+
+function updateClock(dtMs) {
+  // second hand always ticks (1× real speed when paused, 20× when playing)
+  const mult = state.playing ? state.speed * 20 : 1;
+  secondHand += (dtMs / 1000) * mult;
+
+  const totalMin = getCurrentMinutes();
+  const h = (totalMin / 60) % 12;
+  const m = totalMin % 60;
+  const s = secondHand % 60;
+
+  setHandXY('hand-hour', h * 30 + m * 0.5, 14);
+  setHandXY('hand-min',  m * 6  + s * 0.1, 19);
+  setHandXY('hand-sec',  s * 6,             23);
+  setHandXY('hand-sec-tail', s * 6 + 180,   9);
+
+  // Update time label
+  const totalMinInt = Math.floor(totalMin);
+  const hh = Math.floor(totalMinInt / 60);
+  const mm = totalMinInt % 60;
+  const ampm = hh >= 12 ? 'PM' : 'AM';
+  const hDisplay = hh % 12 || 12;
+  $('clock-time-label').textContent = `${hDisplay}:${String(mm).padStart(2,'0')} ${ampm}`;
+}
+
+function secLoop(ts) {
+  if (_secPrev !== null) updateClock(Math.min(ts - _secPrev, 100));
+  _secPrev = ts;
+  requestAnimationFrame(secLoop);
+}
+
+// ════════════════════════════════════════════════════════════
+// SKY & SUN
+// ════════════════════════════════════════════════════════════
+// Sky color stops keyed to time-of-day (minutes)
+const SKY_KEYFRAMES = [
+  { min:300,  top:'#0a0814', mid:'#0d0e18', bot:'#10121e' }, // pre-dawn
+  { min:360,  top:'#1a0a2e', mid:'#2d1244', bot:'#1a0f2e' }, // 6am dawn
+  { min:420,  top:'#ff6b3520', mid:'#ff8c4240', bot:'#fbbf2420' }, // sunrise glow
+  { min:480,  top:'#0d1f4a', mid:'#1a3060', bot:'#0f2040' }, // 8am morning
+  { min:600,  top:'#071530', mid:'#0d2045', bot:'#0a1830' }, // 10am
+  { min:720,  top:'#040e25', mid:'#081828', bot:'#071520' }, // noon peak
+  { min:840,  top:'#0d2040', mid:'#152e55', bot:'#0f2045' }, // 2pm
+  { min:900,  top:'#1a1530', mid:'#281e42', bot:'#1f1832' }, // 3pm
+  { min:1020, top:'#3d1a0a', mid:'#5c2810', bot:'#3d1f08' }, // 5pm sunset start
+  { min:1140, top:'#5a1a00', mid:'#8c2a00', bot:'#6a2000' }, // 7pm deep sunset
+  { min:1200, top:'#0d0818', mid:'#15102a', bot:'#0d0c1e' }, // 8pm night
+  { min:1350, top:'#070812', mid:'#0a0c18', bot:'#070c14' }, // 10:30pm
+  { min:1440, top:'#040608', mid:'#060810', bot:'#04060c' }, // midnight
+];
+
+function lerpColor(c1, c2, t) {
+  const parse = c => {
+    const h = c.replace('#','');
+    const len = h.length;
+    if (len === 6) return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16), 1];
+    if (len === 8) return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16), parseInt(h.slice(6,8),16)/255];
+    return [0,0,0,1];
+  };
+  const [r1,g1,b1,a1] = parse(c1);
+  const [r2,g2,b2,a2] = parse(c2);
+  const r = Math.round(r1 + (r2-r1)*t);
+  const g = Math.round(g1 + (g2-g1)*t);
+  const b = Math.round(b1 + (b2-b1)*t);
+  const a = a1 + (a2-a1)*t;
+  if (a >= 0.98) return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+  return `rgba(${r},${g},${b},${a.toFixed(2)})`;
+}
+
+function getSkyColors(minutes) {
+  const kf = SKY_KEYFRAMES;
+  let i = kf.length - 2;
+  for (let k = 0; k < kf.length - 1; k++) {
+    if (minutes >= kf[k].min && minutes < kf[k+1].min) { i = k; break; }
+  }
+  const t = (minutes - kf[i].min) / (kf[i+1].min - kf[i].min);
+  return {
+    top: lerpColor(kf[i].top, kf[i+1].top, t),
+    mid: lerpColor(kf[i].mid, kf[i+1].mid, t),
+    bot: lerpColor(kf[i].bot, kf[i+1].bot, t),
+  };
+}
+
+// Sun position: parabolic arc, rises 6am, peaks noon, sets 7pm
+function getSunPos(minutes) {
+  const RISE = 360, SET = 1140, PEAK_MIN = 720;
+  if (minutes < RISE || minutes > SET) return { x:-100, y:200, visible:false, intensity:0 };
+  const t = (minutes - RISE) / (SET - RISE); // 0 to 1
+  const x = 30 + t * 580;
+  const y = 130 - Math.sin(t * Math.PI) * 110;
+  const intensity = Math.sin(t * Math.PI); // 0 at rise/set, 1 at noon
+  return { x, y, visible: true, intensity };
+}
+
+// Sun ray angle offsets
+const RAY_ANGLES = [-50, -20, 20, 60];
+const RAY_LEN = 28;
+
+function updateScene() {
+  const minutes = getCurrentMinutes();
+  const sky = getSkyColors(minutes);
+  const sun = getSunPos(minutes);
+
+  // Sky gradient
+  $('sky-top').setAttribute('stop-color', sky.top);
+  $('sky-mid').setAttribute('stop-color', sky.mid);
+  $('sky-bot').setAttribute('stop-color', sky.bot);
+
+  // Horizon glow (warm at sunrise/sunset)
+  const act = ACTS[state.actIndex];
+  if (minutes >= 380 && minutes <= 500) {
+    $('horizon-glow').setAttribute('fill', '#ff6b3520');
+  } else if (minutes >= 1000 && minutes <= 1200) {
+    $('horizon-glow').setAttribute('fill', '#ff450020');
+  } else {
+    $('horizon-glow').setAttribute('fill', '#00000000');
+  }
+
+  // Sun
+  const sunEl = $('sun');
+  const haloEl = $('sun-halo');
+  if (sun.visible) {
+    sunEl.setAttribute('cx', sun.x.toFixed(1));
+    sunEl.setAttribute('cy', sun.y.toFixed(1));
+    sunEl.setAttribute('opacity', Math.min(sun.intensity * 1.5, 1).toFixed(2));
+    haloEl.setAttribute('cx', sun.x.toFixed(1));
+    haloEl.setAttribute('cy', sun.y.toFixed(1));
+    haloEl.setAttribute('opacity', (sun.intensity * 0.8).toFixed(2));
+  } else {
+    sunEl.setAttribute('opacity', '0');
+    haloEl.setAttribute('opacity', '0');
+  }
+
+  // Solar panel glow
+  const pglow = sun.intensity * 0.35;
+  ['panel-glow-1','panel-glow-2','panel-glow-3','panel-glow-4'].forEach(id => {
+    $(id).setAttribute('opacity', pglow.toFixed(3));
+  });
+
+  // Sun rays
+  const raysGroup = $('sun-rays');
+  if (sun.visible && sun.intensity > 0.2) {
+    raysGroup.setAttribute('opacity', (sun.intensity * 0.8).toFixed(2));
+    const rays = raysGroup.querySelectorAll('.sun-ray');
+    RAY_ANGLES.forEach((ang, i) => {
+      if (!rays[i]) return;
+      const rad = (ang - 90) * Math.PI / 180;
+      rays[i].setAttribute('x1', sun.x.toFixed(1));
+      rays[i].setAttribute('y1', sun.y.toFixed(1));
+      rays[i].setAttribute('x2', (sun.x + Math.cos(rad) * RAY_LEN * (1 + sun.intensity)).toFixed(1));
+      rays[i].setAttribute('y2', (sun.y + Math.sin(rad) * RAY_LEN * (1 + sun.intensity)).toFixed(1));
+    });
+  } else {
+    raysGroup.setAttribute('opacity', '0');
+  }
+
+  // Scene status text
+  const statusEl = $('scene-status');
+  const actStatus = act.sceneStatus;
+  if (actStatus && state.actIndex > 0) {
+    statusEl.textContent = actStatus;
+    statusEl.setAttribute('opacity', '1');
+    statusEl.setAttribute('fill',
+      act.color === 'amber' ? '#f59e0b' :
+      act.color === 'red'   ? '#ef4444' :
+      act.color === 'green' ? '#10b981' : '#00d4ff');
+  } else {
+    statusEl.setAttribute('opacity', '0');
+  }
+
+  // Meter LED pulse
+  const led = $('meter-led');
+  if (state.actIndex >= 1 && state.actIndex <= 3) {
+    const pulse = (Math.sin(Date.now() / 300) + 1) / 2;
+    led.setAttribute('opacity', (0.5 + pulse * 0.5).toFixed(2));
+    led.setAttribute('fill', ACTS[state.actIndex].kwhRate >= 0 ? '#10b981' : '#ef4444');
+  } else {
+    led.setAttribute('opacity', '0.4');
+    led.setAttribute('fill', '#10b981');
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// FLOW PARTICLES
+// ════════════════════════════════════════════════════════════
+let flowSpawnTimer = 0;
+
+function spawnFlowParticle() {
+  const act = ACTS[state.actIndex];
+  if (act.kwhRate === 0) return;
+  const generating = act.kwhRate > 0;
+  const paths = generating ? FLOW_PATHS : FLOW_PATHS_REV;
+  const color = generating ? '#fbbf24' : '#3b82f6';
+  const container = $('flow-particles');
+
+  // Spawn 1 particle per active path
+  paths.forEach((path, pi) => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    el.setAttribute('r', '4');
+    el.setAttribute('fill', color);
+    el.setAttribute('opacity', '0.9');
+    const startPt = bezQ(0, path.p0, path.cp, path.p2);
+    el.setAttribute('cx', startPt.x);
+    el.setAttribute('cy', startPt.y);
+    container.appendChild(el);
+    flowParticles.push({ el, path, t: 0, speed: 0.012 + Math.random() * 0.008, color });
+  });
+}
+
+function updateFlowParticles(dtMs) {
+  const act = ACTS[state.actIndex];
+  if (act.kwhRate === 0) {
+    flowParticles.forEach(p => p.el.remove());
+    flowParticles = [];
+    return;
+  }
+  const f = state.playing ? state.speed * (dtMs / 16.67) : 0;
+
+  // Spawn
+  if (state.playing) {
+    flowSpawnTimer += dtMs;
+    const interval = Math.max(200, 800 / Math.abs(act.kwhRate));
+    if (flowSpawnTimer >= interval) {
+      flowSpawnTimer = 0;
+      spawnFlowParticle();
+    }
+  }
+
+  // Update
+  flowParticles = flowParticles.filter(p => {
+    p.t += p.speed * f;
+    if (p.t >= 1) { p.el.remove(); return false; }
+    const pos = bezQ(p.t, p.path.p0, p.path.cp, p.path.p2);
+    p.el.setAttribute('cx', pos.x.toFixed(2));
+    p.el.setAttribute('cy', pos.y.toFixed(2));
+    p.el.setAttribute('opacity', (0.9 - p.t * 0.5).toFixed(2));
+    return true;
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// TERMINAL — MDT TYPEWRITER
+// ════════════════════════════════════════════════════════════
+let mdtTimers = [];
+
+function startMDTTyping() {
+  mdtDone.clear();
+  // Clear all fields
+  MDT_FIELDS.forEach(f => {
+    const el = $(f.id);
+    if (el) { el.textContent = ''; el.classList.remove('done'); }
+  });
+
+  mdtTimers.forEach(t => clearTimeout(t));
+  mdtTimers = [];
+
+  MDT_FIELDS.forEach(field => {
+    const t = setTimeout(() => {
+      typeField(field.id, field.val);
+    }, field.delay);
+    mdtTimers.push(t);
+  });
+}
+
+function typeField(id, value) {
+  const el = $(id);
+  if (!el) return;
+  el.innerHTML = '<span class="cursor"></span>';
+  let i = 0;
+  const cursor = el.querySelector('.cursor');
+  const interval = setInterval(() => {
+    if (i >= value.length) {
+      el.textContent = value;
+      el.classList.add('done');
+      clearInterval(interval);
+      return;
+    }
+    el.innerHTML = value.slice(0, ++i) + '<span class="cursor"></span>';
+  }, 40);
+  mdtTimers.push(interval);
+}
+
+function clearMDTTimers() {
+  mdtTimers.forEach(t => { clearTimeout(t); clearInterval(t); });
+  mdtTimers = [];
+}
+
+// ════════════════════════════════════════════════════════════
+// TERMINAL — DASHBOARD + CLOUDEVENT STREAM
+// ════════════════════════════════════════════════════════════
+const dashState = { solarKwh: 0, gridKwh: 0, prevQty: null, prevDir: null, prevBal: null, prevPrice: null };
+
+function getTOUInfo(actIdx) {
+  if (actIdx === 1) return { cls:'rate-offpeak', rate:'$0.0842', label:'☀️ Solar Export · Off-Peak · $0.0842/kWh', dirLabel:'EXPORT ↑', dirColor:'#10b981' };
+  if (actIdx === 2) return { cls:'rate-std',     rate:'$0.1240', label:'🌆 Evening Import · Standard · $0.1240/kWh', dirLabel:'IMPORT ↓', dirColor:'#f59e0b' };
+  if (actIdx === 3) return { cls:'rate-peak',    rate:'$0.3040', label:'⚠️ Peak Window · Surcharge · $0.3040/kWh',  dirLabel:'PEAK ↑↑', dirColor:'#ef4444' };
+  return { cls:'rate-offpeak', rate:'$0.0842', label:'', dirLabel:'—', dirColor:'#64748b' };
+}
+
+function touCursorPct(minutes) {
+  // 6am=360, 6pm=1080, 8pm=1200, 10pm=1320, 12am=1440
+  // map 6am-12am (360-1440) to 0-100%
+  const t = (minutes - 360) / (1440 - 360);
+  return Math.max(0, Math.min(100, t * 100));
+}
+
+function updateDashboard(actIdx, qty, dir, bal, price) {
+  // Accumulate solar/grid
+  if (dir === 'EXPORT') dashState.solarKwh += qty;
+  else dashState.gridKwh += qty;
+
+  const net = state.kwhBalance;
+  const tou = getTOUInfo(actIdx);
+
+  // Update metric cards
+  const solarEl = $('ev-solar-val'); if (solarEl) solarEl.textContent = dashState.solarKwh.toFixed(2);
+  const gridEl  = $('ev-grid-val');  if (gridEl)  gridEl.textContent  = dashState.gridKwh.toFixed(2);
+  const netEl   = $('ev-net-val');
+  if (netEl) {
+    netEl.textContent = (net >= 0 ? '+' : '') + net.toFixed(1);
+    $('ev-m-net').className = 'ev-metric ' + (net >= 0 ? 'net-pos' : 'net-neg');
+  }
+  const rateEl  = $('ev-rate-val'); if (rateEl) rateEl.textContent = tou.rate;
+  const rateUnitEl = $('ev-rate-unit');
+  if (rateUnitEl) rateUnitEl.textContent = tou.label.replace(/^[^ ]+ /,'').split(' · ').slice(0,2).join(' · ');
+  const rateMEl = $('ev-m-rate'); if (rateMEl) rateMEl.className = 'ev-metric ' + tou.cls;
+
+  // TOU bar cursor
+  const pct = touCursorPct(getCurrentMinutes());
+  const cur = $('ev-tou-cursor'); if (cur) cur.style.left = pct.toFixed(1) + '%';
+  const rLabel = $('ev-tou-rate-label');
+  if (rLabel) { rLabel.textContent = tou.label; rLabel.style.color = tou.dirColor; }
+
+  // Direction label
+  const dirEl = $('event-direction');
+  if (dirEl) { dirEl.textContent = tou.dirLabel; dirEl.style.color = tou.dirColor; }
+}
+
+function makeCloudEventHTML(actIdx) {
+  const act = ACTS[actIdx];
+  const minutes = getCurrentMinutes();
+  const hh = Math.floor(minutes / 60), mm = Math.floor(minutes % 60);
+  const ts = `2024-06-21T${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}Z`;
+  const qty = parseFloat((Math.abs(act.kwhRate) * 0.016 + Math.random() * 0.002).toFixed(4));
+  const bal = state.kwhBalance.toFixed(1);
+  const dir = act.kwhRate >= 0 ? 'EXPORT' : 'IMPORT';
+  const price = act.kwhRate >= 0 ? '0.0842' : (actIdx === 3 ? '0.3040' : '0.1240');
+
+  // Diff classes
+  const qtyClass  = (dashState.prevQty !== null && qty.toFixed(4) !== dashState.prevQty) ? ' ev-changed' : '';
+  const dirClass  = (dashState.prevDir !== null && dir !== dashState.prevDir) ? ' ev-changed-dir' : '';
+  const balClass  = (dashState.prevBal !== null && bal !== dashState.prevBal) ? ' ev-changed-bal' : '';
+  const priceClass = (dashState.prevPrice !== null && price !== dashState.prevPrice) ? ' ev-changed' : '';
+
+  const result = `<span class="ev-brace">{</span>
+  <span class="ev-key">"specversion"</span>: <span class="ev-str">"1.0"</span>,
+  <span class="ev-key">"type"</span>: <span class="ev-str">"com.units360.energy.meter"</span>,
+  <span class="ev-key">"source"</span>: <span class="ev-str">"solar/RES-CA-94102"</span>,
+  <span class="ev-key">"time"</span>: <span class="ev-str ev-changed-bal">${ts}</span>,
+  <span class="ev-key">"data"</span>: {
+    <span class="ev-key">"unit"</span>: <span class="ev-str">"kWh"</span>,
+    <span class="ev-key">"qty"</span>: <span class="ev-num${qtyClass}">${qty.toFixed(4)}</span>,
+    <span class="ev-key">"direction"</span>: <span class="ev-str${dirClass}">"${dir}"</span>,
+    <span class="ev-key">"balance"</span>: <span class="ev-num${balClass}">${bal}</span>,
+    <span class="ev-key">"price"</span>: <span class="ev-num${priceClass}">${price}</span>
+  }
+<span class="ev-brace">}</span>`;
+
+  // Update prev state
+  dashState.prevQty = qty.toFixed(4);
+  dashState.prevDir = dir;
+  dashState.prevBal = bal;
+  dashState.prevPrice = price;
+
+  // Update dashboard
+  updateDashboard(actIdx, qty, dir, bal, price);
+
+  return result;
+}
+
+function addEventBlock() {
+  const stream = $('event-stream');
+  if (!stream) return;
+  const div = document.createElement('div');
+  div.className = 'event-block';
+  div.innerHTML = makeCloudEventHTML(state.actIndex);
+  // Replace previous (show only latest 1 event in the small panel)
+  stream.innerHTML = '';
+  stream.appendChild(div);
+  state.eventCount++;
+  $('event-count').textContent = state.eventCount;
+}
+
+// ════════════════════════════════════════════════════════════
+// TERMINAL — INVOICE
+// ════════════════════════════════════════════════════════════
+let invTimers = [];
+
+function startInvoiceReveal() {
+  invTimers.forEach(t => clearTimeout(t));
+  invTimers = [];
+  const container = $('invoice-view');
+  container.innerHTML = '';
+  INVOICE_LINES.forEach((line, i) => {
+    const t = setTimeout(() => {
+      const div = document.createElement('div');
+      div.className = `inv-json-line ${line.color} reveal`;
+      div.textContent = line.txt;
+      container.appendChild(div);
+    }, i * 120 + 300);
+    invTimers.push(t);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// CINEMATIC OVERLAY
+// ════════════════════════════════════════════════════════════
+function showOverlay(act, cb) {
+  const ovl = $('overlay');
+  $('overlay-title').textContent = act.overlayTitle;
+  $('overlay-time').textContent = act.overlayTime;
+  $('overlay-sub').textContent = act.overlaySub;
+  ovl.classList.add('show');
+  setTimeout(() => {
+    ovl.classList.remove('show');
+    setTimeout(cb, 350);
+  }, 1400);
+}
+
+// ════════════════════════════════════════════════════════════
+// ACT MANAGEMENT
+// ════════════════════════════════════════════════════════════
+function goToAct(idx, withOverlay = true) {
+  if (idx < 0 || idx >= ACTS.length) return;
+  state.actIndex = idx;
+  state.actElapsed = 0;
+  flowParticles.forEach(p => p.el.remove());
+  flowParticles = [];
+  flowSpawnTimer = 0;
+  eventStreamTimer = 0;
+
+  // Terminal mode
+  switchTerminalView(idx);
+
+  // Update act header progress dots
+  document.querySelectorAll('.prog-act').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  if (withOverlay) {
+    const wasPlaying = state.playing;
+    state.playing = false;
+    $('btn-play').textContent = '▶ Play';
+    showOverlay(ACTS[idx], () => {
+      updateUI();
+      if (wasPlaying) { state.playing = true; $('btn-play').textContent = '⏸ Pause'; }
+    });
+  } else {
+    updateUI();
+  }
+}
+
+function switchTerminalView(actIdx) {
+  const mdtView = $('mdt-view');
+  const evView = $('event-view');
+  const invView = $('invoice-view');
+  const badge = $('term-mode-badge');
+  const tabs = document.querySelector('#term-tabs');
+
+  clearMDTTimers();
+  invTimers.forEach(t => clearTimeout(t));
+  invTimers = [];
+
+  if (actIdx === 0) {
+    // MDT typewriter
+    mdtView.style.display = 'flex';
+    evView.style.display = 'none';
+    invView.style.display = 'none';
+    badge.className = 'mdt'; badge.textContent = 'MDT';
+    tabs.style.display = 'flex';
+    startMDTTyping();
+  } else if (actIdx >= 1 && actIdx <= 3) {
+    // CloudEvent stream
+    mdtView.style.display = 'none';
+    evView.style.display = 'flex';
+    invView.style.display = 'none';
+    badge.className = 'event'; badge.textContent = 'LIVE';
+    tabs.style.display = 'none';
+    $('event-stream').innerHTML = '';
+    dashState.solarKwh = 0; dashState.gridKwh = 0;
+    dashState.prevQty = null; dashState.prevDir = null; dashState.prevBal = null; dashState.prevPrice = null;
+    if ($('ev-solar-val')) $('ev-solar-val').textContent = '0.0';
+    if ($('ev-grid-val'))  $('ev-grid-val').textContent = '0.0';
+    addEventBlock(); // show first event immediately
+  } else {
+    // Invoice JSON
+    mdtView.style.display = 'none';
+    evView.style.display = 'none';
+    invView.style.display = 'flex';
+    badge.className = 'invoice'; badge.textContent = 'INVOICE';
+    tabs.style.display = 'none';
+    startInvoiceReveal();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// UI UPDATE
+// ════════════════════════════════════════════════════════════
+function updateUI() {
+  const act = ACTS[state.actIndex];
+
+  // Act header
+  $('act-eyebrow').textContent = act.eyebrow;
+  $('act-title').className = act.color !== 'teal' ? act.color : '';
+  $('act-title').textContent = act.label;
+  $('act-desc').textContent = act.desc;
+
+  // Commentary
+  const comm = $('commentary');
+  comm.className = act.color !== 'teal' ? act.color : '';
+  $('commentary-icon').textContent = act.commentaryIcon;
+  $('commentary-text').innerHTML = act.commentary;
+
+  // Flow node labels
+  act.nodeTexts.forEach((t, i) => {
+    const el = $(`node-kwh-${i+1}`);
+    if (el) el.textContent = t;
+  });
+
+  // kWh balance display
+  updateKWHDisplay();
+
+  // Progress
+  const total = ACTS.reduce((s, a, i) => s + (i < state.actIndex ? a.duration : 0), 0) + state.actElapsed;
+  const grand = ACTS.reduce((s, a) => s + a.duration, 0);
+  $('prog-fill').style.width = (total / grand * 100).toFixed(1) + '%';
+
+  // Play button
+  $('btn-play').textContent = state.playing ? '⏸ Pause' : '▶ Play';
+}
+
+function updateKWHDisplay() {
+  const act = ACTS[state.actIndex];
+  const bal = state.kwhBalance;
+  const balEl = $('kwh-balance');
+  const statusEl = $('kwh-status');
+  const rateEl = $('kwh-rate-pill');
+  const sign = bal >= 0 ? '+' : '';
+  balEl.textContent = sign + bal.toFixed(1);
+
+  if (act.kwhRate > 0) {
+    balEl.className = 'pos'; statusEl.className = 'pos'; rateEl.className = 'pos';
+    statusEl.textContent = 'GENERATING';
+    rateEl.textContent = `+${act.kwhRate.toFixed(1)} kWh/min`;
+  } else if (act.kwhRate < 0) {
+    if (act.color === 'red') {
+      balEl.className = 'neg'; statusEl.className = 'warn'; rateEl.className = 'neg';
+      statusEl.textContent = 'PEAK PRICING';
+    } else {
+      balEl.className = 'neg'; statusEl.className = 'neg'; rateEl.className = 'neg';
+      statusEl.textContent = 'CONSUMING';
+    }
+    rateEl.textContent = `${act.kwhRate.toFixed(1)} kWh/min`;
+  } else if (act.id === 'invoice') {
+    balEl.className = 'pos'; statusEl.className = 'pos'; rateEl.className = 'zero';
+    statusEl.textContent = 'NET CREDIT';
+    rateEl.textContent = '—';
+  } else {
+    balEl.className = 'zero'; statusEl.className = 'zero'; rateEl.className = 'zero';
+    statusEl.textContent = 'STANDBY';
+    rateEl.textContent = '— kWh/min';
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// MAIN LOOP
+// ════════════════════════════════════════════════════════════
+function tick(ts) {
+  if (state.lastTs === null) { state.lastTs = ts; requestAnimationFrame(tick); return; }
+  const rawDt = Math.min(ts - state.lastTs, 100);
+  state.lastTs = ts;
+
+  if (state.playing) {
+    const dt = rawDt * state.speed;
+    state.actElapsed += dt;
+
+    // kWh balance
+    const act = ACTS[state.actIndex];
+    state.kwhBalance += act.kwhRate * (dt / 1000) * 60; // kWhRate is per-minute conceptually; dt in ms
+    // Clamp balance to reasonable range
+    if (state.kwhBalance < -500) state.kwhBalance = -500;
+
+    // CloudEvent stream timer (Acts 1-3)
+    if (state.actIndex >= 1 && state.actIndex <= 3) {
+      eventStreamTimer += rawDt;
+      if (eventStreamTimer >= 1800 / state.speed) {
+        eventStreamTimer = 0;
+        addEventBlock();
+      }
+    }
+
+    // Auto-advance act
+    if (state.actElapsed >= act.duration) {
+      if (state.actIndex < ACTS.length - 1) {
+        goToAct(state.actIndex + 1, true);
+      } else {
+        state.playing = false;
+        $('btn-play').textContent = '▶ Play';
+      }
+    }
+  }
+
+  updateScene();
+  updateFlowParticles(rawDt);
+  updateUI();
+
+  requestAnimationFrame(tick);
+}
+
+// ════════════════════════════════════════════════════════════
+// CONTROLS
+// ════════════════════════════════════════════════════════════
+$('btn-play').addEventListener('click', () => {
+  state.playing = !state.playing;
+  $('btn-play').textContent = state.playing ? '⏸ Pause' : '▶ Play';
+  state.lastTs = null;
+  if (state.playing && state.actIndex === ACTS.length - 1 && state.actElapsed >= ACTS[ACTS.length-1].duration) {
+    resetAll();
+  }
+});
+$('btn-prev').addEventListener('click', () => {
+  if (state.actIndex > 0) goToAct(state.actIndex - 1, true);
+});
+$('btn-next').addEventListener('click', () => {
+  if (state.actIndex < ACTS.length - 1) goToAct(state.actIndex + 1, true);
+});
+$('btn-reset').addEventListener('click', resetAll);
+
+$('btn-slower').addEventListener('click', () => {
+  state.speed = Math.max(0.5, state.speed - 0.5);
+  $('speed-val').textContent = state.speed + '×';
+});
+$('btn-faster').addEventListener('click', () => {
+  state.speed = Math.min(4, state.speed + 0.5);
+  $('speed-val').textContent = state.speed + '×';
+});
+
+document.querySelectorAll('.prog-act').forEach(el => {
+  el.addEventListener('click', () => goToAct(+el.dataset.act, true));
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === ' ') { e.preventDefault(); $('btn-play').click(); }
+  else if (e.key === 'ArrowRight') $('btn-next').click();
+  else if (e.key === 'ArrowLeft') $('btn-prev').click();
+  else if (e.key === 'r' || e.key === 'R') resetAll();
+});
+
+function resetAll() {
+  state.playing = false;
+  state.actElapsed = 0;
+  state.kwhBalance = 0;
+  state.eventCount = 0;
+  state.lastTs = null;
+  secondHand = 0;
+  _secPrev = null;
+  flowParticles.forEach(p => p.el.remove());
+  flowParticles = [];
+  flowSpawnTimer = 0;
+  eventStreamTimer = 0;
+  $('btn-play').textContent = '▶ Play';
+  $('event-count').textContent = '0';
+  clearMDTTimers();
+  invTimers.forEach(t => clearTimeout(t));
+  invTimers = [];
+  goToAct(0, false);
+}
+
+// Tab switching (visual only, Act 1)
+['tab-unit','tab-account','tab-txn'].forEach(id => {
+  $(id).addEventListener('click', () => {
+    document.querySelectorAll('.term-tab').forEach(t => t.classList.remove('active'));
+    $(id).classList.add('active');
+  });
+});
+
+
+// ════════════════════════════════════════════════════════════
+// FLOW NODE EXPLANATIONS (drawer)
+// ════════════════════════════════════════════════════════════
+const FLOW_EXPLAINS = {
+  mdt: {
+    title: '📐 Step 1 · MDT — Metadata Template',
+    body: 'The <strong>Metadata Template (MDT)</strong> is where the power provider defines their metering model in Units360 — no code required. They specify the unit (kWh), direction (bidirectional), rate plan, peak pricing windows, and account types. Once saved, Units360 auto-generates the REST API, event schema, and analytics dashboard. <em>Think of it as the blueprint that drives everything downstream.</em>'
+  },
+  rte: {
+    title: '⚙️ Step 2 · RTE — Run Time Engine',
+    body: 'Clicking "Deploy" spins up the <strong>Run Time Engine (RTE)</strong> — a fully managed, isolated cloud infrastructure instance for this organization. The RTE opens a live CloudEvent endpoint, starts an atomic ledger for kWh balances, and begins applying the MDT rules in real time. <em>No Kafka. No ClickHouse. No DevOps team. All provisioned automatically.</em>'
+  },
+  stream: {
+    title: '📡 Step 3 · CloudEvent Stream',
+    body: `The smart meter sends a <strong>CloudEvent JSON payload</strong> to the RTE endpoint every few seconds — each one carries a qty, direction (EXPORT or IMPORT), and timestamp. The RTE validates it against the MDT schema, looks up the current TOU rate, and atomically updates the account&#39;s kWh balance. <em>The dashboard and ledger update in under 10 ms per event, at any scale.</em>`
+  },
+  invoice: {
+    title: '🧾 Step 4 · Automatic Invoice',
+    body: 'At the billing period end, the RTE aggregates all transactions for the account — total kWh exported, total imported — and applies the net metering rules. The result is a <strong>structured invoice JSON</strong> generated automatically. Credits for solar export offset grid import charges. If net export exceeds import, the customer receives a credit. <em>Zero manual reconciliation.</em>'
+  }
+};
+
+function showFlowExplain(step, el) {
+  const expDiv = $('flow-explain');
+  const content = $('flow-explain-content');
+  const info = FLOW_EXPLAINS[step];
+  if (!info) return;
+  // Toggle
+  const alreadyOpen = expDiv.style.display !== 'none' && content.dataset.step === step;
+  document.querySelectorAll('#flow-steps .dflow-node').forEach(n => n.classList.remove('highlight'));
+  if (alreadyOpen) {
+    expDiv.style.display = 'none';
+    content.dataset.step = '';
+  } else {
+    el.classList.add('highlight');
+    content.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:5px">' + info.title + '</div>' + info.body;
+    content.dataset.step = step;
+    expDiv.style.display = 'block';
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// INFO DRAWER
+// ════════════════════════════════════════════════════════════
+const drawerEl   = $('info-drawer');
+const backdropEl = $('info-backdrop');
+
+function openDrawer() {
+  drawerEl.classList.add('open');
+  backdropEl.classList.add('show');
+}
+function closeDrawer() {
+  drawerEl.classList.remove('open');
+  backdropEl.classList.remove('show');
+}
+function toggleDrawer() {
+  drawerEl.classList.contains('open') ? closeDrawer() : openDrawer();
+}
+
+$('btn-info').addEventListener('click', toggleDrawer);
+$('drawer-close').addEventListener('click', closeDrawer);
+backdropEl.addEventListener('click', closeDrawer);
+
+// Nav pill scrolling + active state
+document.querySelectorAll('.dnav-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const target = $(pill.dataset.target);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.querySelectorAll('.dnav-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  });
+});
+
+// Highlight nav pill as user scrolls drawer body
+const drawerBody = $('drawer-body');
+const sections = drawerBody.querySelectorAll('.dsec');
+drawerBody.addEventListener('scroll', () => {
+  let current = sections[0].id;
+  sections.forEach(sec => {
+    if (sec.offsetTop - drawerBody.scrollTop <= 40) current = sec.id;
+  });
+  document.querySelectorAll('.dnav-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.target === current);
+  });
+}, { passive: true });
+
+// Keyboard shortcut ? to open/close drawer
+document.addEventListener('keydown', e => {
+  if (e.key === '?') toggleDrawer();
+});
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+goToAct(0, false);
+updateUI();
+requestAnimationFrame(secLoop);
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
