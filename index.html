@@ -309,47 +309,52 @@
       font-size:.95rem; line-height:1.75;
     }
 
-    /* ── Industries ── */
+    /* ── Industries & Demos ── */
     #industries { padding:8rem 5vw; }
     .industry-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
-      gap:1.25rem; max-width:1100px; margin:0 auto;
+      display:flex; flex-wrap:wrap; justify-content:center;
+      gap:1.5rem; max-width:1100px; margin:0 auto;
     }
-    .icard {
-      background:var(--glass-bg);
-      backdrop-filter:blur(20px);
-      border:1px solid var(--glass-bd);
-      border-radius:var(--radius-lg);
-      padding:1.75rem 1.5rem;
-      cursor:pointer;
-      transition:transform .3s, border-color .3s, box-shadow .3s;
-      position:relative; overflow:hidden;
+    /* Make dcard work as a clickable div too */
+    .dcard { cursor:pointer; user-select:none; }
+    .dcard.active {
+      border-color:var(--dc-solid, var(--accent));
+      box-shadow:
+        0 0 0 1px var(--dc-solid, var(--accent)),
+        0 28px 60px rgba(0,0,0,.55),
+        0 0 48px var(--dc, rgba(79,142,247,.18));
     }
-    .icard::after {
-      content:'';
-      position:absolute; inset:0;
-      background:radial-gradient(circle at 50% 0%, var(--ic,rgba(79,142,247,.12)) 0%, transparent 68%);
-      opacity:0; transition:opacity .3s;
+    .dcard.active .dcard-preview::before { opacity:.8; }
+
+    /* Coming soon variant */
+    .dcard--soon .dcard-preview {
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 110%, var(--dc, rgba(79,142,247,.12)) 0%, transparent 68%),
+        linear-gradient(160deg, #070b16 0%, #090d1a 100%);
     }
-    .icard:hover, .icard.active {
-      transform:translateY(-5px);
-      border-color:var(--ic-solid, var(--accent));
-      box-shadow:0 18px 40px rgba(0,0,0,.35);
+    .dcard--soon .dcard-preview-icon { opacity:.55; filter:grayscale(.3) drop-shadow(0 0 10px var(--dc-solid, var(--accent))); }
+    .dcard--soon:hover .dcard-preview-icon { opacity:.7; transform:none; filter:grayscale(.2) drop-shadow(0 0 14px var(--dc-solid, var(--accent))); }
+    .dcard--soon .dcard-title { opacity:.75; }
+    .dcard--soon .dcard-desc  { opacity:.65; }
+
+    .dcard-badge {
+      position:absolute; top:13px; right:13px; z-index:2;
+      display:flex; align-items:center; gap:5px;
+      padding:4px 11px;
+      background:rgba(3,4,14,.6); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:100px;
+      font-size:.63rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      color:var(--muted);
     }
-    .icard:hover::after, .icard.active::after { opacity:1; }
-    .icard-icon  { font-size:1.8rem; margin-bottom:.9rem; display:block; }
-    .icard-title {
-      font-family:'Space Grotesk',sans-serif;
-      font-size:1rem; font-weight:700; margin-bottom:.45rem;
-    }
-    .icard-desc  { font-size:.82rem; color:var(--muted); line-height:1.65; }
-    .icard-unit  {
-      margin-top:.9rem; padding:.4rem .7rem;
-      background:rgba(255,255,255,.04);
-      border-radius:8px;
-      font-family:'Space Grotesk',monospace;
-      font-size:.72rem; color:var(--teal);
+
+    .dcard-cta--soon {
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      cursor:default;
+      box-shadow:none !important;
+      transform:none !important;
+      opacity:.7;
     }
 
     /* ── Why ── */
@@ -483,13 +488,7 @@
     .flinks a:hover { color:var(--text); }
     .fcopy { font-size:.78rem; color:var(--muted); }
 
-    /* ── Live Demos ── */
-    #demos { padding:8rem 5vw; }
-    .demo-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(360px,1fr));
-      gap:2rem; max-width:960px; margin:0 auto;
-    }
+    /* ── Demo Cards ── */
     .dcard {
       background:var(--glass-bg);
       backdrop-filter:blur(24px);
@@ -616,8 +615,7 @@
   <div class="logo">Units360.ai</div>
   <div class="nav-links">
     <a href="#explainer">How It Works</a>
-    <a href="#industries">Use Cases</a>
-    <a href="#demos">Live Demos</a>
+    <a href="#industries">Industries & Demos</a>
     <a href="#compare-teaser">Compare</a>
   </div>
   <button class="nav-cta" onclick="smoothTo('signup')">Get Early Access</button>
@@ -738,50 +736,116 @@
 
 <!-- Industries -->
 <section id="industries" class="layer">
-  <div class="sec-label">Use Cases</div>
+  <div class="sec-label">Use Cases &amp; Live Demos</div>
   <h2 class="sec-title">Any unit. Any industry.</h2>
-  <p class="sec-sub">Click an industry to see how Units360.ai adapts to your domain.</p>
+  <p class="sec-sub">Click any industry to see the 3D visualization. Two live demos are ready to explore now.</p>
 
   <div class="industry-grid">
-    <div class="icard" style="--ic:rgba(124,94,247,.15);--ic-solid:#7c5ef7"
+
+    <!-- ── LIVE: AI & LLM ── -->
+    <div class="dcard" style="--dc:rgba(124,94,247,.22);--dc-solid:#7c5ef7; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
          onclick="pickIndustry('llm',this)">
-      <span class="icard-icon">🤖</span>
-      <div class="icard-title">AI &amp; LLM Platforms</div>
-      <div class="icard-desc">Track token consumption, enforce limits, and bill by inference cost in real time.</div>
-      <div class="icard-unit">unit: tokens_consumed</div>
+      <div class="dcard-preview">
+        <div class="dcard-preview-icon">🤖</div>
+        <div class="dcard-live"><span class="dcard-live-dot"></span>Live</div>
+      </div>
+      <div class="dcard-body">
+        <span class="dcard-eyebrow">AI &amp; LLM Platforms</span>
+        <div class="dcard-title">AI Token Metering</div>
+        <div class="dcard-desc">Track token consumption, enforce rate limits, and bill by inference cost in real time across providers.</div>
+        <div class="dcard-chips">
+          <span class="dcard-chip hi">unit: tokens_consumed</span>
+          <span class="dcard-chip">8 providers</span>
+          <span class="dcard-chip">Real-time</span>
+        </div>
+        <a class="dcard-cta" href="units360-token-demo.html" onclick="event.stopPropagation()">
+          Launch Demo <span class="dcard-arrow">→</span>
+        </a>
+      </div>
     </div>
 
-    <div class="icard" style="--ic:rgba(0,212,180,.15);--ic-solid:#00d4b4"
+    <!-- ── LIVE: Utilities & Energy ── -->
+    <div class="dcard" style="--dc:rgba(0,212,180,.22);--dc-solid:#00d4b4; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
          onclick="pickIndustry('utilities',this)">
-      <span class="icard-icon">⚡</span>
-      <div class="icard-title">Utilities &amp; Energy</div>
-      <div class="icard-desc">Meter consumption per property, enforce limits, and generate invoices automatically.</div>
-      <div class="icard-unit">unit: kilowatt_hours</div>
+      <div class="dcard-preview">
+        <div class="dcard-preview-icon">⚡</div>
+        <div class="dcard-live"><span class="dcard-live-dot"></span>Live</div>
+      </div>
+      <div class="dcard-body">
+        <span class="dcard-eyebrow">Utilities &amp; Energy</span>
+        <div class="dcard-title">Solar Net Metering</div>
+        <div class="dcard-desc">Meter solar generation vs. grid consumption per property. Auto-generated ledger, invoices, and threshold alerts.</div>
+        <div class="dcard-chips">
+          <span class="dcard-chip hi">unit: kilowatt_hours</span>
+          <span class="dcard-chip">Solar + Grid</span>
+          <span class="dcard-chip">Net metering</span>
+        </div>
+        <a class="dcard-cta" href="units360-energy-demo.html" onclick="event.stopPropagation()">
+          Launch Demo <span class="dcard-arrow">→</span>
+        </a>
+      </div>
     </div>
 
-    <div class="icard" style="--ic:rgba(255,165,0,.15);--ic-solid:#ffa500"
+    <!-- ── COMING SOON: Mobility ── -->
+    <div class="dcard dcard--soon" style="--dc:rgba(255,165,0,.15);--dc-solid:#ffa500; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
          onclick="pickIndustry('logistics',this)">
-      <span class="icard-icon">🚛</span>
-      <div class="icard-title">Mobility &amp; Logistics</div>
-      <div class="icard-desc">Track ride credits, delivery units, and driver rewards across your entire fleet.</div>
-      <div class="icard-unit">unit: ride_credits</div>
+      <div class="dcard-preview">
+        <div class="dcard-preview-icon">🚛</div>
+        <div class="dcard-badge">Coming Soon</div>
+      </div>
+      <div class="dcard-body">
+        <span class="dcard-eyebrow">Mobility &amp; Logistics</span>
+        <div class="dcard-title">Fleet &amp; Ride Credits</div>
+        <div class="dcard-desc">Track ride credits, delivery units, and driver rewards across your entire fleet in real time.</div>
+        <div class="dcard-chips">
+          <span class="dcard-chip hi">unit: ride_credits</span>
+          <span class="dcard-chip">Fleet tracking</span>
+          <span class="dcard-chip">Rewards</span>
+        </div>
+        <div class="dcard-cta dcard-cta--soon">In Development</div>
+      </div>
     </div>
 
-    <div class="icard" style="--ic:rgba(255,215,0,.15);--ic-solid:#ffd700"
+    <!-- ── COMING SOON: Fintech ── -->
+    <div class="dcard dcard--soon" style="--dc:rgba(255,215,0,.15);--dc-solid:#ffd700; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
          onclick="pickIndustry('fintech',this)">
-      <span class="icard-icon">💳</span>
-      <div class="icard-title">Fintech &amp; Banking</div>
-      <div class="icard-desc">Power virtual currencies, loyalty points, and prepaid credit systems with a full ledger.</div>
-      <div class="icard-unit">unit: reward_points</div>
+      <div class="dcard-preview">
+        <div class="dcard-preview-icon">💳</div>
+        <div class="dcard-badge">Coming Soon</div>
+      </div>
+      <div class="dcard-body">
+        <span class="dcard-eyebrow">Fintech &amp; Banking</span>
+        <div class="dcard-title">Loyalty &amp; Credit Ledger</div>
+        <div class="dcard-desc">Power virtual currencies, loyalty points, and prepaid credit systems with a full real-time ledger.</div>
+        <div class="dcard-chips">
+          <span class="dcard-chip hi">unit: reward_points</span>
+          <span class="dcard-chip">Virtual currency</span>
+          <span class="dcard-chip">Full ledger</span>
+        </div>
+        <div class="dcard-cta dcard-cta--soon">In Development</div>
+      </div>
     </div>
 
-    <div class="icard" style="--ic:rgba(255,100,100,.15);--ic-solid:#ff6464"
+    <!-- ── COMING SOON: Healthcare ── -->
+    <div class="dcard dcard--soon" style="--dc:rgba(255,100,100,.15);--dc-solid:#ff6464; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
          onclick="pickIndustry('healthcare',this)">
-      <span class="icard-icon">🏥</span>
-      <div class="icard-title">Healthcare</div>
-      <div class="icard-desc">Allocate service hours, track consultations, and manage resource credits per patient.</div>
-      <div class="icard-unit">unit: consultation_hours</div>
+      <div class="dcard-preview">
+        <div class="dcard-preview-icon">🏥</div>
+        <div class="dcard-badge">Coming Soon</div>
+      </div>
+      <div class="dcard-body">
+        <span class="dcard-eyebrow">Healthcare</span>
+        <div class="dcard-title">Service Hour Allocation</div>
+        <div class="dcard-desc">Allocate consultation hours, track service credits, and manage resource usage per patient.</div>
+        <div class="dcard-chips">
+          <span class="dcard-chip hi">unit: consultation_hours</span>
+          <span class="dcard-chip">Per-patient</span>
+          <span class="dcard-chip">Alerts</span>
+        </div>
+        <div class="dcard-cta dcard-cta--soon">In Development</div>
+      </div>
     </div>
+
   </div>
 </section>
 
@@ -855,62 +919,6 @@
   </div>
 </section>
 
-<!-- Live Demos -->
-<section id="demos" class="layer">
-  <div class="sec-label">Interactive Demos</div>
-  <h2 class="sec-title">See Units360.ai in action.</h2>
-  <p class="sec-sub">Explore live simulations of real deployments — no login required.</p>
-
-  <div class="demo-grid">
-
-    <a class="dcard" href="units360-token-demo.html"
-       style="--dc:rgba(124,94,247,.22);--dc-solid:#7c5ef7">
-      <div class="dcard-preview">
-        <div class="dcard-preview-icon">🤖</div>
-        <div class="dcard-live"><span class="dcard-live-dot"></span>Live</div>
-      </div>
-      <div class="dcard-body">
-        <span class="dcard-eyebrow">AI &amp; LLM Platforms</span>
-        <div class="dcard-title">Live AI Token Metering</div>
-        <div class="dcard-desc">
-          Watch real-time token consumption across multiple LLM providers.
-          Rate limiting, cost tracking, balance burn-down, and threshold alerts — all live.
-        </div>
-        <div class="dcard-chips">
-          <span class="dcard-chip hi">unit: tokens_consumed</span>
-          <span class="dcard-chip">8 providers</span>
-          <span class="dcard-chip">Real-time</span>
-          <span class="dcard-chip">Rate limiting</span>
-        </div>
-        <div class="dcard-cta">Launch Demo <span class="dcard-arrow">→</span></div>
-      </div>
-    </a>
-
-    <a class="dcard" href="units360-energy-demo.html"
-       style="--dc:rgba(0,212,180,.22);--dc-solid:#00d4b4">
-      <div class="dcard-preview">
-        <div class="dcard-preview-icon">⚡</div>
-        <div class="dcard-live"><span class="dcard-live-dot"></span>Live</div>
-      </div>
-      <div class="dcard-body">
-        <span class="dcard-eyebrow">Utilities &amp; Energy</span>
-        <div class="dcard-title">Solar Net Metering Dashboard</div>
-        <div class="dcard-desc">
-          Track solar generation vs. grid consumption per property in real time.
-          Net metering ledger, export credits, and usage alerts — auto-provisioned.
-        </div>
-        <div class="dcard-chips">
-          <span class="dcard-chip hi">unit: kilowatt_hours</span>
-          <span class="dcard-chip">Solar + Grid</span>
-          <span class="dcard-chip">Net metering</span>
-          <span class="dcard-chip">Live alerts</span>
-        </div>
-        <div class="dcard-cta">Launch Demo <span class="dcard-arrow">→</span></div>
-      </div>
-    </a>
-
-  </div>
-</section>
 
 <!-- Signup -->
 <section id="signup" class="layer">
@@ -1388,7 +1396,7 @@ document.querySelectorAll('.wcard').forEach((card, i) => {
 //  INDUSTRY INTERACTION
 // ══════════════════════════════════════════════════════
 function pickIndustry(name, el) {
-  document.querySelectorAll('.icard').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.dcard').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   LERP_SPEED = 0.018;
   transitionTo(name);
