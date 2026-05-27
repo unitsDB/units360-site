@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- v1.1 -->
   <title>Units360.ai — The Operating System for the Usage Economy</title>
   <meta name="description" content="Define any unit of service. Deploy live APIs and analytics dashboards in minutes. No DevOps. No infrastructure headaches.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -786,23 +787,25 @@
       </div>
     </div>
 
-    <!-- ── COMING SOON: Mobility ── -->
-    <div class="dcard dcard--soon" style="--dc:rgba(255,165,0,.15);--dc-solid:#ffa500; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
+    <!-- ── LIVE: Mobility & Logistics ── -->
+    <div class="dcard" style="--dc:rgba(255,165,0,.15);--dc-solid:#ffa500; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
          onclick="pickIndustry('logistics',this)">
       <div class="dcard-preview">
         <div class="dcard-preview-icon">🚛</div>
-        <div class="dcard-badge">Coming Soon</div>
+        <div class="dcard-live"><span class="dcard-live-dot"></span>Live</div>
       </div>
       <div class="dcard-body">
         <span class="dcard-eyebrow">Mobility &amp; Logistics</span>
-        <div class="dcard-title">Fleet &amp; Ride Credits</div>
-        <div class="dcard-desc">Track ride credits, delivery units, and driver rewards across your entire fleet in real time.</div>
+        <div class="dcard-title">Fleet Route Metering</div>
+        <div class="dcard-desc">Per-km billing with real-time GPS CloudEvents — highway and urban rate tiers applied automatically.</div>
         <div class="dcard-chips">
-          <span class="dcard-chip hi">unit: ride_credits</span>
-          <span class="dcard-chip">Fleet tracking</span>
-          <span class="dcard-chip">Rewards</span>
+          <span class="dcard-chip hi">unit: km</span>
+          <span class="dcard-chip">GPS streaming</span>
+          <span class="dcard-chip">Route invoice</span>
         </div>
-        <div class="dcard-cta dcard-cta--soon">In Development</div>
+        <a class="dcard-cta" href="units360-logistics-demo.html" onclick="event.stopPropagation()">
+          Launch Demo <span class="dcard-arrow">→</span>
+        </a>
       </div>
     </div>
 
