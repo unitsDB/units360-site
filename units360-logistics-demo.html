@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units360 · Mobility &amp; Logistics Demo</title>
+<style>
+:root {
+  --bg: #070c18; --surface: #0d1526; --surface2: #131e35;
+  --teal: #00d4ff; --teal-glow: #00d4ff33;
+  --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444; --green: #10b981;
+  --orange: #f97316; --orange-glow: #f9731640;
+  --text: #e0f2fe; --muted: #64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh;max-width:1280px;margin:0 auto;padding:10px 16px 0}
+
+#overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(7,12,24,0.92);opacity:0;pointer-events:none;transition:opacity .35s}
+#overlay.show{opacity:1;pointer-events:auto;backdrop-filter:blur(8px)}
+#overlay-eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+#overlay-title{font-size:clamp(28px,5vw,54px);font-weight:800;letter-spacing:-1px;color:var(--text);text-align:center}
+#overlay-time{font-size:clamp(16px,3vw,28px);color:var(--orange);margin-top:10px;font-weight:300;letter-spacing:2px}
+#overlay-sub{font-size:14px;color:var(--muted);margin-top:14px;letter-spacing:1px}
+
+#header{display:flex;align-items:center;gap:10px;padding:4px 0 8px;flex-shrink:0}
+#logo{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+#logo span{color:var(--teal)}
+#badge{font-size:10px;padding:3px 8px;border:1px solid var(--orange);border-radius:4px;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase}
+#header-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px}
+#demo-title{font-size:13px;color:var(--muted);letter-spacing:.5px}
+#demo-sub{font-size:11px;color:var(--muted);opacity:.6}
+#clock-wrap{display:flex;align-items:center;gap:8px;margin-left:auto}
+#clock-time-label{font-size:12px;color:var(--orange);font-variant-numeric:tabular-nums;letter-spacing:.5px;min-width:70px;text-align:right}
+#clock-svg{width:56px;height:56px;flex-shrink:0}
+
+#main{display:flex;gap:12px;flex:1;min-height:0}
+#left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
+#right-panel{display:flex;flex-direction:column;flex:1;min-width:280px;max-width:420px;background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;overflow:hidden}
+
+#scene-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid #1e2d4a;flex-shrink:0;height:160px}
+#scene-svg{width:100%;height:100%;display:block}
+
+#flow-wrap{background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;padding:10px 14px 8px;flex-shrink:0}
+#flow-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+#flow-svg{width:100%;display:block}
+
+#km-row{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;padding:8px 14px;flex-shrink:0}
+#km-balance{font-size:clamp(22px,3.5vw,38px);font-weight:800;font-variant-numeric:tabular-nums;transition:color .6s;min-width:120px}
+#km-balance.moving{color:var(--orange)}
+#km-balance.done{color:var(--green)}
+#km-balance.zero{color:var(--muted)}
+#km-meta{display:flex;flex-direction:column;gap:2px}
+#km-status{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .6s}
+#km-status.moving{color:var(--orange)}
+#km-status.done{color:var(--green)}
+#km-status.warn{color:var(--amber)}
+#km-unit{font-size:10px;color:var(--muted)}
+#km-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+#km-rate-pill{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;letter-spacing:.5px;transition:background .5s,color .5s}
+#km-rate-pill.moving{background:#f9731620;color:var(--orange);border:1px solid #f9731640}
+#km-rate-pill.done{background:#10b98120;color:var(--green);border:1px solid #10b98140}
+#km-rate-pill.zero{background:#1e2d4a;color:var(--muted);border:1px solid #1e2d4a}
+#km-today{font-size:10px;color:var(--muted)}
+
+#prog-wrap{flex-shrink:0;padding:0 2px}
+#prog-bar{height:3px;background:#1e2d4a;border-radius:2px;overflow:hidden}
+#prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--orange),var(--amber));border-radius:2px;transition:width .1s linear}
+#prog-acts{display:flex;justify-content:space-between;margin-top:4px}
+.prog-act{font-size:9px;color:var(--muted);letter-spacing:.3px;cursor:pointer;transition:color .2s}
+.prog-act:hover{color:var(--orange)}
+.prog-act.active{color:var(--orange)}
+
+#term-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+#term-dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444}
+#term-dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b}
+#term-dot-g{width:10px;height:10px;border-radius:50%;background:#10b981}
+#term-title{font-size:11px;color:var(--muted);margin-left:4px;letter-spacing:.5px}
+#term-mode-badge{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;transition:all .4s}
+#term-mode-badge.fmt{background:#f9731620;color:var(--orange);border:1px solid #f9731640}
+#term-mode-badge.event{background:#3b82f620;color:var(--blue);border:1px solid #3b82f640}
+#term-mode-badge.invoice{background:#10b98120;color:var(--green);border:1px solid #10b98140}
+
+#term-tabs{display:flex;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+.term-tab{font-size:10px;padding:6px 14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.term-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+
+#term-body{flex:1;overflow:hidden;position:relative;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+
+#fmt-view{position:absolute;inset:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.fmt-section{background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;overflow:hidden}
+.fmt-section-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);padding:6px 10px;background:#f9731608;border-bottom:1px solid #1e2d4a}
+.fmt-fields{display:flex;flex-direction:column}
+.fmt-field{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #0d1526}
+.fmt-field:last-child{border-bottom:none}
+.fmt-field-label{font-size:10px;color:var(--muted);min-width:88px;letter-spacing:.3px}
+.fmt-field-value{font-size:11px;color:var(--text);font-family:'SF Mono','Fira Code',monospace;flex:1;min-height:16px}
+.fmt-field-value .cursor{display:inline-block;width:7px;height:12px;background:var(--orange);margin-left:1px;animation:blink 1s step-end infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.fmt-field-value.done{color:var(--orange)}
+
+#event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;display:none}
+#event-stream{flex:1;overflow:hidden;padding:0;font-size:10.5px}
+.event-block{padding:5px 10px;font-size:10.5px;line-height:1.55;border-bottom:1px solid #0d152640;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.ev-key{color:#7dd3fc}.ev-str{color:#86efac}.ev-num{color:#fbbf24}.ev-bool{color:#f472b6}.ev-null{color:var(--muted)}.ev-brace{color:var(--muted)}
+.ev-changed{border-radius:2px;outline:1px solid #f9731680;background:#f9731612;padding:0 2px}
+.ev-changed-speed{outline:1px solid #f59e0b80;background:#f59e0b12;padding:0 2px}
+.ev-changed-cost{outline:1px solid #10b98180;background:#10b98112;padding:0 2px}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+#invoice-view{position:absolute;inset:0;overflow:hidden;padding:10px 14px;display:flex;flex-direction:column;gap:0;display:none}
+.inv-json-line{font-size:11px;line-height:1.6;white-space:pre}
+.inv-json-line.reveal{animation:slideIn .25s ease}
+
+#commentary{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;background:var(--surface);border-top:1px solid #1e2d4a;border-left:3px solid var(--orange);flex-shrink:0;min-height:38px;transition:border-color .4s}
+#commentary.amber{border-left-color:var(--amber)}
+#commentary.red{border-left-color:var(--red)}
+#commentary.green{border-left-color:var(--green)}
+#commentary-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+#commentary-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
+#commentary-text strong{color:var(--orange)}
+#commentary.amber #commentary-text strong{color:var(--amber)}
+#commentary.red #commentary-text strong{color:var(--red)}
+#commentary.green #commentary-text strong{color:var(--green)}
+
+#act-header{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
+#act-eyebrow{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+#act-title{font-size:15px;font-weight:700;color:var(--text);transition:color .4s}
+#act-title.amber{color:var(--amber)}
+#act-title.red{color:var(--red)}
+#act-title.green{color:var(--green)}
+#act-title.orange{color:var(--orange)}
+#act-desc{font-size:11px;color:var(--muted);margin-left:auto}
+
+#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid #1e2d4a;margin-top:4px}
+.ctrl-btn{background:var(--surface2);border:1px solid #1e2d4a;color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.ctrl-btn:hover{border-color:var(--orange);color:var(--orange)}
+.ctrl-btn:active{transform:scale(.97)}
+#btn-play{background:var(--orange);border-color:var(--orange);color:#070c18;font-weight:600;min-width:64px}
+#btn-play:hover{background:#ea6208;border-color:#ea6208}
+#speed-label{font-size:11px;color:var(--muted);margin-left:4px}
+#speed-val{font-size:11px;color:var(--orange);min-width:24px}
+.ctrl-sep{width:1px;height:18px;background:#1e2d4a;margin:0 4px}
+#kbd-hint{font-size:10px;color:var(--muted);margin-left:auto;letter-spacing:.3px}
+
+#btn-info{background:linear-gradient(135deg,#f9731622,#f59e0b22);border:1px solid var(--orange);
+  border-radius:20px;color:var(--orange);font-size:11px;font-weight:700;padding:5px 14px;
+  cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;
+  box-shadow:0 0 10px #f9731622}
+#btn-info:hover{background:var(--orange);color:#070c18;box-shadow:0 0 18px #f9731655}
+#btn-info:active{transform:scale(.97)}
+
+#info-backdrop{position:fixed;inset:0;z-index:205;background:rgba(4,8,18,.65);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .3s}
+#info-backdrop.show{opacity:1;pointer-events:auto}
+#info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:210;
+  background:#070d1c;border-left:1px solid #1e2d4a;
+  transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden}
+#info-drawer.open{transform:translateX(0)}
+#drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid #1e2d4a;flex-shrink:0;background:linear-gradient(135deg,#0d1a2e,#0a1425)}
+#drawer-logo{font-size:16px;font-weight:800;color:var(--text)}
+#drawer-logo span{color:var(--teal)}
+#drawer-subtitle{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+#drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#1e2d4a;border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#drawer-close:hover{background:#2a3f5f;color:var(--text)}
+#drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;scroll-behavior:smooth}
+#drawer-body::-webkit-scrollbar{width:4px}
+#drawer-body::-webkit-scrollbar-thumb{background:#1e2d4a;border-radius:2px}
+#drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+.dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:#1e2d4a;color:var(--muted);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
+.dnav-pill:hover{background:#2a3f5f;color:var(--text)}
+.dnav-pill.active{background:#f9731615;color:var(--orange);border-color:#f9731640}
+
+.dsec{padding:18px 0;border-bottom:1px solid #0d1526}
+.dsec:last-child{border-bottom:none;padding-bottom:8px}
+.dsec-eyebrow{font-size:8px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:6px;opacity:.7}
+.dsec-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dsec-icon{font-size:18px}
+.dsec-body{font-size:12px;color:#94a3b8;line-height:1.7;display:flex;flex-direction:column;gap:8px}
+.dsec-body p{margin:0}
+.dsec-body strong{color:var(--text);font-weight:600}
+.dsec-body em{color:var(--orange);font-style:normal}
+.dfield-table{background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;overflow:hidden;margin-top:4px}
+.dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid #0d1526;align-items:flex-start;gap:10px;font-size:11px}
+.dfield-row:last-child{border-bottom:none}
+.dfield-key{color:var(--orange);min-width:110px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
+.dfield-val{color:#94a3b8;line-height:1.5}
+.dfield-val strong{color:var(--text)}
+.dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;font-size:11px}
+.dflow-node{padding:4px 10px;border-radius:4px;background:#1e2d4a;color:var(--text);text-align:center;font-size:10px;line-height:1.4}
+.dflow-node.highlight{background:#f9731615;border:1px solid #f9731640;color:var(--orange)}
+.dflow-arrow{color:var(--muted);font-size:14px}
+.dtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.dtag{font-size:9px;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+.dtag.teal{background:#00d4ff15;color:var(--teal);border:1px solid #00d4ff30}
+.dtag.blue{background:#3b82f615;color:var(--blue);border:1px solid #3b82f630}
+.dtag.green{background:#10b98115;color:var(--green);border:1px solid #10b98130}
+.dtag.amber{background:#f59e0b15;color:var(--amber);border:1px solid #f59e0b30}
+.dtag.orange{background:#f9731615;color:var(--orange);border:1px solid #f9731630}
+.dcode{background:#040810;border:1px solid #1e2d4a;border-radius:6px;padding:10px 12px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:6px}
+.dcode .ck{color:#7dd3fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#64748b}
+.dcallout{background:linear-gradient(135deg,#f9731608,#f59e0b08);border:1px solid #f9731625;border-radius:6px;padding:10px 12px;font-size:11px;color:#94a3b8;line-height:1.6;margin-top:6px}
+.dcallout strong{color:var(--orange)}
+
+/* Dashboard in event view */
+#ev-dashboard{padding:8px 10px 6px;background:#040810;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+.ev-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px}
+.ev-metric{background:#0d1526;border:1px solid #1e2d4a;border-radius:7px;padding:6px 9px;transition:border-color .4s}
+.ev-metric-top{display:flex;align-items:center;gap:4px;margin-bottom:1px}
+.ev-metric-icon{font-size:11px}
+.ev-metric-label{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.ev-metric-val{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .5s;line-height:1}
+.ev-metric-unit{font-size:8px;color:var(--muted);margin-top:1px}
+.ev-metric.dist{border-color:#f9731630}
+.ev-metric.dist .ev-metric-val{color:var(--orange)}
+.ev-metric.spd{border-color:#f59e0b30}
+.ev-metric.spd .ev-metric-val{color:var(--amber)}
+.ev-metric.cost{border-color:#3b82f630}
+.ev-metric.cost .ev-metric-val{color:var(--blue)}
+.ev-metric.eta{border-color:#10b98130}
+.ev-metric.eta .ev-metric-val{color:var(--green)}
+.ev-metric.urban-alert{border-color:#ef444460;animation:peak-pulse .9s ease infinite alternate}
+.ev-metric.urban-alert .ev-metric-val{color:var(--red)}
+@keyframes peak-pulse{from{border-color:#ef444430}to{border-color:#ef444490}}
+#ev-seg-wrap{display:flex;flex-direction:column;gap:3px}
+#ev-seg-title{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between}
+#ev-seg-track{height:8px;border-radius:4px;background:#1e2d4a;position:relative;overflow:visible}
+.seg-part{position:absolute;top:0;height:100%;border-radius:4px}
+.seg-part.ramp{background:#f9731630;border:1px solid #f9731650}
+.seg-part.highway{background:#3b82f620;border:1px solid #3b82f640}
+.seg-part.urban{background:#ef444430;border:1px solid #ef444450}
+#ev-seg-cursor{position:absolute;top:-2px;width:3px;height:12px;background:var(--orange);border-radius:2px;transform:translateX(-50%);transition:left .5s;box-shadow:0 0 6px var(--orange)}
+#ev-seg-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}
+#ev-seg-rate-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-align:center;margin-top:2px;transition:color .4s}
+#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid #1e2d4a;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+#ev-footer{padding:4px 10px;border-top:1px solid #1e2d4a;font-size:8.5px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ev-legend{display:inline-flex;align-items:center;gap:3px}
+.ev-leg-box{width:8px;height:8px;border-radius:1px;display:inline-block}
+</style>
+</head>
+<body>
+
+<a href="index.html" style="position:fixed;top:14px;left:18px;z-index:9999;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(13,21,38,0.82);backdrop-filter:blur(16px);border:1px solid rgba(30,48,88,0.9);color:#64748b;font-family:system-ui,sans-serif;font-size:12px;font-weight:500;text-decoration:none;transition:color .2s,border-color .2s;" onmouseover="this.style.color='#e0f2fe';this.style.borderColor='#f97316'" onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(30,48,88,0.9)'">← Units360.ai</a>
+
+<div id="app">
+
+<div id="overlay">
+  <div id="overlay-eyebrow">Units360 · Fleet Route Metering</div>
+  <div id="overlay-title"></div>
+  <div id="overlay-time"></div>
+  <div id="overlay-sub"></div>
+</div>
+
+<div id="header">
+  <div id="logo">Units<span>360</span></div>
+  <div id="badge">Demo · Logistics</div>
+  <button id="btn-info">ℹ Platform Guide</button>
+  <div id="header-center">
+    <div id="demo-title">Fleet Route Metering · Usage Intelligence Platform</div>
+    <div id="demo-sub">Real-time GPS distance tracking · Per-km billing · CloudEvents stream</div>
+  </div>
+  <div id="clock-wrap">
+    <div id="clock-time-label">5:45 AM</div>
+    <svg id="clock-svg" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="#0d1526" stroke="#1e2d4a" stroke-width="1.5"/>
+      <g stroke="#2a3f5f" stroke-width="1">
+        <line x1="28" y1="4" x2="28" y2="8"/>
+        <line x1="28" y1="48" x2="28" y2="52"/>
+        <line x1="4" y1="28" x2="8" y2="28"/>
+        <line x1="48" y1="28" x2="52" y2="28"/>
+      </g>
+      <line id="hand-hour" x1="28" y1="28" x2="28" y2="14" stroke="#64748b" stroke-width="3.5" stroke-linecap="round"/>
+      <line id="hand-min"  x1="28" y1="28" x2="28" y2="7"  stroke="#e0f2fe" stroke-width="2"   stroke-linecap="round"/>
+      <line id="hand-sec"  x1="28" y1="28" x2="28" y2="5"  stroke="#ef4444" stroke-width="1.2" stroke-linecap="round"/>
+      <line id="hand-sec-tail" x1="28" y1="28" x2="28" y2="36" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="28" cy="28" r="2.5" fill="#ef4444"/>
+    </svg>
+  </div>
+</div>
+
+<div id="act-header">
+  <div id="act-eyebrow">ACT 1 OF 5</div>
+  <div id="act-title">Fleet Configuration</div>
+  <div id="act-desc">Defining the km unit, vehicle account &amp; rate plan</div>
+</div>
+
+<div id="main">
+  <div id="left-panel">
+
+    <!-- Scene -->
+    <div id="scene-wrap">
+      <svg id="scene-svg" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop id="sky-top" offset="0%" stop-color="#0a0e1a"/>
+            <stop id="sky-bot" offset="100%" stop-color="#111828"/>
+          </linearGradient>
+          <radialGradient id="headlight-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Sky -->
+        <rect width="640" height="160" fill="url(#sky-grad)"/>
+
+        <!-- Distant city silhouette -->
+        <g id="city-silhouette" opacity="0.4">
+          <rect x="340" y="58" width="18" height="52" fill="#0d1828"/>
+          <rect x="362" y="45" width="22" height="65" fill="#0f1e30"/>
+          <rect x="388" y="62" width="16" height="48" fill="#0d1828"/>
+          <rect x="408" y="38" width="28" height="72" fill="#111e34"/>
+          <rect x="440" y="52" width="20" height="58" fill="#0d1828"/>
+          <rect x="464" y="68" width="14" height="42" fill="#0b1622"/>
+          <rect x="482" y="44" width="24" height="66" fill="#0f1e30"/>
+          <rect x="510" y="58" width="18" height="52" fill="#0d1828"/>
+          <!-- Window lights -->
+          <rect x="366" y="50" width="3" height="2" fill="#f97316" opacity="0.5"/>
+          <rect x="373" y="58" width="3" height="2" fill="#fbbf24" opacity="0.4"/>
+          <rect x="414" y="44" width="3" height="2" fill="#f97316" opacity="0.6"/>
+          <rect x="420" y="55" width="3" height="2" fill="#fbbf24" opacity="0.3"/>
+          <rect x="488" y="50" width="3" height="2" fill="#f97316" opacity="0.5"/>
+        </g>
+
+        <!-- Ground -->
+        <rect x="0" y="110" width="640" height="50" fill="#0a0f1a"/>
+        <!-- Ground top highlight -->
+        <rect x="0" y="110" width="640" height="2" fill="#1a2a3a30"/>
+
+        <!-- Road surface -->
+        <rect x="0" y="112" width="640" height="32" fill="#141c28"/>
+        <!-- Road edges -->
+        <line x1="0" y1="112" x2="640" y2="112" stroke="#1e2d45" stroke-width="1"/>
+        <line x1="0" y1="144" x2="640" y2="144" stroke="#1e2d45" stroke-width="1"/>
+        <!-- Road shoulder stripes -->
+        <rect x="0" y="112" width="640" height="2" fill="#f9731612"/>
+        <rect x="0" y="142" width="640" height="2" fill="#f9731612"/>
+        <!-- Center dashes -->
+        <g stroke="#2a3a50" stroke-width="1.5" stroke-dasharray="18,12">
+          <line x1="0" y1="128" x2="640" y2="128"/>
+        </g>
+
+        <!-- Depot building (left) -->
+        <g id="depot-building">
+          <!-- Main warehouse body -->
+          <rect x="12" y="62" width="112" height="50" fill="#0d1828" stroke="#1e3050" stroke-width="1"/>
+          <!-- Roof -->
+          <rect x="12" y="55" width="112" height="9" fill="#0b1420" stroke="#1e3050" stroke-width="1"/>
+          <!-- Roof ridge -->
+          <line x1="12" y1="55" x2="124" y2="55" stroke="#243650" stroke-width="1"/>
+          <!-- Bay doors (3 rolling doors) -->
+          <rect x="18" y="82" width="24" height="30" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
+          <line x1="18" y1="90" x2="42" y2="90" stroke="#1a2840" stroke-width=".5"/>
+          <line x1="18" y1="98" x2="42" y2="98" stroke="#1a2840" stroke-width=".5"/>
+          <line x1="18" y1="106" x2="42" y2="106" stroke="#1a2840" stroke-width=".5"/>
+          <rect x="48" y="82" width="24" height="30" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
+          <line x1="48" y1="90" x2="72" y2="90" stroke="#1a2840" stroke-width=".5"/>
+          <line x1="48" y1="98" x2="72" y2="98" stroke="#1a2840" stroke-width=".5"/>
+          <line x1="48" y1="106" x2="72" y2="106" stroke="#1a2840" stroke-width=".5"/>
+          <rect x="82" y="82" width="24" height="30" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
+          <line x1="82" y1="90" x2="106" y2="90" stroke="#1a2840" stroke-width=".5"/>
+          <line x1="82" y1="98" x2="106" y2="98" stroke="#1a2840" stroke-width=".5"/>
+          <line x1="82" y1="106" x2="106" y2="106" stroke="#1a2840" stroke-width=".5"/>
+          <!-- Office window -->
+          <rect x="110" y="68" width="10" height="8" rx="1" fill="#0a1520" stroke="#1e2d45" stroke-width=".5"/>
+          <!-- Depot sign -->
+          <text x="68" y="73" font-size="7" fill="#f97316" text-anchor="middle" letter-spacing="1.5" opacity="0.8">DEPOT</text>
+          <!-- Orange indicator light -->
+          <circle id="depot-led" cx="20" cy="64" r="2.5" fill="#f97316" opacity="0.7"/>
+          <!-- Forklift silhouette -->
+          <rect x="15" y="100" width="18" height="10" rx="1" fill="#0f1e30"/>
+          <rect x="29" y="92" width="2" height="18" fill="#1a2a40"/>
+          <rect x="28" y="92" width="8" height="1.5" fill="#1a2a40"/>
+          <rect x="28" y="98" width="8" height="1.5" fill="#1a2a40"/>
+        </g>
+
+        <!-- GPS Tower (center) -->
+        <g id="gps-tower">
+          <!-- Pole -->
+          <line x1="318" y1="48" x2="318" y2="112" stroke="#2a3f60" stroke-width="2.5"/>
+          <!-- Cross arms -->
+          <line x1="306" y1="62" x2="330" y2="62" stroke="#2a3f60" stroke-width="1.5"/>
+          <line x1="309" y1="72" x2="327" y2="72" stroke="#2a3f60" stroke-width="1.5"/>
+          <!-- Antenna tip -->
+          <circle cx="318" cy="48" r="3" fill="#f97316" opacity="0.9"/>
+          <line x1="318" y1="38" x2="318" y2="48" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
+          <!-- Support cables -->
+          <line x1="318" y1="65" x2="298" y2="112" stroke="#1e2d45" stroke-width=".8"/>
+          <line x1="318" y1="65" x2="338" y2="112" stroke="#1e2d45" stroke-width=".8"/>
+          <!-- GPS label -->
+          <text x="318" y="108" font-size="6" fill="#f97316" text-anchor="middle" letter-spacing="1" opacity="0.7">GPS</text>
+          <!-- Signal rings (animated via JS) -->
+          <g id="gps-rings"></g>
+        </g>
+
+        <!-- Destination warehouse (right) -->
+        <g id="dest-building">
+          <!-- Main body -->
+          <rect x="500" y="58" width="132" height="54" fill="#0d1828" stroke="#1e3050" stroke-width="1"/>
+          <!-- Roof -->
+          <rect x="500" y="50" width="132" height="10" fill="#0b1420" stroke="#1e3050" stroke-width="1"/>
+          <!-- Loading dock door (large, animates open on delivery) -->
+          <rect id="dest-door" x="506" y="76" width="38" height="36" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
+          <line id="dest-door-line1" x1="506" y1="86" x2="544" y2="86" stroke="#1a2840" stroke-width=".5"/>
+          <line id="dest-door-line2" x1="506" y1="96" x2="544" y2="96" stroke="#1a2840" stroke-width=".5"/>
+          <line id="dest-door-line3" x1="506" y1="106" x2="544" y2="106" stroke="#1a2840" stroke-width=".5"/>
+          <!-- Dock bumpers -->
+          <rect x="504" y="108" width="4" height="4" rx="1" fill="#1a2a40"/>
+          <rect x="540" y="108" width="4" height="4" rx="1" fill="#1a2a40"/>
+          <!-- Side windows -->
+          <rect x="552" y="64" width="16" height="10" rx="1" fill="#070c18" stroke="#1e2d45" stroke-width=".5"/>
+          <rect x="574" y="64" width="16" height="10" rx="1" fill="#070c18" stroke="#1e2d45" stroke-width=".5"/>
+          <!-- Sign -->
+          <text x="588" y="76" font-size="6" fill="#00d4ff" text-anchor="middle" letter-spacing="1" opacity="0.7">WHSE</text>
+          <!-- Delivery indicator (hidden until Act 5) -->
+          <circle id="dest-led" cx="502" cy="60" r="2.5" fill="#10b981" opacity="0"/>
+          <!-- Dock plate -->
+          <rect x="506" y="110" width="38" height="3" fill="#1e3050"/>
+        </g>
+
+        <!-- Road distance markers -->
+        <g fill="#1e2d45" font-size="7" text-anchor="middle">
+          <text x="180" y="108">● km 50</text>
+          <text x="318" y="108">● km 300</text>
+          <text x="458" y="108">● km 560</text>
+        </g>
+
+        <!-- Truck group (animated x position) -->
+        <g id="truck-group" transform="translate(90, 100)">
+          <!-- Trailer -->
+          <rect x="0" y="2" width="56" height="21" rx="2" fill="#1a2840" stroke="#253c5a" stroke-width="1"/>
+          <!-- Orange stripe on trailer top -->
+          <rect x="2" y="3" width="52" height="3" rx="1" fill="#f97316" opacity="0.7"/>
+          <!-- Cargo label -->
+          <text x="28" y="17" font-size="6.5" fill="#94a3b8" text-anchor="middle" opacity="0.6">CARGO</text>
+          <!-- Trailer rear lights -->
+          <rect x="1" y="6" width="2" height="4" rx=".5" fill="#ef4444" opacity="0.8"/>
+          <rect x="1" y="14" width="2" height="4" rx=".5" fill="#ef4444" opacity="0.8"/>
+          <!-- Cab -->
+          <rect x="56" y="1" width="22" height="22" rx="2" fill="#1e3050" stroke="#2a4570" stroke-width="1"/>
+          <!-- Windshield -->
+          <rect x="58" y="3" width="14" height="11" rx="1" fill="#090e1c" stroke="#2a3a55" stroke-width=".5"/>
+          <!-- Windshield gleam -->
+          <line x1="59" y1="4" x2="63" y2="9" stroke="#ffffff" stroke-width=".6" opacity="0.2"/>
+          <!-- Cab top vent -->
+          <rect x="58" y="0" width="14" height="2" rx="1" fill="#253c5a"/>
+          <!-- Exhaust stack -->
+          <rect x="58" y="-9" width="2.5" height="10" rx="1" fill="#253c5a"/>
+          <!-- Exhaust smoke (animated via JS) -->
+          <g id="exhaust-smoke"></g>
+          <!-- Front grille -->
+          <rect x="76" y="10" width="4" height="10" rx="1" fill="#0d1828"/>
+          <line x1="76" y1="12" x2="80" y2="12" stroke="#253c5a" stroke-width=".5"/>
+          <line x1="76" y1="15" x2="80" y2="15" stroke="#253c5a" stroke-width=".5"/>
+          <line x1="76" y1="18" x2="80" y2="18" stroke="#253c5a" stroke-width=".5"/>
+          <!-- Headlights -->
+          <rect x="76" y="3" width="4" height="4" rx=".5" fill="#fbbf24" opacity="0.9"/>
+          <ellipse id="headlight-beam" cx="82" cy="5" rx="14" ry="6" fill="url(#headlight-grad)" opacity="0"/>
+          <!-- Wheels (trailer: 2 axles, cab: 1 axle) -->
+          <circle cx="13" cy="24" r="5.5" fill="#0b1525" stroke="#253c5a"/>
+          <circle cx="13" cy="24" r="2.5" fill="#1a2840"/>
+          <circle cx="43" cy="24" r="5.5" fill="#0b1525" stroke="#253c5a"/>
+          <circle cx="43" cy="24" r="2.5" fill="#1a2840"/>
+          <circle cx="65" cy="24" r="5" fill="#0b1525" stroke="#253c5a"/>
+          <circle cx="65" cy="24" r="2" fill="#1a2840"/>
+          <!-- Orange cab stripe -->
+          <rect x="56" y="1" width="22" height="3" rx="1" fill="#f97316" opacity="0.6"/>
+        </g>
+
+        <!-- Scene particles container -->
+        <g id="scene-particles"></g>
+
+        <!-- GPS ping rings container (centered on truck) -->
+        <g id="ping-rings"></g>
+
+        <!-- Scene status text -->
+        <text id="scene-status" x="320" y="15" font-size="10" fill="#f97316" text-anchor="middle" opacity="0" letter-spacing="2" font-weight="600"></text>
+      </svg>
+    </div>
+
+    <!-- Flow diagram -->
+    <div id="flow-wrap">
+      <div id="flow-label">Live Fleet Data Flow</div>
+      <svg id="flow-svg" viewBox="0 0 640 72" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="node-grad-orange" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f9731620"/>
+            <stop offset="100%" stop-color="#f9731608"/>
+          </linearGradient>
+          <linearGradient id="node-grad-blue" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3b82f620"/>
+            <stop offset="100%" stop-color="#3b82f608"/>
+          </linearGradient>
+          <linearGradient id="node-grad-green" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#10b98120"/>
+            <stop offset="100%" stop-color="#10b98108"/>
+          </linearGradient>
+        </defs>
+        <path id="path-0" d="M 148 36 Q 197 20 242 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+        <path id="path-1" d="M 348 36 Q 397 20 442 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+        <path id="path-2" d="M 548 36 Q 580 20 610 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+        <!-- Node 1: GPS Tracker -->
+        <rect x="4" y="14" width="144" height="44" rx="8" fill="url(#node-grad-orange)" stroke="#1e2d4a" stroke-width="1"/>
+        <text x="76" y="32" font-size="14" text-anchor="middle">📍</text>
+        <text x="76" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">GPS Tracker</text>
+        <text id="node-val-1" x="76" y="56" font-size="8" fill="#64748b" text-anchor="middle">OFFLINE</text>
+        <!-- Node 2: Fleet Gateway -->
+        <rect x="244" y="14" width="104" height="44" rx="8" fill="#0d1526" stroke="#f9731640" stroke-width="1"/>
+        <text x="296" y="32" font-size="14" text-anchor="middle">🛡️</text>
+        <text x="296" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Fleet Gateway</text>
+        <text id="node-val-2" x="296" y="56" font-size="8" fill="#64748b" text-anchor="middle">IDLE</text>
+        <!-- Node 3: Units360 API -->
+        <rect x="444" y="14" width="104" height="44" rx="8" fill="url(#node-grad-blue)" stroke="#3b82f640" stroke-width="1"/>
+        <text x="496" y="32" font-size="14" text-anchor="middle">⚡</text>
+        <text x="496" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Units360 API</text>
+        <text id="node-val-3" x="496" y="56" font-size="8" fill="#64748b" text-anchor="middle">READY</text>
+        <!-- Node 4: Carrier Invoice -->
+        <rect x="590" y="14" width="46" height="44" rx="8" fill="url(#node-grad-green)" stroke="#10b98140" stroke-width="1"/>
+        <text x="613" y="32" font-size="14" text-anchor="middle">📋</text>
+        <text x="613" y="45" font-size="7" fill="#e0f2fe" text-anchor="middle" letter-spacing=".2">Invoice</text>
+        <text id="node-val-4" x="613" y="56" font-size="7" fill="#64748b" text-anchor="middle">$0.00</text>
+        <g id="flow-particles"></g>
+      </svg>
+    </div>
+
+    <!-- KM counter row -->
+    <div id="km-row">
+      <div>
+        <div id="km-balance" class="zero">0.0</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">km traveled · Route SFO→LA</div>
+      </div>
+      <div id="km-meta">
+        <div id="km-status" class="zero">STANDBY</div>
+        <div id="km-unit">Per-km metering · Vehicle TRK-CA-10023</div>
+      </div>
+      <div id="km-right">
+        <div id="km-rate-pill" class="zero">— km/s</div>
+        <div id="km-today">Rate Plan: Standard-Fleet-KM</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div id="prog-wrap">
+      <div id="prog-bar"><div id="prog-fill"></div></div>
+      <div id="prog-acts">
+        <span class="prog-act active" data-act="0">Setup</span>
+        <span class="prog-act" data-act="1">Dispatch</span>
+        <span class="prog-act" data-act="2">Highway</span>
+        <span class="prog-act" data-act="3">Last Mile</span>
+        <span class="prog-act" data-act="4">Invoice</span>
+      </div>
+    </div>
+
+  </div><!-- /left-panel -->
+
+  <!-- Right panel -->
+  <div id="right-panel">
+    <div id="term-header">
+      <div id="term-dot-r"></div><div id="term-dot-y"></div><div id="term-dot-g"></div>
+      <div id="term-title">Units360 · Fleet Terminal</div>
+      <div id="term-mode-badge" class="fmt">FMT</div>
+    </div>
+    <div id="term-tabs">
+      <div class="term-tab active" id="tab-unit">UNIT</div>
+      <div class="term-tab" id="tab-account">ACCOUNT</div>
+      <div class="term-tab" id="tab-txn">TRANSACTION</div>
+    </div>
+    <div id="term-body">
+
+      <!-- FMT View (Act 1) -->
+      <div id="fmt-view">
+        <div class="fmt-section">
+          <div class="fmt-section-hdr">Unit Definition</div>
+          <div class="fmt-fields">
+            <div class="fmt-field"><span class="fmt-field-label">Unit ID</span><span class="fmt-field-value" id="ff-unit-id"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Display Name</span><span class="fmt-field-value" id="ff-display"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Direction</span><span class="fmt-field-value" id="ff-direction"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Reset Period</span><span class="fmt-field-value" id="ff-reset"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Precision</span><span class="fmt-field-value" id="ff-precision"></span></div>
+          </div>
+        </div>
+        <div class="fmt-section">
+          <div class="fmt-section-hdr">Vehicle Account</div>
+          <div class="fmt-fields">
+            <div class="fmt-field"><span class="fmt-field-label">Account ID</span><span class="fmt-field-value" id="ff-acct-id"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Vehicle Type</span><span class="fmt-field-value" id="ff-vehicle"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Rate Plan</span><span class="fmt-field-value" id="ff-rate"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Cargo Class</span><span class="fmt-field-value" id="ff-cargo"></span></div>
+          </div>
+        </div>
+        <div class="fmt-section">
+          <div class="fmt-section-hdr">Transaction Rules</div>
+          <div class="fmt-fields">
+            <div class="fmt-field"><span class="fmt-field-label">Base Rate</span><span class="fmt-field-value" id="ff-base"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Fuel Surcharge</span><span class="fmt-field-value" id="ff-fuel"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Urban Premium</span><span class="fmt-field-value" id="ff-urban"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event View (Acts 2–4) -->
+      <div id="event-view" style="display:none;position:absolute;inset:0;overflow:hidden;flex-direction:column;">
+        <div id="ev-dashboard">
+          <div class="ev-dash-grid">
+            <div class="ev-metric dist">
+              <div class="ev-metric-top"><span class="ev-metric-icon">📍</span><span class="ev-metric-label">Distance</span></div>
+              <div class="ev-metric-val" id="ev-dist-val">0.0</div>
+              <div class="ev-metric-unit">km traveled this route</div>
+            </div>
+            <div class="ev-metric spd" id="ev-speed-card">
+              <div class="ev-metric-top"><span class="ev-metric-icon">🚛</span><span class="ev-metric-label">Speed</span></div>
+              <div class="ev-metric-val" id="ev-speed-val">0</div>
+              <div class="ev-metric-unit">km/h current</div>
+            </div>
+            <div class="ev-metric cost">
+              <div class="ev-metric-top"><span class="ev-metric-icon">💰</span><span class="ev-metric-label">Route Cost</span></div>
+              <div class="ev-metric-val" id="ev-cost-val">$0.00</div>
+              <div class="ev-metric-unit">accrued this route</div>
+            </div>
+            <div class="ev-metric eta" id="ev-eta-card">
+              <div class="ev-metric-top"><span class="ev-metric-icon">🕐</span><span class="ev-metric-label">ETA</span></div>
+              <div class="ev-metric-val" id="ev-eta-val">—</div>
+              <div class="ev-metric-unit" id="ev-eta-unit">estimated arrival</div>
+            </div>
+          </div>
+          <div id="ev-seg-wrap">
+            <div id="ev-seg-title">
+              <span>Route Segments</span>
+              <span id="event-segment" style="color:var(--orange)">DISPATCH ↗</span>
+            </div>
+            <div id="ev-seg-track">
+              <div class="seg-part ramp"    style="left:0%;width:10%"></div>
+              <div class="seg-part highway" style="left:10%;width:75%"></div>
+              <div class="seg-part urban"   style="left:85%;width:15%"></div>
+              <div id="ev-seg-cursor" style="left:0%"></div>
+            </div>
+            <div id="ev-seg-labels"><span>Depot</span><span>Ramp</span><span>I-5 Hwy</span><span>Urban</span><span>WHSE</span></div>
+            <div id="ev-seg-rate-label" style="color:var(--orange)">🚛 Dispatch · Ramp-up · $0.42/km base</div>
+          </div>
+        </div>
+        <div id="ev-json-hdr">
+          <div class="pulse-dot" id="event-pulse"></div>
+          <span>Live GPS CloudEvent</span>
+          <span id="event-count" style="color:var(--orange);font-weight:700">0</span>
+          <span style="font-size:8px;margin-left:auto;opacity:.6">→ Units360 RTE</span>
+        </div>
+        <div id="event-stream"></div>
+        <div id="ev-footer">
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#f9731612;outline:1px solid #f9731680"></span> qty Δ</span>
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#f59e0b12;outline:1px solid #f59e0b80"></span> speed Δ</span>
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#10b98112;outline:1px solid #10b98180"></span> cost Δ</span>
+        </div>
+      </div>
+
+      <!-- Invoice View (Act 5) -->
+      <div id="invoice-view" style="display:none;position:absolute;inset:0;overflow:hidden;padding:10px 14px;flex-direction:column;"></div>
+
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div id="commentary">
+  <span id="commentary-icon">🚛</span>
+  <span id="commentary-text">Configure the <strong>km unit</strong> — Units360 sets up per-kilometer route metering for fleet billing. The FMT defines base rates, fuel surcharges, and urban premiums in seconds.</span>
+</div>
+
+<div id="controls">
+  <button class="ctrl-btn" id="btn-prev">⏮ Prev</button>
+  <button class="ctrl-btn" id="btn-play">▶ Play</button>
+  <button class="ctrl-btn" id="btn-next">Next ⏭</button>
+  <div class="ctrl-sep"></div>
+  <span class="ctrl-btn" id="btn-slower" style="cursor:pointer">🐢</span>
+  <span id="speed-label">Speed:</span><span id="speed-val">1×</span>
+  <span class="ctrl-btn" id="btn-faster" style="cursor:pointer">🐇</span>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn" id="btn-reset">↺ Reset</button>
+  <div id="kbd-hint">Space · ← → · R · ? Guide</div>
+</div>
+
+</div><!-- /app -->
+
+<div id="info-backdrop"></div>
+
+<div id="info-drawer">
+  <div id="drawer-header">
+    <div>
+      <div id="drawer-logo">Units<span>360</span>.ai</div>
+      <div id="drawer-subtitle">Platform Guide · Logistics Edition</div>
+    </div>
+    <button id="drawer-close">✕</button>
+  </div>
+  <div id="drawer-nav">
+    <span class="dnav-pill active" data-target="sec-what">What is Units360?</span>
+    <span class="dnav-pill" data-target="sec-org">Fleet Carrier</span>
+    <span class="dnav-pill" data-target="sec-unit">Unit</span>
+    <span class="dnav-pill" data-target="sec-account">Account</span>
+    <span class="dnav-pill" data-target="sec-txn">Transaction</span>
+    <span class="dnav-pill" data-target="sec-fmt">FMT</span>
+    <span class="dnav-pill" data-target="sec-rte">RTE</span>
+    <span class="dnav-pill" data-target="sec-cloud">CloudEvents</span>
+  </div>
+  <div id="drawer-body">
+
+    <div class="dsec" id="sec-what">
+      <div class="dsec-eyebrow">Platform Overview</div>
+      <div class="dsec-title"><span class="dsec-icon">🚀</span> What is Units360?</div>
+      <div class="dsec-body">
+        <p>Units360.ai is a <strong>low-code usage metering platform</strong> — the operating system for any business that sells by the unit. Instead of building custom billing infrastructure, you define your unit model once, and Units360 auto-provisions everything else.</p>
+        <p>In this demo, the unit is <em>km (kilometer)</em>. But it works equally for kWh, tokens, API calls, consultation hours — any measurable service.</p>
+        <div class="dflow">
+          <div class="dflow-node highlight">1. Define<br><small>FMT</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">2. Deploy<br><small>RTE</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">3. Stream<br><small>GPS Events</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">4. Invoice<br><small>Auto</small></div>
+        </div>
+        <div class="dtags">
+          <span class="dtag orange">No DevOps required</span>
+          <span class="dtag blue">Auto-generated API</span>
+          <span class="dtag green">Real-time analytics</span>
+          <span class="dtag amber">Usage-based billing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-org">
+      <div class="dsec-eyebrow">Who Uses Units360 Here</div>
+      <div class="dsec-title"><span class="dsec-icon">🏢</span> The Fleet Carrier</div>
+      <div class="dsec-body">
+        <p>In this logistics demo, the <strong>Organization</strong> is the <em>Fleet Carrier</em> — the trucking or delivery company that charges customers per kilometer driven. They are the Units360 customer.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Organization</span><span class="dfield-val"><strong>Pacific Coast Freight</strong> (example)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their product</span><span class="dfield-val">Freight delivery billed per kilometer driven</span></div>
+          <div class="dfield-row"><span class="dfield-key">Unit they sell</span><span class="dfield-val"><strong>km</strong> — kilometers traveled per route</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate plan used</span><span class="dfield-val">Standard-Fleet-KM · with highway and urban tiers</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their customer</span><span class="dfield-val">Shipper at <strong>TRK-CA-10023</strong> — SFO to LA route</span></div>
+        </div>
+        <div class="dcallout"><strong>Per-km billing</strong> removes the complexity of flat-rate contracts. Units360 tracks every kilometer in real time via GPS, applies the correct rate tier, and auto-generates invoices at delivery — zero manual reconciliation.</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-unit">
+      <div class="dsec-eyebrow">Core Concept · 1 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">📍</span> What is a Unit?</div>
+      <div class="dsec-body">
+        <p>A <strong>Unit</strong> is the fundamental thing being measured and billed — in this case, <em>kilometers driven</em>. It defines what you're counting, how it accumulates, and when it resets.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">unit_id</span><span class="dfield-val"><strong>km</strong> — the unique identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">display_name</span><span class="dfield-val">Kilometer</span></div>
+          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val"><strong>CUMULATIVE</strong> — always increases, never negative</span></div>
+          <div class="dfield-row"><span class="dfield-key">reset_period</span><span class="dfield-val">Per-Route — balance resets at route completion</span></div>
+          <div class="dfield-row"><span class="dfield-key">precision</span><span class="dfield-val">1 decimal place (e.g., 0.4 km per GPS ping)</span></div>
+        </div>
+        <div class="dtags">
+          <span class="dtag orange">km · miles · hours</span>
+          <span class="dtag blue">API calls · tokens</span>
+          <span class="dtag green">kWh · gallons · credits</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-account">
+      <div class="dsec-eyebrow">Core Concept · 2 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">🚛</span> What is an Account?</div>
+      <div class="dsec-body">
+        <p>An <strong>Account</strong> is the entity whose usage is tracked — in this case, a specific vehicle on a specific route. Each account gets its own running distance balance governed by its rate plan.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">account_id</span><span class="dfield-val"><strong>TRK-CA-10023</strong> — vehicle identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">type</span><span class="dfield-val">Box Truck · 20-tonne capacity</span></div>
+          <div class="dfield-row"><span class="dfield-key">rate_plan</span><span class="dfield-val"><strong>Standard-Fleet-KM</strong> — tiered by segment type</span></div>
+          <div class="dfield-row"><span class="dfield-key">cargo_class</span><span class="dfield-val">Standard Parcel (≤30 kg per unit)</span></div>
+          <div class="dfield-row"><span class="dfield-key">current_balance</span><span class="dfield-val">Live km total — updated per GPS ping</span></div>
+        </div>
+        <p>Multiple trucks can share the same km unit definition but have different rate plans based on vehicle class, cargo type, or shipper agreements.</p>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-txn">
+      <div class="dsec-eyebrow">Core Concept · 3 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">📋</span> What is a Transaction?</div>
+      <div class="dsec-body">
+        <p>A <strong>Transaction</strong> is a single GPS ping — one reading that says "this vehicle traveled X km since the last ping." Transactions build the running distance total and trigger pricing.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">quantity</span><span class="dfield-val"><strong>0.47 km</strong> — distance since last ping (30s interval)</span></div>
+          <div class="dfield-row"><span class="dfield-key">segment</span><span class="dfield-val">HIGHWAY — determines which rate tier applies</span></div>
+          <div class="dfield-row"><span class="dfield-key">price_applied</span><span class="dfield-val">$0.42 base + $0.08 fuel surcharge = $0.50/km</span></div>
+          <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Cumulative km total updated after each ping</span></div>
+          <div class="dfield-row"><span class="dfield-key">timestamp</span><span class="dfield-val">ISO 8601 UTC — every ping is precisely timestamped</span></div>
+        </div>
+        <div class="dcallout"><strong>At route completion</strong>, all transactions are summed by segment type. Highway km get the base rate, urban km get the premium surcharge. The invoice is generated automatically — no manual calculation.</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-fmt">
+      <div class="dsec-eyebrow">Configuration Layer</div>
+      <div class="dsec-title"><span class="dsec-icon">📐</span> FMT — Fleet Metadata Template</div>
+      <div class="dsec-body">
+        <p>The <strong>FMT (Fleet Metadata Template)</strong> is Units360's low-code config builder for fleet operators. Define the metering model once — no code, no schemas, no infrastructure.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define km, direction (cumulative), precision, reset period</span></div>
+          <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Vehicle type, rate plan, cargo class, GPS ping interval</span></div>
+          <div class="dfield-row"><span class="dfield-key">Transaction tab</span><span class="dfield-val">Base rate per km, fuel surcharge, urban premium, segment rules</span></div>
+        </div>
+        <div class="dcallout"><strong>FMT outputs:</strong> Once saved, Units360 auto-generates a REST endpoint for GPS ingestion, a real-time route dashboard, and an invoice template. The carrier's dispatch system sends GPS pings — Units360 handles everything else.</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-rte">
+      <div class="dsec-eyebrow">Runtime Engine</div>
+      <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
+      <div class="dsec-body">
+        <p>The <strong>RTE</strong> is the live processing layer. It ingests GPS events, classifies route segments, applies pricing rules, and maintains the distance ledger — all in real time.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">GPS ingestion</span><span class="dfield-val">Accepts CloudEvents from vehicle GPS units via REST POST</span></div>
+          <div class="dfield-row"><span class="dfield-key">Segment classifier</span><span class="dfield-val">Detects highway vs urban based on speed + geofence</span></div>
+          <div class="dfield-row"><span class="dfield-key">Distance ledger</span><span class="dfield-val">Atomic cumulative km update per ping — millisecond-accurate</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate application</span><span class="dfield-val">Reads FMT rules; applies base, surcharge, or urban premium per segment</span></div>
+          <div class="dfield-row"><span class="dfield-key">Invoice trigger</span><span class="dfield-val">On delivery scan event → auto-generates route invoice JSON</span></div>
+        </div>
+        <div class="dflow">
+          <div class="dflow-node">GPS Device</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node highlight">RTE</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Ledger</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Invoice</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-cloud">
+      <div class="dsec-eyebrow">Event Protocol</div>
+      <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The GPS Payload</div>
+      <div class="dsec-body">
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong>. Every GPS ping the vehicle sends is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
+        <div class="dcode"><span class="cc">// Vehicle GPS → Units360 RTE (one ping)</span>
+POST /api/v1/events/TRK-CA-10023
+Content-Type: application/cloudevents+json
+
+{
+  <span class="ck">"specversion"</span>: <span class="cv">"1.0"</span>,
+  <span class="ck">"type"</span>:        <span class="cv">"com.units360.fleet.gps"</span>,
+  <span class="ck">"source"</span>:      <span class="cv">"gps/TRK-CA-10023"</span>,
+  <span class="ck">"time"</span>:        <span class="cv">"2024-06-21T09:42:18Z"</span>,
+  <span class="ck">"data"</span>: {
+    <span class="ck">"unit"</span>:      <span class="cv">"km"</span>,
+    <span class="ck">"qty"</span>:       <span class="cn">0.47</span>,
+    <span class="ck">"speed_kmh"</span>: <span class="cn">94</span>,
+    <span class="ck">"heading"</span>:   <span class="cv">"SE"</span>,
+    <span class="ck">"odometer"</span>:  <span class="cn">287.4</span>,
+    <span class="ck">"segment"</span>:   <span class="cv">"HIGHWAY"</span>
+  }
+}</div>
+        <div class="dfield-table" style="margin-top:10px">
+          <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match FMT unit_id — "km" here</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">km driven since last ping — added to running total</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.speed_kmh</span><span class="dfield-val">Current speed — used for segment classification</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.segment</span><span class="dfield-val">HIGHWAY or URBAN — determines pricing tier</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const CX = 28, CY = 28;
+
+const ACT_TIMES = [
+  [345, 360],  // Act 1: 5:45 AM – 6:00 AM (fleet setup)
+  [360, 480],  // Act 2: 6:00 AM – 8:00 AM (dispatch)
+  [480, 720],  // Act 3: 8:00 AM – 12:00 PM (highway)
+  [720, 810],  // Act 4: 12:00 PM – 1:30 PM (last mile)
+  [810, 840],  // Act 5: 1:30 PM – 2:00 PM (invoice)
+];
+
+const ACTS = [
+  {
+    id:'setup', label:'Fleet Configuration', eyebrow:'ACT 1 OF 5',
+    desc:'Defining the km unit, vehicle account & rate plan',
+    kmRate:0, duration:7000, color:'orange',
+    commentaryIcon:'🚛',
+    commentary:'Configure the <strong>km unit</strong> — Units360 sets up per-kilometer route metering for fleet billing. The FMT defines base rates, fuel surcharges, and urban premiums in seconds.',
+    overlayTitle:'FLEET SETUP · FMT',
+    overlayTime:'5:45 AM',
+    overlaySub:'Configuring km unit · Vehicle TRK-CA-10023 · Route SFO→LA',
+    sceneStatus:'',
+    nodeVals:['OFFLINE','IDLE','READY','$0.00'],
+    kmStatus:'STANDBY', kmClass:'zero',
+    speedKmh:0, segment:'SETUP', segCursor:'0%', segLabel:'🚛 Fleet Setup · Configuring FMT · SFO→LA',
+    etaText:'2:00 PM',
+  },
+  {
+    id:'dispatch', label:'Dispatch — En Route', eyebrow:'ACT 2 OF 5',
+    desc:'Truck leaves depot, GPS events streaming',
+    kmRate:5, duration:9000, color:'orange',
+    commentaryIcon:'📍',
+    commentary:'Truck <strong>TRK-CA-10023 dispatched</strong>. GPS CloudEvents stream to Units360 every 30 seconds — each ping adds to the running km total. Base rate $0.42/km applied automatically.',
+    overlayTitle:'DISPATCH · EN ROUTE',
+    overlayTime:'6:00 AM',
+    overlaySub:'GPS active · Streaming to Units360 RTE · Base rate $0.42/km',
+    sceneStatus:'EN ROUTE ↗',
+    nodeVals:['GPS LIVE','ACTIVE','STREAMING','$0.00'],
+    kmStatus:'DISPATCH', kmClass:'moving',
+    speedKmh:47, segment:'DISPATCH ↗', segCursor:'5%', segLabel:'🛣️ Dispatch · City Exit · $0.42/km base',
+    etaText:'2:05 PM',
+  },
+  {
+    id:'highway', label:'Highway Transit', eyebrow:'ACT 3 OF 5',
+    desc:'I-5 highway — peak speed, rapid distance accumulation',
+    kmRate:45, duration:13000, color:'amber',
+    commentaryIcon:'🛣️',
+    commentary:'Highway transit at <strong>94 km/h</strong> on I-5. Distance accumulates rapidly — Units360 processes each GPS ping in under 10ms, updating the route ledger in real time.',
+    overlayTitle:'HIGHWAY TRANSIT · I-5',
+    overlayTime:'8:00 AM',
+    overlaySub:'I-5 South · 94 km/h · Highway rate active',
+    sceneStatus:'HIGHWAY ⚡',
+    nodeVals:['94 km/h','TRANSIT','LIVE','+km'],
+    kmStatus:'HIGHWAY', kmClass:'moving',
+    speedKmh:94, segment:'HIGHWAY I-5 ⚡', segCursor:'45%', segLabel:'⚡ I-5 South · Highway transit · $0.50/km incl. fuel surcharge',
+    etaText:'1:55 PM',
+  },
+  {
+    id:'lastmile', label:'Urban Last Mile', eyebrow:'ACT 4 OF 5',
+    desc:'Urban delivery zone — congestion surcharge active',
+    kmRate:8, duration:9000, color:'red',
+    commentaryIcon:'⚠️',
+    commentary:'Entering <strong>urban last mile</strong>. Speed drops to 28 km/h — congestion surcharge activates. Units360 applies the +$0.15/km urban premium automatically per FMT rules.',
+    overlayTitle:'URBAN LAST MILE · SURCHARGE',
+    overlayTime:'12:00 PM',
+    overlaySub:'Urban zone detected · Congestion surcharge: +$0.15/km',
+    sceneStatus:'LAST MILE ⚠',
+    nodeVals:['28 km/h','URBAN','SURCHARGE','PEAK'],
+    kmStatus:'URBAN', kmClass:'moving',
+    speedKmh:28, segment:'URBAN ZONE ⚠', segCursor:'88%', segLabel:'⚠️ Urban Zone · Congestion surcharge +$0.15/km active',
+    etaText:'1:58 PM',
+  },
+  {
+    id:'invoice', label:'Delivered · Route Invoice', eyebrow:'ACT 5 OF 5',
+    desc:'Delivery confirmed — route invoice auto-generated',
+    kmRate:0, duration:9000, color:'green',
+    commentaryIcon:'✅',
+    commentary:'Route complete. <strong>614.3 km delivered</strong>. Units360 generates the carrier invoice automatically — GPS dispatch to delivery scan in one seamless audit trail. Zero manual work.',
+    overlayTitle:'DELIVERED · ROUTE INVOICE',
+    overlayTime:'1:58 PM',
+    overlaySub:'614.3 km · Delivery confirmed · Invoice generated',
+    sceneStatus:'DELIVERED ✓',
+    nodeVals:['DOCKED','SETTLED','INVOICED','614.3 km'],
+    kmStatus:'DELIVERED', kmClass:'done',
+    speedKmh:0, segment:'DELIVERED ✓', segCursor:'100%', segLabel:'✅ Delivered · Invoice generated · $317.71 total',
+    etaText:'Arrived',
+  },
+];
+
+const FLOW_PATHS = [
+  { p0:{x:148,y:36}, cp:{x:197,y:20}, p2:{x:242,y:36} },
+  { p0:{x:348,y:36}, cp:{x:397,y:20}, p2:{x:442,y:36} },
+  { p0:{x:548,y:36}, cp:{x:580,y:20}, p2:{x:610,y:36} },
+];
+
+function bezQ(t, p0, cp, p2) {
+  const mt = 1-t;
+  return { x: mt*mt*p0.x + 2*mt*t*cp.x + t*t*p2.x,
+           y: mt*mt*p0.y + 2*mt*t*cp.y + t*t*p2.y };
+}
+
+const FMT_FIELDS = [
+  { id:'ff-unit-id',   val:'km',                      delay:200  },
+  { id:'ff-display',   val:'Kilometer',                delay:700  },
+  { id:'ff-direction', val:'CUMULATIVE',               delay:1300 },
+  { id:'ff-reset',     val:'Per-Route',                delay:1900 },
+  { id:'ff-precision', val:'1 decimal place',          delay:2400 },
+  { id:'ff-acct-id',   val:'TRK-CA-10023',             delay:3100 },
+  { id:'ff-vehicle',   val:'Box Truck · 20T',          delay:3700 },
+  { id:'ff-rate',      val:'Standard-Fleet-KM',        delay:4300 },
+  { id:'ff-cargo',     val:'Standard Parcel ≤30kg',    delay:4900 },
+  { id:'ff-base',      val:'$0.42 / km',               delay:5500 },
+  { id:'ff-fuel',      val:'+$0.08 / km',              delay:6000 },
+  { id:'ff-urban',     val:'+$0.15 / km (urban zone)', delay:6500 },
+];
+
+const INVOICE_LINES = [
+  {txt:'{',                                        color:'ev-brace'},
+  {txt:'  "invoice_id": "INV-2024-06-21-10023",', color:'ev-str'},
+  {txt:'  "vehicle":    "TRK-CA-10023",',          color:'ev-str'},
+  {txt:'  "route":      "SFO-DEPOT → LA-WHSE",',  color:'ev-str'},
+  {txt:'  "date":       "2024-06-21",',            color:'ev-str'},
+  {txt:'  "distance": {',                          color:'ev-brace'},
+  {txt:'    "highway_km":  543.8,',                color:'ev-num'},
+  {txt:'    "urban_km":     70.5,',                color:'ev-num'},
+  {txt:'    "total_km":    614.3',                 color:'ev-num'},
+  {txt:'  },',                                     color:'ev-brace'},
+  {txt:'  "charges": {',                           color:'ev-brace'},
+  {txt:'    "base_rate":     "$257.99",',          color:'ev-str'},
+  {txt:'    "fuel_surcharge":"$49.14",',           color:'ev-str'},
+  {txt:'    "urban_premium": "$10.58"',            color:'ev-str'},
+  {txt:'  },',                                     color:'ev-brace'},
+  {txt:'  "amount_due":  317.71,',                 color:'ev-num'},
+  {txt:'  "status":      "DELIVERED"',             color:'ev-bool'},
+  {txt:'}',                                        color:'ev-brace'},
+];
+
+// ── STATE ──
+const state = {
+  actIndex: 0, actElapsed: 0, playing: false, speed: 1,
+  kmBalance: 0, eventCount: 0, lastTs: null,
+};
+
+let flowParticles = [], fmtTimers = [], fmtDone = new Set();
+let invoiceLineIdx = 0, overlayTimer = 0, secondHand = 0, _secPrev = null;
+let flowSpawnTimer = 0;
+let pingRings = []; // GPS ping ring animations
+let pingSpawnTimer = 0;
+let smokeParticles = [];
+let smokeSpawnTimer = 0;
+
+// ── CLOCK ──
+function setHandXY(id, angleDeg, length) {
+  const rad = (angleDeg - 90) * Math.PI / 180;
+  const el = $(id); if (!el) return;
+  el.setAttribute('x2', (CX + length * Math.cos(rad)).toFixed(2));
+  el.setAttribute('y2', (CY + length * Math.sin(rad)).toFixed(2));
+}
+
+function getCurrentMinutes() {
+  const [start, end] = ACT_TIMES[state.actIndex];
+  const t = Math.min(state.actElapsed / ACTS[state.actIndex].duration, 1);
+  return start + (end - start) * t;
+}
+
+function updateClock(dtMs) {
+  const mult = state.playing ? state.speed * 20 : 1;
+  secondHand += (dtMs / 1000) * mult;
+  const totalMin = getCurrentMinutes();
+  const h = (totalMin / 60) % 12, m = totalMin % 60, s = secondHand % 60;
+  setHandXY('hand-hour', h * 30 + m * 0.5, 14);
+  setHandXY('hand-min',  m * 6  + s * 0.1, 19);
+  setHandXY('hand-sec',  s * 6,             23);
+  setHandXY('hand-sec-tail', s * 6 + 180,   9);
+  const hh = Math.floor(Math.floor(totalMin) / 60);
+  const mm = Math.floor(totalMin) % 60;
+  const ampm = hh >= 12 ? 'PM' : 'AM';
+  $('clock-time-label').textContent = `${hh%12||12}:${String(mm).padStart(2,'0')} ${ampm}`;
+}
+
+function secLoop(ts) {
+  if (_secPrev !== null) updateClock(Math.min(ts - _secPrev, 100));
+  _secPrev = ts;
+  requestAnimationFrame(secLoop);
+}
+
+// ── SKY ──
+function updateSky() {
+  const totalMin = getCurrentMinutes();
+  // Simple linear day interpolation for logistics scene
+  const t = Math.max(0, Math.min(1, (totalMin - 300) / 600));
+  const r1=10,g1=14,b1=26, r2=15,g2=22,b2=38;
+  const r = Math.round(r1+(r2-r1)*t), g = Math.round(g1+(g2-g1)*t), b = Math.round(b1+(b2-b1)*t);
+  $('sky-top').setAttribute('stop-color', `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`);
+  $('sky-bot').setAttribute('stop-color', `#${(r+3).toString(16).padStart(2,'0')}${(g+4).toString(16).padStart(2,'0')}${(b+6).toString(16).padStart(2,'0')}`);
+}
+
+// ── TRUCK POSITION ──
+function getTruckX() {
+  const progress = Math.min(state.actElapsed / ACTS[state.actIndex].duration, 1);
+  // x range: 90 (depot) → 450 (warehouse entry)
+  const ranges = [[90,90],[90,170],[170,380],[380,455],[455,455]];
+  const [s, e] = ranges[state.actIndex];
+  return s + (e - s) * progress;
+}
+
+function updateScene() {
+  updateSky();
+  const act = ACTS[state.actIndex];
+  const truckX = getTruckX();
+  $('truck-group').setAttribute('transform', `translate(${truckX.toFixed(1)}, 100)`);
+
+  // Headlight beam (on when moving)
+  $('headlight-beam').setAttribute('opacity', act.kmRate > 0 ? '0.6' : '0');
+
+  // Depot LED pulse
+  if (state.actIndex === 0) {
+    const p = (Math.sin(Date.now() / 400) + 1) / 2;
+    $('depot-led').setAttribute('opacity', (0.4 + p * 0.5).toFixed(2));
+  }
+
+  // Destination LED on delivery
+  if (state.actIndex === 4) {
+    const p = (Math.sin(Date.now() / 300) + 1) / 2;
+    $('dest-led').setAttribute('opacity', (0.5 + p * 0.5).toFixed(2));
+    $('dest-door').setAttribute('fill', '#0d1a28');
+  }
+
+  // Scene status text
+  const statusEl = $('scene-status');
+  if (act.sceneStatus && state.actIndex > 0) {
+    statusEl.textContent = act.sceneStatus;
+    statusEl.setAttribute('opacity', '1');
+    statusEl.setAttribute('fill',
+      act.color === 'amber' ? '#f59e0b' :
+      act.color === 'red'   ? '#ef4444' :
+      act.color === 'green' ? '#10b981' : '#f97316');
+  } else {
+    statusEl.setAttribute('opacity', '0');
+  }
+}
+
+// ── GPS PING RINGS ──
+function spawnPingRing() {
+  const truckX = getTruckX();
+  const cx = truckX + 68; // truck center x offset + translate
+  const cy = 112; // truck center y in scene
+  const ns = 'http://www.w3.org/2000/svg';
+  const circle = document.createElementNS(ns, 'circle');
+  circle.setAttribute('cx', cx);
+  circle.setAttribute('cy', cy);
+  circle.setAttribute('r', '6');
+  circle.setAttribute('fill', 'none');
+  circle.setAttribute('stroke', '#f97316');
+  circle.setAttribute('stroke-width', '1.5');
+  circle.setAttribute('opacity', '0.8');
+  $('ping-rings').appendChild(circle);
+  pingRings.push({ el: circle, r: 6, maxR: 30, cx, cy });
+}
+
+function updatePingRings(dtMs) {
+  const act = ACTS[state.actIndex];
+  if (state.playing && act.kmRate > 0) {
+    pingSpawnTimer += dtMs;
+    if (pingSpawnTimer > 1800) { pingSpawnTimer = 0; spawnPingRing(); }
+  }
+  const speed = state.playing ? state.speed : 0;
+  pingRings = pingRings.filter(ring => {
+    ring.r += 0.18 * speed * (dtMs / 16.67);
+    if (ring.r >= ring.maxR) { ring.el.remove(); return false; }
+    const op = (1 - ring.r / ring.maxR) * 0.7;
+    ring.el.setAttribute('r', ring.r.toFixed(1));
+    ring.el.setAttribute('opacity', op.toFixed(2));
+    return true;
+  });
+}
+
+// ── EXHAUST SMOKE ──
+function spawnSmoke() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const c = document.createElementNS(ns, 'circle');
+  const tx = getTruckX();
+  c.setAttribute('cx', (tx + 59).toFixed(1));
+  c.setAttribute('cy', '91');
+  c.setAttribute('r', '2');
+  c.setAttribute('fill', '#4a5568');
+  c.setAttribute('opacity', '0.5');
+  $('exhaust-smoke').appendChild(c);
+  smokeParticles.push({ el: c, x: tx + 59, y: 91, r: 2, life: 0 });
+}
+
+function updateSmoke(dtMs) {
+  const act = ACTS[state.actIndex];
+  if (state.playing && act.kmRate > 20) {
+    smokeSpawnTimer += dtMs;
+    if (smokeSpawnTimer > 300) { smokeSpawnTimer = 0; spawnSmoke(); }
+  }
+  const speed = state.playing ? state.speed : 0;
+  smokeParticles = smokeParticles.filter(p => {
+    p.life += dtMs * speed;
+    p.y -= 0.04 * speed * (dtMs / 16.67);
+    p.r += 0.02 * speed;
+    if (p.life > 1200) { p.el.remove(); return false; }
+    const op = (1 - p.life/1200) * 0.4;
+    p.el.setAttribute('cy', p.y.toFixed(1));
+    p.el.setAttribute('r', p.r.toFixed(1));
+    p.el.setAttribute('opacity', op.toFixed(2));
+    return true;
+  });
+}
+
+// ── FLOW PARTICLES ──
+function spawnFlowParticle() {
+  const act = ACTS[state.actIndex];
+  if (act.kmRate === 0) return;
+  const container = $('flow-particles');
+  FLOW_PATHS.forEach(path => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    el.setAttribute('r', '4');
+    el.setAttribute('fill', '#f97316');
+    el.setAttribute('opacity', '0.9');
+    const startPt = bezQ(0, path.p0, path.cp, path.p2);
+    el.setAttribute('cx', startPt.x); el.setAttribute('cy', startPt.y);
+    container.appendChild(el);
+    flowParticles.push({ el, path, t: 0, speed: 0.012 + Math.random()*0.008 });
+  });
+}
+
+function updateFlowParticles(dtMs) {
+  const act = ACTS[state.actIndex];
+  if (act.kmRate === 0) { flowParticles.forEach(p => p.el.remove()); flowParticles = []; return; }
+  const f = state.playing ? state.speed * (dtMs / 16.67) : 0;
+  if (state.playing) {
+    flowSpawnTimer += dtMs;
+    const interval = Math.max(200, 600 / (act.kmRate / 5 + 1));
+    if (flowSpawnTimer >= interval) { flowSpawnTimer = 0; spawnFlowParticle(); }
+  }
+  flowParticles = flowParticles.filter(p => {
+    p.t += p.speed * f;
+    if (p.t >= 1) { p.el.remove(); return false; }
+    const pos = bezQ(p.t, p.path.p0, p.path.cp, p.path.p2);
+    p.el.setAttribute('cx', pos.x.toFixed(2));
+    p.el.setAttribute('cy', pos.y.toFixed(2));
+    p.el.setAttribute('opacity', (0.9 - p.t * 0.5).toFixed(2));
+    return true;
+  });
+}
+
+// ── FMT TYPEWRITER ──
+function startFMTTyping() {
+  fmtDone.clear();
+  FMT_FIELDS.forEach(f => { const el=$(f.id); if(el){el.textContent='';el.classList.remove('done');} });
+  fmtTimers.forEach(t => clearTimeout(t));
+  fmtTimers = [];
+  FMT_FIELDS.forEach(field => {
+    const t = setTimeout(() => {
+      if (state.actIndex !== 0) return;
+      typeField(field.id, field.val, 0);
+    }, field.delay / state.speed);
+    fmtTimers.push(t);
+  });
+}
+
+function typeField(id, val, idx) {
+  if (state.actIndex !== 0) return;
+  const el = $(id); if (!el) return;
+  if (idx === 0) el.innerHTML = '<span class="cursor"></span>';
+  if (idx < val.length) {
+    el.innerHTML = val.slice(0, idx+1) + '<span class="cursor"></span>';
+    fmtTimers.push(setTimeout(() => typeField(id, val, idx+1), 50 / state.speed));
+  } else {
+    el.textContent = val;
+    el.classList.add('done');
+    fmtDone.add(id);
+  }
+}
+
+// ── GPS EVENT STREAM ──
+let lastEventData = null;
+let eventSpawnTimer = 0;
+
+const HEADINGS = ['N','NE','NE','E','SE','SE','S','SW'];
+
+function generateGPSEvent() {
+  const act = ACTS[state.actIndex];
+  const progress = Math.min(state.actElapsed / act.duration, 1);
+  // Interpolate lat/lon: SFO (37.78, -122.42) → LA (34.05, -118.24)
+  const baseLat = 37.78 - (37.78 - 34.05) * ((state.actIndex - 1) / 3 + progress / 3);
+  const baseLon = -122.42 + (122.42 - 118.24) * ((state.actIndex - 1) / 3 + progress / 3);
+  const lat = (baseLat + (Math.random()-0.5)*0.02).toFixed(4);
+  const lon = (baseLon + (Math.random()-0.5)*0.02).toFixed(4);
+  const speeds = { dispatch:[35,58], highway:[88,102], lastmile:[18,38] };
+  const speedRange = act.id === 'dispatch' ? speeds.dispatch : act.id === 'highway' ? speeds.highway : speeds.lastmile;
+  const spd = Math.floor(speedRange[0] + Math.random() * (speedRange[1]-speedRange[0]));
+  const qty = act.id === 'highway' ? (0.38 + Math.random()*0.16).toFixed(2) :
+              act.id === 'dispatch' ? (0.18 + Math.random()*0.12).toFixed(2) : (0.08+Math.random()*0.08).toFixed(2);
+  const odo = state.kmBalance.toFixed(1);
+  const heading = HEADINGS[Math.floor(Math.random() * HEADINGS.length)];
+  const seg = act.id === 'lastmile' ? 'URBAN' : act.id === 'dispatch' ? 'RAMP' : 'HIGHWAY';
+  const now = new Date(2024, 5, 21, 6 + Math.floor((getCurrentMinutes()-360)/60), Math.floor(getCurrentMinutes()-360)%60, Math.floor(Math.random()*60));
+  const time = now.toISOString().replace('.000Z','Z');
+  return { lat, lon, spd, qty, odo, heading, seg, time, prev: lastEventData };
+}
+
+function renderGPSEvent(d) {
+  const container = $('event-stream');
+  // Keep max 4 events
+  while (container.children.length >= 4) container.removeChild(container.lastChild);
+  const prevQty = d.prev ? parseFloat(d.prev.qty) : null;
+  const prevSpd = d.prev ? d.prev.spd : null;
+  const qtyChanged = prevQty !== null && Math.abs(parseFloat(d.qty) - prevQty) > 0.05;
+  const spdChanged = prevSpd !== null && Math.abs(d.spd - prevSpd) > 5;
+
+  const block = document.createElement('div');
+  block.className = 'event-block';
+  const qC = qtyChanged ? ' ev-changed' : '';
+  const sC = spdChanged ? ' ev-changed-speed' : '';
+  block.innerHTML =
+    `<span class="ev-brace">{</span><br>` +
+    `&nbsp;<span class="ev-key">"type"</span>:<span class="ev-str">"com.units360.fleet.gps"</span>,<br>` +
+    `&nbsp;<span class="ev-key">"source"</span>:<span class="ev-str">"gps/TRK-CA-10023"</span>,<br>` +
+    `&nbsp;<span class="ev-key">"time"</span>:<span class="ev-str">"${d.time}"</span>,<br>` +
+    `&nbsp;<span class="ev-key">"data"</span>:<span class="ev-brace">{</span>` +
+      `<span class="ev-key">"unit"</span>:<span class="ev-str">"km"</span>,` +
+      `<span class="ev-key">"qty"</span>:<span class="ev-num${qC}">${d.qty}</span>,` +
+      `<span class="ev-key">"speed_kmh"</span>:<span class="ev-num${sC}">${d.spd}</span>,` +
+      `<span class="ev-key">"heading"</span>:<span class="ev-str">"${d.heading}"</span>,` +
+      `<span class="ev-key">"odometer"</span>:<span class="ev-num ev-changed-cost">${d.odo}</span>,` +
+      `<span class="ev-key">"segment"</span>:<span class="ev-str">"${d.seg}"</span>` +
+    `<span class="ev-brace">}</span><span class="ev-brace">}</span>`;
+  container.insertBefore(block, container.firstChild);
+  lastEventData = d;
+}
+
+function updateEventDashboard() {
+  const act = ACTS[state.actIndex];
+  const km = state.kmBalance;
+  $('ev-dist-val').textContent = km.toFixed(1);
+  const cost = km * 0.50;
+  $('ev-cost-val').textContent = `$${cost.toFixed(2)}`;
+  $('ev-speed-val').textContent = act.speedKmh;
+  $('ev-eta-val').textContent = act.etaText;
+  $('ev-seg-cursor').style.left = act.segCursor;
+  $('ev-seg-rate-label').textContent = act.segLabel;
+  $('event-segment').textContent = act.segment;
+
+  // Urban alert
+  const speedCard = $('ev-speed-card');
+  if (act.id === 'lastmile') {
+    speedCard.className = 'ev-metric urban-alert';
+    $('ev-seg-rate-label').style.color = 'var(--red)';
+  } else {
+    speedCard.className = 'ev-metric spd';
+    $('ev-seg-rate-label').style.color = act.id === 'highway' ? 'var(--amber)' : 'var(--orange)';
+  }
+}
+
+// ── INVOICE ──
+function renderInvoice() {
+  const container = $('invoice-view');
+  if (invoiceLineIdx >= INVOICE_LINES.length) return;
+  const line = INVOICE_LINES[invoiceLineIdx++];
+  const el = document.createElement('div');
+  el.className = `inv-json-line ${line.color} reveal`;
+  el.textContent = line.txt;
+  container.appendChild(el);
+  if (invoiceLineIdx < INVOICE_LINES.length) {
+    setTimeout(renderInvoice, 280 / state.speed);
+  }
+}
+
+// ── OVERLAY ──
+function showOverlay(act, onDone) {
+  const ov = $('overlay');
+  $('overlay-eyebrow').textContent = 'Units360 · Fleet Route Metering';
+  $('overlay-title').textContent = act.overlayTitle;
+  $('overlay-time').textContent = act.overlayTime;
+  $('overlay-sub').textContent = act.overlaySub;
+  ov.classList.add('show');
+  overlayTimer = setTimeout(() => {
+    ov.classList.remove('show');
+    setTimeout(onDone, 380);
+  }, 1800 / state.speed);
+}
+
+// ── ACT SETUP ──
+function setupAct(idx, fromOverlay = true) {
+  state.actIndex = idx;
+  state.actElapsed = 0;
+  const act = ACTS[idx];
+
+  // Update header
+  $('act-eyebrow').textContent = act.eyebrow;
+  $('act-title').textContent = act.label;
+  $('act-title').className = act.color;
+  $('act-desc').textContent = act.desc;
+
+  // Commentary
+  $('commentary').className = act.color === 'red' ? 'red' : act.color === 'amber' ? 'amber' : act.color === 'green' ? 'green' : '';
+  $('commentary-icon').textContent = act.commentaryIcon;
+  $('commentary-text').innerHTML = act.commentary;
+
+  // KM counter
+  $('km-status').textContent = act.kmStatus;
+  $('km-status').className = act.kmClass;
+  $('km-balance').className = act.kmClass;
+  $('km-rate-pill').className = act.kmRate > 0 ? 'moving' : (act.id === 'invoice' ? 'done' : 'zero');
+  $('km-rate-pill').textContent = act.kmRate > 0 ? `${act.kmRate} km/s` : (act.id === 'invoice' ? '614.3 km' : '— km/s');
+
+  // Progress bar
+  const pct = (idx / (ACTS.length - 1)) * 100;
+  $('prog-fill').style.width = pct + '%';
+  document.querySelectorAll('.prog-act').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  // Node values
+  act.nodeVals.forEach((v, i) => { const el = $(`node-val-${i+1}`); if(el) el.textContent = v; });
+
+  // Terminal badge
+  $('term-mode-badge').className = idx === 0 ? 'fmt' : idx === 4 ? 'invoice' : 'event';
+  $('term-mode-badge').textContent = idx === 0 ? 'FMT' : idx === 4 ? 'INVOICE' : 'GPS';
+
+  // Views
+  $('fmt-view').style.display = idx === 0 ? 'flex' : 'none';
+  $('event-view').style.display = (idx >= 1 && idx <= 3) ? 'flex' : 'none';
+  $('invoice-view').style.display = idx === 4 ? 'flex' : 'none';
+
+  if (idx === 0) startFMTTyping();
+  if (idx === 4) { invoiceLineIdx = 0; $('invoice-view').innerHTML = ''; setTimeout(renderInvoice, 400); }
+  if (idx === 4) {
+    state.kmBalance = 614.3;
+    $('km-balance').textContent = '614.3';
+    $('km-balance').className = 'done';
+  }
+  if (idx >= 1 && idx <= 3) {
+    updateEventDashboard();
+    $('event-count').textContent = state.eventCount;
+  }
+
+  eventSpawnTimer = 0;
+  pingSpawnTimer = 0;
+  lastEventData = null;
+}
+
+// ── MAIN LOOP ──
+let _prev = null;
+function loop(ts) {
+  const dtMs = _prev !== null ? Math.min(ts - _prev, 100) : 0;
+  _prev = ts;
+
+  if (state.playing) {
+    state.actElapsed += dtMs * state.speed;
+    const act = ACTS[state.actIndex];
+
+    // Accumulate km
+    if (act.kmRate > 0) {
+      state.kmBalance += act.kmRate * (dtMs / 1000) * state.speed;
+      $('km-balance').textContent = state.kmBalance.toFixed(1);
+    }
+
+    // Event stream
+    if (state.actIndex >= 1 && state.actIndex <= 3) {
+      eventSpawnTimer += dtMs;
+      const interval = Math.max(500, 3000 / state.speed / (act.kmRate / 10 + 1));
+      if (eventSpawnTimer >= interval) {
+        eventSpawnTimer = 0;
+        state.eventCount++;
+        $('event-count').textContent = state.eventCount;
+        renderGPSEvent(generateGPSEvent());
+        updateEventDashboard();
+      }
+    }
+
+    // Advance act
+    if (state.actElapsed >= act.duration) {
+      if (state.actIndex < ACTS.length - 1) {
+        const nextIdx = state.actIndex + 1;
+        state.playing = false;
+        $('btn-play').textContent = '▶ Play';
+        showOverlay(ACTS[nextIdx], () => {
+          setupAct(nextIdx, false);
+          state.playing = true;
+          $('btn-play').textContent = '⏸ Pause';
+        });
+      } else {
+        state.playing = false;
+        $('btn-play').textContent = '▶ Play';
+      }
+    }
+  }
+
+  updateScene();
+  updateFlowParticles(dtMs);
+  updatePingRings(dtMs);
+  updateSmoke(dtMs);
+
+  requestAnimationFrame(loop);
+}
+
+// ── CONTROLS ──
+$('btn-play').addEventListener('click', () => {
+  state.playing = !state.playing;
+  $('btn-play').textContent = state.playing ? '⏸ Pause' : '▶ Play';
+  if (state.playing && state.actIndex === 0 && state.actElapsed === 0) startFMTTyping();
+});
+
+$('btn-next').addEventListener('click', () => {
+  if (state.actIndex < ACTS.length - 1) {
+    clearTimeout(overlayTimer);
+    $('overlay').classList.remove('show');
+    state.playing = false;
+    $('btn-play').textContent = '▶ Play';
+    const next = state.actIndex + 1;
+    showOverlay(ACTS[next], () => setupAct(next, false));
+  }
+});
+
+$('btn-prev').addEventListener('click', () => {
+  if (state.actIndex > 0) {
+    clearTimeout(overlayTimer);
+    $('overlay').classList.remove('show');
+    state.playing = false;
+    $('btn-play').textContent = '▶ Play';
+    const prev = state.actIndex - 1;
+    // Restore km balance to start of prev act
+    const kmAtAct = [0, 0, 45, 630, 614.3];
+    state.kmBalance = kmAtAct[prev];
+    setupAct(prev, false);
+  }
+});
+
+$('btn-reset').addEventListener('click', () => {
+  clearTimeout(overlayTimer);
+  $('overlay').classList.remove('show');
+  state.playing = false; state.kmBalance = 0; state.eventCount = 0;
+  $('btn-play').textContent = '▶ Play';
+  flowParticles.forEach(p => p.el.remove()); flowParticles = [];
+  pingRings.forEach(r => r.el.remove()); pingRings = [];
+  smokeParticles.forEach(p => p.el.remove()); smokeParticles = [];
+  $('event-stream').innerHTML = '';
+  $('invoice-view').innerHTML = '';
+  setupAct(0, false);
+});
+
+$('btn-faster').addEventListener('click', () => {
+  state.speed = Math.min(state.speed * 2, 8);
+  $('speed-val').textContent = state.speed + '×';
+});
+$('btn-slower').addEventListener('click', () => {
+  state.speed = Math.max(state.speed / 2, 0.5);
+  $('speed-val').textContent = state.speed + '×';
+});
+
+// Drawer
+$('btn-info').addEventListener('click', () => {
+  $('info-drawer').classList.add('open');
+  $('info-backdrop').classList.add('show');
+});
+$('info-backdrop').addEventListener('click', () => {
+  $('info-drawer').classList.remove('open');
+  $('info-backdrop').classList.remove('show');
+});
+$('drawer-close').addEventListener('click', () => {
+  $('info-drawer').classList.remove('open');
+  $('info-backdrop').classList.remove('show');
+});
+document.querySelectorAll('.dnav-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.dnav-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    const target = $(pill.dataset.target);
+    if (target) target.scrollIntoView({ behavior:'smooth' });
+  });
+});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'k') { e.preventDefault(); $('btn-play').click(); }
+  if (e.key === 'ArrowRight') $('btn-next').click();
+  if (e.key === 'ArrowLeft')  $('btn-prev').click();
+  if (e.key === 'r' || e.key === 'R') $('btn-reset').click();
+  if (e.key === '?' || e.key === 'i') $('btn-info').click();
+});
+
+// ── INIT ──
+setupAct(0, false);
+requestAnimationFrame(loop);
+requestAnimationFrame(secLoop);
+</script>
+</body>
+</html>
