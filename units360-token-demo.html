@@ -731,6 +731,83 @@
     0%,100% { transform: translateY(0); }
     50%      { transform: translateY(-1.5px); }
   }
+
+  /* ── PLATFORM GUIDE BUTTON ── */
+  #btn-guide{background:linear-gradient(135deg,#00d4ff22,#3b82f622);border:1px solid var(--teal);
+    border-radius:20px;color:var(--teal);font-size:11px;font-weight:700;padding:5px 14px;
+    cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;font-family:'Inter',sans-serif;
+    box-shadow:0 0 10px #00d4ff22}
+  #btn-guide:hover{background:var(--teal);color:#070c18;box-shadow:0 0 18px #00d4ff55}
+  #btn-guide:active{transform:scale(.97)}
+
+  /* ── INFO DRAWER ── */
+  #info-backdrop{position:fixed;inset:0;z-index:205;background:rgba(4,8,18,.65);backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:opacity .3s}
+  #info-backdrop.show{opacity:1;pointer-events:auto}
+
+  #info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:210;
+    background:#070d1c;border-left:1px solid #1e2d4a;
+    transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);
+    display:flex;flex-direction:column;overflow:hidden}
+  #info-drawer.open{transform:translateX(0)}
+
+  #drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid #1e2d4a;flex-shrink:0;
+    background:linear-gradient(135deg,#0d1a2e,#0a1425)}
+  #drawer-logo{font-size:16px;font-weight:800;color:var(--text)}
+  #drawer-logo span{color:var(--teal)}
+  #drawer-subtitle{font-size:10px;color:#64748b;letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+  #drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#1e2d4a;
+    border:none;color:#64748b;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  #drawer-close:hover{background:#2a3f5f;color:var(--text)}
+
+  #drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:0;scroll-behavior:smooth}
+  #drawer-body::-webkit-scrollbar{width:4px}
+  #drawer-body::-webkit-scrollbar-track{background:transparent}
+  #drawer-body::-webkit-scrollbar-thumb{background:#1e2d4a;border-radius:2px}
+
+  #drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+  .dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:#1e2d4a;color:#64748b;
+    cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
+  .dnav-pill:hover{background:#2a3f5f;color:var(--text)}
+  .dnav-pill.active{background:#00d4ff15;color:var(--teal);border-color:#00d4ff40}
+
+  .dsec{padding:18px 0;border-bottom:1px solid #0d1526}
+  .dsec:last-child{border-bottom:none;padding-bottom:8px}
+  .dsec-eyebrow{font-size:8px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:6px;opacity:.7}
+  .dsec-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .dsec-icon{font-size:18px}
+  .dsec-body{font-size:12px;color:#94a3b8;line-height:1.7;display:flex;flex-direction:column;gap:8px}
+  .dsec-body p{margin:0}
+  .dsec-body strong{color:var(--text);font-weight:600}
+  .dsec-body em{color:var(--teal);font-style:normal}
+
+  .dfield-table{background:#0d1526;border:1px solid #1e2d4a;border-radius:6px;overflow:hidden;margin-top:4px}
+  .dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid #0d1526;align-items:flex-start;gap:10px;font-size:11px}
+  .dfield-row:last-child{border-bottom:none}
+  .dfield-key{color:var(--teal);min-width:110px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
+  .dfield-val{color:#94a3b8;line-height:1.5}
+  .dfield-val strong{color:var(--text)}
+
+  .dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;
+    background:#0d1526;border:1px solid #1e2d4a;border-radius:6px;font-size:11px}
+  .dflow-node{padding:4px 10px;border-radius:4px;background:#1e2d4a;color:var(--text);text-align:center;font-size:10px;line-height:1.4}
+  .dflow-node.highlight{background:#00d4ff15;border:1px solid #00d4ff40;color:var(--teal)}
+  .dflow-arrow{color:#64748b;font-size:14px}
+
+  .dtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .dtag{font-size:9px;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+  .dtag.teal{background:#00d4ff15;color:var(--teal);border:1px solid #00d4ff30}
+  .dtag.blue{background:#3b82f615;color:#60a5fa;border:1px solid #3b82f630}
+  .dtag.purple{background:#8b5cf615;color:#a78bfa;border:1px solid #8b5cf630}
+  .dtag.amber{background:#f59e0b15;color:#fbbf24;border:1px solid #f59e0b30}
+
+  .dcode{background:#040810;border:1px solid #1e2d4a;border-radius:6px;padding:10px 12px;
+    font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:6px}
+  .dcode .ck{color:#7dd3fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#64748b}
+
+  .dcallout{background:linear-gradient(135deg,#00d4ff08,#3b82f608);border:1px solid #00d4ff25;
+    border-radius:6px;padding:10px 12px;font-size:11px;color:#94a3b8;line-height:1.6;margin-top:6px}
+  .dcallout strong{color:var(--teal)}
 </style>
 </head>
 <body>
@@ -790,9 +867,12 @@
       <span id="live-token-val">0</span>
       <span style="color:var(--text-dim)">/ 100,000 tokens</span>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-      <div class="badge">Demo · AI SaaS</div>
-      <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.3px;">Token metering for an AI coding assistant startup</div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <button id="btn-guide">ℹ Platform Guide</button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+        <div class="badge">Demo · AI SaaS</div>
+        <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.3px;">Token metering for an AI coding assistant startup</div>
+      </div>
     </div>
   </header>
 
@@ -1940,6 +2020,246 @@ window.addEventListener('resize', () => {
 initClock();         // draw tick marks + numerals
 requestAnimationFrame(clockLoop); // clock always ticks — independent of demo
 updateUI();
+
+// ════════════════════════════════════════════════════════════
+// PLATFORM GUIDE DRAWER
+// ════════════════════════════════════════════════════════════
+const drawerEl   = document.getElementById('info-drawer');
+const backdropEl = document.getElementById('info-backdrop');
+
+function openDrawer()  { drawerEl.classList.add('open');    backdropEl.classList.add('show'); }
+function closeDrawer() { drawerEl.classList.remove('open'); backdropEl.classList.remove('show'); }
+function toggleDrawer(){ drawerEl.classList.contains('open') ? closeDrawer() : openDrawer(); }
+
+document.getElementById('btn-guide').addEventListener('click', toggleDrawer);
+document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+backdropEl.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if (e.key === '?') toggleDrawer(); });
+
+document.querySelectorAll('.dnav-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const target = document.getElementById(pill.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.dnav-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  });
+});
+
+const drawerBody = document.getElementById('drawer-body');
+const dsections  = drawerBody.querySelectorAll('.dsec');
+drawerBody.addEventListener('scroll', () => {
+  let current = dsections[0].id;
+  dsections.forEach(sec => { if (sec.offsetTop - drawerBody.scrollTop <= 40) current = sec.id; });
+  document.querySelectorAll('.dnav-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.target === current);
+  });
+}, { passive: true });
 </script>
+
+<!-- Info backdrop -->
+<div id="info-backdrop"></div>
+
+<!-- Platform Guide drawer -->
+<div id="info-drawer">
+
+  <div id="drawer-header">
+    <div>
+      <div id="drawer-logo">Units<span>360</span>.ai</div>
+      <div id="drawer-subtitle">Platform Guide · AI &amp; LLM Edition</div>
+    </div>
+    <button id="drawer-close">✕</button>
+  </div>
+
+  <div id="drawer-nav">
+    <span class="dnav-pill active" data-target="sec-what">What is Units360?</span>
+    <span class="dnav-pill" data-target="sec-org">AI Company</span>
+    <span class="dnav-pill" data-target="sec-unit">Unit</span>
+    <span class="dnav-pill" data-target="sec-account">Account</span>
+    <span class="dnav-pill" data-target="sec-txn">Transaction</span>
+    <span class="dnav-pill" data-target="sec-mdt">MDT</span>
+    <span class="dnav-pill" data-target="sec-rte">RTE</span>
+    <span class="dnav-pill" data-target="sec-cloud">CloudEvents</span>
+  </div>
+
+  <div id="drawer-body">
+
+    <!-- SECTION 1 -->
+    <div class="dsec" id="sec-what">
+      <div class="dsec-eyebrow">Platform Overview</div>
+      <div class="dsec-title"><span class="dsec-icon">🚀</span> What is Units360?</div>
+      <div class="dsec-body">
+        <p>Units360.ai is a <strong>low-code usage metering platform</strong> — the operating system for any business that sells by the unit. Instead of building custom billing infrastructure, you define your unit model once, and Units360 auto-provisions everything else.</p>
+        <p>In this demo, the unit is <em>AI Token</em>. But it works equally for kWh, API calls, ride credits, consultation hours — any measurable service.</p>
+        <div class="dflow">
+          <div class="dflow-node highlight">1. Define<br><small>MDT</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">2. Deploy<br><small>RTE</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">3. Stream<br><small>CloudEvents</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">4. Invoice<br><small>Auto</small></div>
+        </div>
+        <div class="dtags">
+          <span class="dtag teal">No DevOps required</span>
+          <span class="dtag blue">Auto-generated API</span>
+          <span class="dtag purple">Real-time analytics</span>
+          <span class="dtag amber">Usage-based billing</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="dsec" id="sec-org">
+      <div class="dsec-eyebrow">Who Uses Units360 Here</div>
+      <div class="dsec-title"><span class="dsec-icon">🤖</span> The AI Company</div>
+      <div class="dsec-body">
+        <p>In this demo, the <strong>Organization</strong> is an <em>AI SaaS startup</em> that provides a coding assistant powered by large language models. They are the Units360 customer.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Organization</span><span class="dfield-val"><strong>CodeMind AI</strong> (example)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their product</span><span class="dfield-val">AI-powered coding assistant — auto-complete, code review, debugging</span></div>
+          <div class="dfield-row"><span class="dfield-key">Unit they sell</span><span class="dfield-val"><strong>AI Token</strong> — each LLM input/output token consumed</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate plan used</span><span class="dfield-val">Tiered — first 50K tokens/mo free, then $0.002 per 1K</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their customer</span><span class="dfield-val">Developer tenant <strong>dev-42</strong> on the Pro plan</span></div>
+        </div>
+        <p>The AI company logs into Units360, creates a <em>Metadata Template (MDT)</em> for AI tokens, and configures their rate tiers. Units360 then handles all real-time metering, threshold alerts, and invoice generation automatically.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="dsec" id="sec-unit">
+      <div class="dsec-eyebrow">Core Concept · 1 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">⚡</span> What is a Unit?</div>
+      <div class="dsec-body">
+        <p>A <strong>Unit</strong> is the fundamental thing being measured and billed. It defines <em>what</em> you are counting, how it accumulates, and when it resets.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">unit_id</span><span class="dfield-val"><strong>ai-token</strong> — the unique identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">display_name</span><span class="dfield-val">AI Token</span></div>
+          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val"><strong>UNIDIRECTIONAL</strong> — tokens only consumed, never returned</span></div>
+          <div class="dfield-row"><span class="dfield-key">reset_period</span><span class="dfield-val">Monthly — balance resets on the 1st of each month</span></div>
+          <div class="dfield-row"><span class="dfield-key">precision</span><span class="dfield-val">0 decimal places — tokens are whole numbers</span></div>
+        </div>
+        <p>Units can be <em>unidirectional</em> (tokens only consumed) or <em>bidirectional</em> (energy exported / imported). For AI tokens, direction is always inbound — each API call consumes tokens from the account's monthly allowance.</p>
+        <div class="dtags">
+          <span class="dtag teal">Tokens · API Calls · kWh</span>
+          <span class="dtag blue">Credits · Minutes · GB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="dsec" id="sec-account">
+      <div class="dsec-eyebrow">Core Concept · 2 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">👤</span> What is an Account?</div>
+      <div class="dsec-body">
+        <p>An <strong>Account</strong> is the entity whose usage is being tracked — a customer, a tenant, a device, or a subscription. Each account gets its own running balance governed by its rate plan.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">account_id</span><span class="dfield-val"><strong>dev-42</strong> — unique developer tenant ID</span></div>
+          <div class="dfield-row"><span class="dfield-key">plan</span><span class="dfield-val">Pro — 100,000 tokens/month included</span></div>
+          <div class="dfield-row"><span class="dfield-key">overage_rate</span><span class="dfield-val">$0.002 per 1,000 tokens above the 100K limit</span></div>
+          <div class="dfield-row"><span class="dfield-key">alert_threshold</span><span class="dfield-val">80% usage — webhook fired to notify the developer</span></div>
+          <div class="dfield-row"><span class="dfield-key">hard_limit</span><span class="dfield-val">100,000 tokens — API blocked until next billing cycle</span></div>
+          <div class="dfield-row"><span class="dfield-key">current_balance</span><span class="dfield-val">Live token count — updated per API call</span></div>
+        </div>
+        <p>When an API call arrives, Units360 looks up the account, checks its balance against the rate plan, updates the running total atomically, and fires threshold alerts when configured limits are crossed.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="dsec" id="sec-txn">
+      <div class="dsec-eyebrow">Core Concept · 3 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">📋</span> What is a Transaction?</div>
+      <div class="dsec-body">
+        <p>A <strong>Transaction</strong> is a single metering event — one API call that reports "this account consumed X tokens right now." Transactions are the atomic records that build the running balance.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">quantity</span><span class="dfield-val"><strong>847 tokens</strong> — input + output tokens for this call</span></div>
+          <div class="dfield-row"><span class="dfield-key">model</span><span class="dfield-val">claude-3-opus · gpt-4o · gemini-pro (any LLM)</span></div>
+          <div class="dfield-row"><span class="dfield-key">feature</span><span class="dfield-val">autocomplete · code-review · debug — tagged per call type</span></div>
+          <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Running total updated after each event</span></div>
+          <div class="dfield-row"><span class="dfield-key">timestamp</span><span class="dfield-val">ISO 8601 UTC — every event is time-stamped precisely</span></div>
+        </div>
+        <p>Transaction rules — set up in the MDT — define how to price each event based on model tier, feature type, and account plan. Units360 applies these rules automatically at ingestion time, with no custom code required.</p>
+        <div class="dcallout"><strong>At month end,</strong> all transactions are summed. If the tenant exceeded 100K tokens, the overage is calculated and the invoice is generated automatically.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="dsec" id="sec-mdt">
+      <div class="dsec-eyebrow">Configuration Layer</div>
+      <div class="dsec-title"><span class="dsec-icon">📐</span> MDT — Metadata Template</div>
+      <div class="dsec-body">
+        <p>The <strong>MDT (Metadata Template)</strong> is Units360's low-code configuration builder. It's where the AI company defines everything about their metering model — with no code, no database schemas, no infrastructure setup.</p>
+        <p>Think of the MDT as a blueprint: define it once, and it governs every API call, every balance update, and every invoice for that unit type.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define the unit (ai-token), direction (inbound), reset period (monthly)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Set plan tiers, included quotas, hard limits, and overage rates</span></div>
+          <div class="dfield-row"><span class="dfield-key">Transaction tab</span><span class="dfield-val">Configure feature tagging, model-tier pricing, threshold webhooks</span></div>
+        </div>
+        <div class="dcallout"><strong>MDT outputs:</strong> Once saved, Units360 auto-generates a REST API endpoint, a CloudEvent schema for your AI gateway, and a live analytics dashboard. No DevOps team required.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div class="dsec" id="sec-rte">
+      <div class="dsec-eyebrow">Runtime Engine</div>
+      <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
+      <div class="dsec-body">
+        <p>The <strong>RTE (Run Time Engine)</strong> is the live processing layer that runs once an MDT is deployed. It continuously ingests API call events, applies rate rules, updates balances, and fires alerts — all in real time.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Event ingestion</span><span class="dfield-val">Accepts CloudEvents from your AI gateway via REST POST</span></div>
+          <div class="dfield-row"><span class="dfield-key">Balance engine</span><span class="dfield-val">Atomic ledger update per event — millisecond-accurate</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate application</span><span class="dfield-val">Reads MDT rules; applies tier pricing and overage logic per event</span></div>
+          <div class="dfield-row"><span class="dfield-key">Threshold alerts</span><span class="dfield-val">Fires webhooks at 80% usage — notifies dev before hitting hard limit</span></div>
+          <div class="dfield-row"><span class="dfield-key">Hard limit enforce</span><span class="dfield-val">Returns 429 to AI gateway when quota is exhausted</span></div>
+          <div class="dfield-row"><span class="dfield-key">Invoice trigger</span><span class="dfield-val">At period end, aggregates all transactions → auto-generates invoice</span></div>
+        </div>
+        <div class="dflow">
+          <div class="dflow-node">AI Gateway</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node highlight">RTE</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Ledger</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Dashboard</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 8 -->
+    <div class="dsec" id="sec-cloud">
+      <div class="dsec-eyebrow">Event Protocol</div>
+      <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The JSON Payload</div>
+      <div class="dsec-body">
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong> — an open industry standard for describing event data. Every API call your AI gateway makes is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
+        <div class="dcode"><span class="cc">// AI gateway → Units360 RTE (one API call)</span>
+POST /api/v1/events/dev-42
+Content-Type: application/cloudevents+json
+
+{
+  <span class="ck">"specversion"</span>: <span class="cv">"1.0"</span>,
+  <span class="ck">"type"</span>:        <span class="cv">"com.units360.ai.token"</span>,
+  <span class="ck">"source"</span>:      <span class="cv">"gateway/dev-42"</span>,
+  <span class="ck">"time"</span>:        <span class="cv">"2024-06-21T14:03:45Z"</span>,
+  <span class="ck">"data"</span>: {
+    <span class="ck">"unit"</span>:     <span class="cv">"ai-token"</span>,
+    <span class="ck">"qty"</span>:      <span class="cn">847</span>,
+    <span class="ck">"model"</span>:    <span class="cv">"claude-3-opus"</span>,
+    <span class="ck">"feature"</span>:  <span class="cv">"autocomplete"</span>
+  }
+}</div>
+        <div class="dfield-table" style="margin-top:10px">
+          <div class="dfield-row"><span class="dfield-key">specversion</span><span class="dfield-val">Always "1.0" — CloudEvents standard version</span></div>
+          <div class="dfield-row"><span class="dfield-key">type</span><span class="dfield-val">Namespaced event type — identifies the metering category</span></div>
+          <div class="dfield-row"><span class="dfield-key">source</span><span class="dfield-val">Gateway + account ID — where the call originated</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match the MDT unit_id — "ai-token" here</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">Total tokens for this call — RTE adds this to the balance</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.model</span><span class="dfield-val">LLM used — enables per-model cost breakdown in analytics</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.feature</span><span class="dfield-val">Feature tag — enables per-feature usage reporting</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /drawer-body -->
+</div><!-- /info-drawer -->
+
 </body>
 </html>
