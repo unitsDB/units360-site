@@ -809,12 +809,12 @@
       </div>
     </div>
 
-    <!-- ── COMING SOON: Fintech ── -->
-    <div class="dcard dcard--soon" style="--dc:rgba(255,215,0,.15);--dc-solid:#ffd700; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
+    <!-- ── LIVE: Fintech ── -->
+    <div class="dcard" style="--dc:rgba(255,215,0,.15);--dc-solid:#ffd700; flex:0 0 calc(33.33% - 1rem); min-width:280px;"
          onclick="pickIndustry('fintech',this)">
       <div class="dcard-preview">
         <div class="dcard-preview-icon">💳</div>
-        <div class="dcard-badge">Coming Soon</div>
+        <div class="dcard-live"><span class="dcard-live-dot"></span>Live</div>
       </div>
       <div class="dcard-body">
         <span class="dcard-eyebrow">Fintech &amp; Banking</span>
@@ -825,7 +825,9 @@
           <span class="dcard-chip">Virtual currency</span>
           <span class="dcard-chip">Full ledger</span>
         </div>
-        <div class="dcard-cta dcard-cta--soon">In Development</div>
+        <a class="dcard-cta" href="units360-fintech-demo.html" onclick="event.stopPropagation()">
+          Launch Demo <span class="dcard-arrow">→</span>
+        </a>
       </div>
     </div>
 

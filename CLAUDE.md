@@ -26,8 +26,8 @@ units360-site/
 |---|---|---|
 | AI & LLM Platforms | `units360-token-demo.html` | ✅ Live |
 | Utilities & Energy | `units360-energy-demo.html` | ✅ Live |
-| Mobility & Logistics | — | 🔜 Coming soon |
-| Fintech & Banking | — | 🔜 Coming soon |
+| Mobility & Logistics | `units360-logistics-demo.html` | ✅ Live |
+| Fintech & Banking | `units360-fintech-demo.html` | ✅ Live |
 | Healthcare | — | 🔜 Coming soon |
 
 ---

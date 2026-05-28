@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units360 · Fintech &amp; Banking Demo</title>
+<style>
+:root {
+  --bg: #06030f; --surface: #0e0920; --surface2: #150d2a;
+  --gold: #ffd700; --gold-glow: #ffd70033;
+  --purple: #a855f7; --purple-glow: #a855f733;
+  --pink: #f472b6; --pink-glow: #f472b633;
+  --teal: #00d4ff; --teal-glow: #00d4ff33;
+  --green: #10b981; --green-glow: #10b98133;
+  --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444;
+  --text: #f0e6ff; --muted: #6b5a8a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh;max-width:1280px;margin:0 auto;padding:10px 16px 0}
+
+#overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(6,3,15,0.92);opacity:0;pointer-events:none;transition:opacity .35s}
+#overlay.show{opacity:1;pointer-events:auto;backdrop-filter:blur(8px)}
+#overlay-eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+#overlay-title{font-size:clamp(28px,5vw,54px);font-weight:800;letter-spacing:-1px;color:var(--text);text-align:center}
+#overlay-time{font-size:clamp(16px,3vw,28px);color:var(--gold);margin-top:10px;font-weight:300;letter-spacing:2px}
+#overlay-sub{font-size:14px;color:var(--muted);margin-top:14px;letter-spacing:1px}
+
+#header{display:flex;align-items:center;gap:10px;padding:4px 0 8px;flex-shrink:0}
+#logo{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+#logo span{color:var(--gold)}
+#badge{font-size:10px;padding:3px 8px;border:1px solid var(--purple);border-radius:4px;color:var(--purple);letter-spacing:1.5px;text-transform:uppercase}
+#header-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px}
+#demo-title{font-size:13px;color:var(--muted);letter-spacing:.5px}
+#demo-sub{font-size:11px;color:var(--muted);opacity:.6}
+#clock-wrap{display:flex;align-items:center;gap:8px;margin-left:auto}
+#clock-time-label{font-size:12px;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:.5px;min-width:70px;text-align:right}
+#clock-svg{width:56px;height:56px;flex-shrink:0}
+
+#main{display:flex;gap:12px;flex:1;min-height:0}
+#left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
+#right-panel{display:flex;flex-direction:column;flex:1;min-width:280px;max-width:420px;background:var(--surface);border:1px solid #2a1a4a;border-radius:10px;overflow:hidden}
+
+#scene-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid #2a1a4a;flex-shrink:0;height:165px}
+#scene-svg{width:100%;height:100%;display:block}
+
+#flow-wrap{background:var(--surface);border:1px solid #2a1a4a;border-radius:10px;padding:10px 14px 8px;flex-shrink:0}
+#flow-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+#flow-svg{width:100%;display:block}
+
+#pts-row{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid #2a1a4a;border-radius:10px;padding:8px 14px;flex-shrink:0}
+#pts-balance{font-size:clamp(22px,3.5vw,38px);font-weight:800;font-variant-numeric:tabular-nums;transition:color .6s;min-width:130px}
+#pts-balance.earning{color:var(--gold)}
+#pts-balance.bonus{color:var(--pink)}
+#pts-balance.redeeming{color:var(--purple)}
+#pts-balance.done{color:var(--green)}
+#pts-balance.zero{color:var(--muted)}
+#pts-meta{display:flex;flex-direction:column;gap:2px}
+#pts-status{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .6s}
+#pts-status.earning{color:var(--gold)}
+#pts-status.bonus{color:var(--pink)}
+#pts-status.redeeming{color:var(--purple)}
+#pts-status.done{color:var(--green)}
+#pts-unit{font-size:10px;color:var(--muted)}
+#pts-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+#pts-rate-pill{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;letter-spacing:.5px;transition:background .5s,color .5s}
+#pts-rate-pill.earning{background:#ffd70020;color:var(--gold);border:1px solid #ffd70040}
+#pts-rate-pill.bonus{background:#f472b620;color:var(--pink);border:1px solid #f472b640}
+#pts-rate-pill.redeeming{background:#a855f720;color:var(--purple);border:1px solid #a855f740}
+#pts-rate-pill.done{background:#10b98120;color:var(--green);border:1px solid #10b98140}
+#pts-rate-pill.zero{background:#2a1a4a;color:var(--muted);border:1px solid #2a1a4a}
+#pts-today{font-size:10px;color:var(--muted)}
+
+#prog-wrap{flex-shrink:0;padding:0 2px}
+#prog-bar{height:3px;background:#2a1a4a;border-radius:2px;overflow:hidden}
+#prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--purple),var(--pink));border-radius:2px;transition:width .1s linear}
+#prog-acts{display:flex;justify-content:space-between;margin-top:4px}
+.prog-act{font-size:9px;color:var(--muted);letter-spacing:.3px;cursor:pointer;transition:color .2s}
+.prog-act:hover{color:var(--gold)}
+.prog-act.active{color:var(--gold)}
+
+#term-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;border-bottom:1px solid #2a1a4a;flex-shrink:0}
+#term-dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444}
+#term-dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b}
+#term-dot-g{width:10px;height:10px;border-radius:50%;background:#10b981}
+#term-title{font-size:11px;color:var(--muted);margin-left:4px;letter-spacing:.5px}
+#term-mode-badge{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;transition:all .4s}
+#term-mode-badge.fmt{background:#ffd70020;color:var(--gold);border:1px solid #ffd70040}
+#term-mode-badge.event{background:#a855f720;color:var(--purple);border:1px solid #a855f740}
+#term-mode-badge.invoice{background:#10b98120;color:var(--green);border:1px solid #10b98140}
+
+#term-tabs{display:flex;border-bottom:1px solid #2a1a4a;flex-shrink:0}
+.term-tab{font-size:10px;padding:6px 14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.term-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+#term-body{flex:1;overflow:hidden;position:relative;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+
+#fmt-view{position:absolute;inset:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.fmt-section{background:var(--surface2);border:1px solid #2a1a4a;border-radius:6px;overflow:hidden}
+.fmt-section-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);padding:6px 10px;background:#ffd70008;border-bottom:1px solid #2a1a4a}
+.fmt-fields{display:flex;flex-direction:column}
+.fmt-field{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #0e0920}
+.fmt-field:last-child{border-bottom:none}
+.fmt-field-label{font-size:10px;color:var(--muted);min-width:88px;letter-spacing:.3px}
+.fmt-field-value{font-size:11px;color:var(--text);font-family:'SF Mono','Fira Code',monospace;flex:1;min-height:16px}
+.fmt-field-value .cursor{display:inline-block;width:7px;height:12px;background:var(--gold);margin-left:1px;animation:blink 1s step-end infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.fmt-field-value.done{color:var(--gold)}
+
+#event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;display:none}
+#event-stream{flex:1;overflow:hidden;padding:0;font-size:10.5px}
+.event-block{padding:5px 10px;font-size:10.5px;line-height:1.55;border-bottom:1px solid #0e092040;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.ev-key{color:#c084fc}.ev-str{color:#86efac}.ev-num{color:#fbbf24}.ev-bool{color:#f472b6}.ev-null{color:var(--muted)}.ev-brace{color:var(--muted)}
+.ev-changed{border-radius:2px;outline:1px solid #ffd70080;background:#ffd70012;padding:0 2px}
+.ev-changed-mult{outline:1px solid #f472b680;background:#f472b612;padding:0 2px}
+.ev-changed-val{outline:1px solid #10b98180;background:#10b98112;padding:0 2px}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+#invoice-view{position:absolute;inset:0;overflow:hidden;padding:10px 14px;display:flex;flex-direction:column;gap:0;display:none}
+.inv-json-line{font-size:11px;line-height:1.6;white-space:pre}
+.inv-json-line.reveal{animation:slideIn .25s ease}
+
+#commentary{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;background:var(--surface);border-top:1px solid #2a1a4a;border-left:3px solid var(--gold);flex-shrink:0;min-height:38px;transition:border-color .4s}
+#commentary.pink{border-left-color:var(--pink)}
+#commentary.purple{border-left-color:var(--purple)}
+#commentary.green{border-left-color:var(--green)}
+#commentary-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+#commentary-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
+#commentary-text strong{color:var(--gold)}
+#commentary.pink #commentary-text strong{color:var(--pink)}
+#commentary.purple #commentary-text strong{color:var(--purple)}
+#commentary.green #commentary-text strong{color:var(--green)}
+
+#act-header{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
+#act-eyebrow{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+#act-title{font-size:15px;font-weight:700;color:var(--text);transition:color .4s}
+#act-title.gold{color:var(--gold)}
+#act-title.pink{color:var(--pink)}
+#act-title.purple{color:var(--purple)}
+#act-title.green{color:var(--green)}
+#act-desc{font-size:11px;color:var(--muted);margin-left:auto}
+
+#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid #2a1a4a;margin-top:4px}
+.ctrl-btn{background:var(--surface2);border:1px solid #2a1a4a;color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.ctrl-btn:hover{border-color:var(--gold);color:var(--gold)}
+.ctrl-btn:active{transform:scale(.97)}
+#btn-play{background:var(--gold);border-color:var(--gold);color:#06030f;font-weight:600;min-width:64px}
+#btn-play:hover{background:#e6c200;border-color:#e6c200}
+#speed-label{font-size:11px;color:var(--muted);margin-left:4px}
+#speed-val{font-size:11px;color:var(--gold);min-width:24px}
+.ctrl-sep{width:1px;height:18px;background:#2a1a4a;margin:0 4px}
+#kbd-hint{font-size:10px;color:var(--muted);margin-left:auto;letter-spacing:.3px}
+
+#btn-info{background:linear-gradient(135deg,#ffd70022,#a855f722);border:1px solid var(--gold);
+  border-radius:20px;color:var(--gold);font-size:11px;font-weight:700;padding:5px 14px;
+  cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;
+  box-shadow:0 0 10px #ffd70022}
+#btn-info:hover{background:var(--gold);color:#06030f;box-shadow:0 0 18px #ffd70055}
+#btn-info:active{transform:scale(.97)}
+
+#info-backdrop{position:fixed;inset:0;z-index:205;background:rgba(6,3,15,.65);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .3s}
+#info-backdrop.show{opacity:1;pointer-events:auto}
+#info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:210;
+  background:#080512;border-left:1px solid #2a1a4a;
+  transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden}
+#info-drawer.open{transform:translateX(0)}
+#drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid #2a1a4a;flex-shrink:0;background:linear-gradient(135deg,#12082a,#0e0620)}
+#drawer-logo{font-size:16px;font-weight:800;color:var(--text)}
+#drawer-logo span{color:var(--gold)}
+#drawer-subtitle{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+#drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#2a1a4a;border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#drawer-close:hover{background:#3d2560;color:var(--text)}
+#drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;scroll-behavior:smooth}
+#drawer-body::-webkit-scrollbar{width:4px}
+#drawer-body::-webkit-scrollbar-thumb{background:#2a1a4a;border-radius:2px}
+#drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid #2a1a4a;flex-shrink:0}
+.dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:#2a1a4a;color:var(--muted);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
+.dnav-pill:hover{background:#3d2560;color:var(--text)}
+.dnav-pill.active{background:#ffd70015;color:var(--gold);border-color:#ffd70040}
+
+.dsec{padding:18px 0;border-bottom:1px solid #0e0920}
+.dsec:last-child{border-bottom:none;padding-bottom:8px}
+.dsec-eyebrow{font-size:8px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;opacity:.7}
+.dsec-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dsec-icon{font-size:18px}
+.dsec-body{font-size:12px;color:#a892c8;line-height:1.7;display:flex;flex-direction:column;gap:8px}
+.dsec-body p{margin:0}
+.dsec-body strong{color:var(--text);font-weight:600}
+.dsec-body em{color:var(--gold);font-style:normal}
+.dfield-table{background:var(--surface2);border:1px solid #2a1a4a;border-radius:6px;overflow:hidden;margin-top:4px}
+.dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid #0e0920;align-items:flex-start;gap:10px;font-size:11px}
+.dfield-row:last-child{border-bottom:none}
+.dfield-key{color:var(--gold);min-width:110px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
+.dfield-val{color:#a892c8;line-height:1.5}
+.dfield-val strong{color:var(--text)}
+.dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;background:var(--surface2);border:1px solid #2a1a4a;border-radius:6px;font-size:11px}
+.dflow-node{padding:4px 10px;border-radius:4px;background:#2a1a4a;color:var(--text);text-align:center;font-size:10px;line-height:1.4}
+.dflow-node.highlight{background:#ffd70015;border:1px solid #ffd70040;color:var(--gold)}
+.dflow-arrow{color:var(--muted);font-size:14px}
+.dtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.dtag{font-size:9px;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+.dtag.gold{background:#ffd70015;color:var(--gold);border:1px solid #ffd70030}
+.dtag.purple{background:#a855f715;color:var(--purple);border:1px solid #a855f730}
+.dtag.green{background:#10b98115;color:var(--green);border:1px solid #10b98130}
+.dtag.pink{background:#f472b615;color:var(--pink);border:1px solid #f472b630}
+.dtag.teal{background:#00d4ff15;color:var(--teal);border:1px solid #00d4ff30}
+.dcode{background:#030108;border:1px solid #2a1a4a;border-radius:6px;padding:10px 12px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#c084fc;overflow-x:auto;margin-top:6px}
+.dcode .ck{color:#c084fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#6b5a8a}
+.dcallout{background:linear-gradient(135deg,#ffd70008,#a855f708);border:1px solid #ffd70025;border-radius:6px;padding:10px 12px;font-size:11px;color:#a892c8;line-height:1.6;margin-top:6px}
+.dcallout strong{color:var(--gold)}
+
+/* Dashboard — bigger */
+#ev-dashboard{padding:10px 12px 8px;background:#040210;border-bottom:1px solid #2a1a4a;flex-shrink:0}
+.ev-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.ev-metric{background:#0e0920;border:1px solid #2a1a4a;border-radius:9px;padding:9px 12px;transition:border-color .4s}
+.ev-metric-top{display:flex;align-items:center;gap:4px;margin-bottom:3px}
+.ev-metric-icon{font-size:13px}
+.ev-metric-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.ev-metric-val{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .5s;line-height:1}
+.ev-metric-unit{font-size:9px;color:var(--muted);margin-top:2px}
+.ev-metric.pts{border-color:#ffd70035}
+.ev-metric.pts .ev-metric-val{color:var(--gold)}
+.ev-metric.mult{border-color:#f472b635}
+.ev-metric.mult .ev-metric-val{color:var(--pink)}
+.ev-metric.tier{border-color:#a855f735}
+.ev-metric.tier .ev-metric-val{color:var(--purple);font-size:17px}
+.ev-metric.val{border-color:#10b98135}
+.ev-metric.val .ev-metric-val{color:var(--green)}
+.ev-metric.bonus-glow{border-color:#f472b690;animation:bonus-pulse .7s ease infinite alternate}
+@keyframes bonus-pulse{from{border-color:#f472b640}to{border-color:#f472b6c0;box-shadow:0 0 12px #f472b630}}
+
+#ev-tier-bar-wrap{display:flex;flex-direction:column;gap:3px}
+#ev-tier-title{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between}
+#ev-tier-track{height:9px;border-radius:5px;background:#2a1a4a;position:relative;overflow:hidden}
+#ev-tier-fill{position:absolute;top:0;left:0;height:100%;border-radius:5px;transition:width .4s,background .5s}
+#ev-tier-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}
+#ev-tier-rate-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-align:center;margin-top:2px;transition:color .4s}
+
+#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid #2a1a4a;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+#ev-footer{padding:4px 10px;border-top:1px solid #2a1a4a;font-size:8.5px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ev-legend{display:inline-flex;align-items:center;gap:3px}
+.ev-leg-box{width:8px;height:8px;border-radius:1px;display:inline-block}
+</style>
+</head>
+<body>
+
+<a href="index.html" style="position:fixed;top:14px;left:18px;z-index:9999;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(14,9,32,0.82);backdrop-filter:blur(16px);border:1px solid rgba(42,26,74,0.9);color:#6b5a8a;font-family:system-ui,sans-serif;font-size:12px;font-weight:500;text-decoration:none;transition:color .2s,border-color .2s;" onmouseover="this.style.color='#f0e6ff';this.style.borderColor='#ffd700'" onmouseout="this.style.color='#6b5a8a';this.style.borderColor='rgba(42,26,74,0.9)'">← Units360.ai</a>
+
+<div id="app">
+
+<div id="overlay">
+  <div id="overlay-eyebrow">Units360 · Loyalty &amp; Credit Ledger</div>
+  <div id="overlay-title"></div>
+  <div id="overlay-time"></div>
+  <div id="overlay-sub"></div>
+</div>
+
+<div id="header">
+  <div id="logo">Units<span>360</span></div>
+  <div id="badge">Demo · Fintech</div>
+  <button id="btn-info">ℹ Platform Guide</button>
+  <div id="header-center">
+    <div id="demo-title">Loyalty &amp; Credit Ledger · Usage Intelligence Platform</div>
+    <div id="demo-sub">Real-time reward_points metering · Per-transaction earn &amp; redeem · CloudEvents stream</div>
+  </div>
+  <div id="clock-wrap">
+    <div id="clock-time-label">9:00 AM</div>
+    <svg id="clock-svg" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="#0e0920" stroke="#2a1a4a" stroke-width="1.5"/>
+      <g stroke="#3d2560" stroke-width="1">
+        <line x1="28" y1="4" x2="28" y2="8"/>
+        <line x1="28" y1="48" x2="28" y2="52"/>
+        <line x1="4" y1="28" x2="8" y2="28"/>
+        <line x1="48" y1="28" x2="52" y2="28"/>
+      </g>
+      <line id="hand-hour" x1="28" y1="28" x2="28" y2="14" stroke="#6b5a8a" stroke-width="3.5" stroke-linecap="round"/>
+      <line id="hand-min"  x1="28" y1="28" x2="28" y2="7"  stroke="#f0e6ff" stroke-width="2"   stroke-linecap="round"/>
+      <line id="hand-sec"  x1="28" y1="28" x2="28" y2="5"  stroke="#ffd700" stroke-width="1.2" stroke-linecap="round"/>
+      <line id="hand-sec-tail" x1="28" y1="28" x2="28" y2="36" stroke="#ffd700" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="28" cy="28" r="2.5" fill="#ffd700"/>
+    </svg>
+  </div>
+</div>
+
+<div id="act-header">
+  <div id="act-eyebrow">ACT 1 OF 5</div>
+  <div id="act-title" class="gold">Rewards Configuration</div>
+  <div id="act-desc">Defining the reward_points unit, member account &amp; earn rate</div>
+</div>
+
+<div id="main">
+  <div id="left-panel">
+
+    <!-- Scene -->
+    <div id="scene-wrap">
+      <svg id="scene-svg" viewBox="0 0 640 165" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <radialGradient id="card-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffd700" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="purple-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#a855f7" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="bg-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#06030f"/>
+            <stop offset="100%" stop-color="#0e0920"/>
+          </linearGradient>
+          <linearGradient id="card-body-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1a0d38"/>
+            <stop offset="100%" stop-color="#2d1060"/>
+          </linearGradient>
+          <linearGradient id="wallet-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0a1520"/>
+            <stop offset="100%" stop-color="#102040"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Background -->
+        <rect width="640" height="165" fill="url(#bg-grad)"/>
+
+        <!-- Floating particles background -->
+        <g id="bg-particles" opacity="0.4"></g>
+
+        <!-- Left: POS/Merchant Terminal -->
+        <g id="merchant-terminal" transform="translate(18, 20)">
+          <!-- Terminal body -->
+          <rect x="0" y="0" width="110" height="120" rx="8" fill="#0d0a20" stroke="#2a1a4a" stroke-width="1.5"/>
+          <!-- Screen -->
+          <rect x="8" y="8" width="94" height="62" rx="4" fill="#080614" stroke="#3d2560" stroke-width="1"/>
+          <!-- Screen glow -->
+          <rect x="8" y="8" width="94" height="62" rx="4" fill="#a855f705"/>
+          <!-- Screen content -->
+          <text x="55" y="26" font-size="7.5" fill="#a892c8" text-anchor="middle" letter-spacing="1">MERCHANT POS</text>
+          <rect x="16" y="30" width="78" height="1" fill="#2a1a4a"/>
+          <text id="merch-amount" x="55" y="48" font-size="13" fill="#ffd700" text-anchor="middle" font-weight="700">$0.00</text>
+          <text id="merch-label" x="55" y="60" font-size="7" fill="#6b5a8a" text-anchor="middle">AWAITING TXN</text>
+          <!-- Keypad dots -->
+          <g fill="#2a1a4a">
+            <circle cx="20" cy="84" r="5"/><circle cx="35" cy="84" r="5"/><circle cx="50" cy="84" r="5"/>
+            <circle cx="20" cy="98" r="5"/><circle cx="35" cy="98" r="5"/><circle cx="50" cy="98" r="5"/>
+            <circle cx="20" cy="112" r="5"/><circle cx="35" cy="112" r="5"/>
+          </g>
+          <!-- Green confirm button -->
+          <rect x="62" y="88" width="38" height="28" rx="4" fill="#0f2a1a" stroke="#10b98140" stroke-width="1"/>
+          <text x="81" y="106" font-size="9" fill="#10b981" text-anchor="middle">PAY</text>
+          <!-- Active LED -->
+          <circle id="merch-led" cx="100" cy="10" r="3" fill="#10b981" opacity="0.8"/>
+          <!-- Terminal label -->
+          <text x="55" y="138" font-size="6" fill="#3d2560" text-anchor="middle" letter-spacing="1">UNITS360-POS</text>
+        </g>
+
+        <!-- Center: The payment card (animated) -->
+        <g id="card-group" transform="translate(190, 30)">
+          <!-- Card glow -->
+          <ellipse id="card-glow-el" cx="80" cy="53" rx="70" ry="45" fill="url(#card-glow)" opacity="0"/>
+          <!-- Card body -->
+          <rect x="5" y="5" width="150" height="95" rx="10" fill="url(#card-body-grad)" stroke="#5b21b6" stroke-width="1.5"/>
+          <!-- Card shine -->
+          <rect x="5" y="5" width="150" height="22" rx="10" fill="#ffffff08"/>
+          <!-- Chip -->
+          <rect x="20" y="22" width="28" height="22" rx="3" fill="#c9a227" stroke="#e6c200" stroke-width="0.8"/>
+          <line x1="20" y1="33" x2="48" y2="33" stroke="#a07818" stroke-width="0.5"/>
+          <line x1="34" y1="22" x2="34" y2="44" stroke="#a07818" stroke-width="0.5"/>
+          <!-- Contactless symbol -->
+          <g stroke="#c084fc" stroke-width="1.2" fill="none" opacity="0.8">
+            <path d="M 64 27 Q 70 33 64 39"/>
+            <path d="M 68 23 Q 77 33 68 43"/>
+            <path d="M 72 19 Q 84 33 72 47"/>
+          </g>
+          <!-- Card number (masked) -->
+          <text x="20" y="68" font-size="9" fill="#c4b5fd" letter-spacing="3" font-family="monospace">•••• •••• •••• 4291</text>
+          <!-- Card name -->
+          <text x="20" y="88" font-size="7.5" fill="#a892c8" letter-spacing="1">APEX REWARDS GOLD</text>
+          <!-- Network logo -->
+          <circle cx="136" cy="82" r="9" fill="#ef444420" stroke="#ef444440" stroke-width="1"/>
+          <circle cx="144" cy="82" r="9" fill="#f59e0b20" stroke="#f59e0b40" stroke-width="1"/>
+          <!-- Card status -->
+          <text id="card-status" x="80" y="118" font-size="7.5" fill="#6b5a8a" text-anchor="middle" letter-spacing="1.5"></text>
+        </g>
+
+        <!-- Right: Digital Wallet / Rewards Display -->
+        <g id="wallet-display" transform="translate(415, 15)">
+          <!-- Wallet frame -->
+          <rect x="0" y="0" width="200" height="130" rx="8" fill="url(#wallet-grad)" stroke="#1e3050" stroke-width="1.5"/>
+          <!-- Purple glow top -->
+          <rect x="0" y="0" width="200" height="30" rx="8" fill="#a855f710"/>
+          <!-- Header -->
+          <text x="100" y="16" font-size="8" fill="#6b9aaa" text-anchor="middle" letter-spacing="1.5">REWARDS WALLET</text>
+          <rect x="0" y="22" width="200" height="1" fill="#1e3050"/>
+          <!-- Points balance big -->
+          <text x="100" y="50" font-size="8" fill="#6b5a8a" text-anchor="middle" letter-spacing="1">AVAILABLE POINTS</text>
+          <text id="wallet-pts" x="100" y="76" font-size="26" fill="#ffd700" text-anchor="middle" font-weight="800">0</text>
+          <text x="100" y="88" font-size="7" fill="#6b5a8a" text-anchor="middle">reward_points · APEX GOLD</text>
+          <rect x="10" y="96" width="180" height="1" fill="#1e3050"/>
+          <!-- Value line -->
+          <text x="20" y="112" font-size="7.5" fill="#6b5a8a">Cash Value</text>
+          <text id="wallet-val" x="180" y="112" font-size="9" fill="#10b981" text-anchor="end" font-weight="600">$0.00</text>
+          <!-- Tier line -->
+          <text x="20" y="124" font-size="7.5" fill="#6b5a8a">Member Tier</text>
+          <text id="wallet-tier" x="180" y="124" font-size="9" fill="#a855f7" text-anchor="end" font-weight="600">STANDARD</text>
+          <!-- Pulse ring on earn -->
+          <circle id="wallet-ring" cx="100" cy="70" r="40" fill="none" stroke="#ffd700" stroke-width="1.5" opacity="0"/>
+        </g>
+
+        <!-- Animated transaction dots (from card → Units360 → wallet) -->
+        <g id="txn-particles"></g>
+
+        <!-- Scene status text -->
+        <text id="scene-status" x="320" y="14" font-size="10" fill="#ffd700" text-anchor="middle" opacity="0" letter-spacing="2" font-weight="600"></text>
+      </svg>
+    </div>
+
+    <!-- Flow diagram -->
+    <div id="flow-wrap">
+      <div id="flow-label">Live Loyalty Data Flow</div>
+      <svg id="flow-svg" viewBox="0 0 640 72" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ng-gold" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffd70020"/><stop offset="100%" stop-color="#ffd70008"/>
+          </linearGradient>
+          <linearGradient id="ng-purple" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a855f720"/><stop offset="100%" stop-color="#a855f708"/>
+          </linearGradient>
+          <linearGradient id="ng-green" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#10b98120"/><stop offset="100%" stop-color="#10b98108"/>
+          </linearGradient>
+        </defs>
+        <path id="path-0" d="M 148 36 Q 197 20 242 36" fill="none" stroke="#2a1a4a" stroke-width="1.5"/>
+        <path id="path-1" d="M 348 36 Q 397 20 442 36" fill="none" stroke="#2a1a4a" stroke-width="1.5"/>
+        <path id="path-2" d="M 548 36 Q 580 20 610 36" fill="none" stroke="#2a1a4a" stroke-width="1.5"/>
+        <rect x="4"   y="14" width="144" height="44" rx="8" fill="url(#ng-gold)"   stroke="#2a1a4a" stroke-width="1"/>
+        <text x="76"  y="32" font-size="14" text-anchor="middle">💳</text>
+        <text x="76"  y="45" font-size="9" fill="#f0e6ff" text-anchor="middle" letter-spacing=".5">Card Transaction</text>
+        <text id="node-val-1" x="76" y="56" font-size="8" fill="#6b5a8a" text-anchor="middle">IDLE</text>
+        <rect x="244" y="14" width="104" height="44" rx="8" fill="#0e0920" stroke="#ffd70040" stroke-width="1"/>
+        <text x="296" y="32" font-size="14" text-anchor="middle">⚡</text>
+        <text x="296" y="45" font-size="9" fill="#f0e6ff" text-anchor="middle" letter-spacing=".5">Points Engine</text>
+        <text id="node-val-2" x="296" y="56" font-size="8" fill="#6b5a8a" text-anchor="middle">READY</text>
+        <rect x="444" y="14" width="104" height="44" rx="8" fill="url(#ng-purple)" stroke="#a855f740" stroke-width="1"/>
+        <text x="496" y="32" font-size="14" text-anchor="middle">🏦</text>
+        <text x="496" y="45" font-size="9" fill="#f0e6ff" text-anchor="middle" letter-spacing=".5">Units360 Ledger</text>
+        <text id="node-val-3" x="496" y="56" font-size="8" fill="#6b5a8a" text-anchor="middle">ACTIVE</text>
+        <rect x="590" y="14" width="46" height="44" rx="8" fill="url(#ng-green)"   stroke="#10b98140" stroke-width="1"/>
+        <text x="613" y="32" font-size="14" text-anchor="middle">🎁</text>
+        <text x="613" y="45" font-size="7" fill="#f0e6ff" text-anchor="middle" letter-spacing=".2">Wallet</text>
+        <text id="node-val-4" x="613" y="56" font-size="7" fill="#6b5a8a" text-anchor="middle">0 pts</text>
+        <g id="flow-particles"></g>
+      </svg>
+    </div>
+
+    <!-- Points counter row -->
+    <div id="pts-row">
+      <div>
+        <div id="pts-balance" class="zero">0</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">reward_points · Member APEX-4291</div>
+      </div>
+      <div id="pts-meta">
+        <div id="pts-status" class="zero">STANDBY</div>
+        <div id="pts-unit">Real-time ledger · Apex Rewards Gold</div>
+      </div>
+      <div id="pts-right">
+        <div id="pts-rate-pill" class="zero">— pts/txn</div>
+        <div id="pts-today">Rate Plan: Apex-Gold-1x</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div id="prog-wrap">
+      <div id="prog-bar"><div id="prog-fill"></div></div>
+      <div id="prog-acts">
+        <span class="prog-act active" data-act="0">Setup</span>
+        <span class="prog-act" data-act="1">Earn</span>
+        <span class="prog-act" data-act="2">Bonus 3×</span>
+        <span class="prog-act" data-act="3">Redeem</span>
+        <span class="prog-act" data-act="4">Statement</span>
+      </div>
+    </div>
+
+  </div><!-- /left-panel -->
+
+  <!-- Right panel -->
+  <div id="right-panel">
+    <div id="term-header">
+      <div id="term-dot-r"></div><div id="term-dot-y"></div><div id="term-dot-g"></div>
+      <div id="term-title">Units360 · Rewards Terminal</div>
+      <div id="term-mode-badge" class="fmt">FMT</div>
+    </div>
+    <div id="term-tabs">
+      <div class="term-tab active" id="tab-unit">UNIT</div>
+      <div class="term-tab" id="tab-account">ACCOUNT</div>
+      <div class="term-tab" id="tab-txn">TRANSACTION</div>
+    </div>
+    <div id="term-body">
+
+      <!-- FMT View (Act 1) -->
+      <div id="fmt-view">
+        <div class="fmt-section">
+          <div class="fmt-section-hdr">Unit Definition</div>
+          <div class="fmt-fields">
+            <div class="fmt-field"><span class="fmt-field-label">Unit ID</span><span class="fmt-field-value" id="ff-unit-id"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Display Name</span><span class="fmt-field-value" id="ff-display"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Direction</span><span class="fmt-field-value" id="ff-direction"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Reset Period</span><span class="fmt-field-value" id="ff-reset"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Precision</span><span class="fmt-field-value" id="ff-precision"></span></div>
+          </div>
+        </div>
+        <div class="fmt-section">
+          <div class="fmt-section-hdr">Member Account</div>
+          <div class="fmt-fields">
+            <div class="fmt-field"><span class="fmt-field-label">Account ID</span><span class="fmt-field-value" id="ff-acct-id"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Card Type</span><span class="fmt-field-value" id="ff-card"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Rate Plan</span><span class="fmt-field-value" id="ff-rate"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Tier</span><span class="fmt-field-value" id="ff-tier"></span></div>
+          </div>
+        </div>
+        <div class="fmt-section">
+          <div class="fmt-section-hdr">Earn &amp; Redeem Rules</div>
+          <div class="fmt-fields">
+            <div class="fmt-field"><span class="fmt-field-label">Base Earn</span><span class="fmt-field-value" id="ff-base"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Dining Bonus</span><span class="fmt-field-value" id="ff-dining"></span></div>
+            <div class="fmt-field"><span class="fmt-field-label">Redeem Rate</span><span class="fmt-field-value" id="ff-redeem"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event View (Acts 2–4) -->
+      <div id="event-view" style="display:none;position:absolute;inset:0;overflow:hidden;flex-direction:column;">
+        <div id="ev-dashboard">
+          <div class="ev-dash-grid">
+            <div class="ev-metric pts">
+              <div class="ev-metric-top"><span class="ev-metric-icon">⭐</span><span class="ev-metric-label">Points Balance</span></div>
+              <div class="ev-metric-val" id="ev-pts-val">0</div>
+              <div class="ev-metric-unit">reward_points earned</div>
+            </div>
+            <div class="ev-metric mult" id="ev-mult-card">
+              <div class="ev-metric-top"><span class="ev-metric-icon">✨</span><span class="ev-metric-label">Multiplier</span></div>
+              <div class="ev-metric-val" id="ev-mult-val">1×</div>
+              <div class="ev-metric-unit">current earn rate</div>
+            </div>
+            <div class="ev-metric tier">
+              <div class="ev-metric-top"><span class="ev-metric-icon">👑</span><span class="ev-metric-label">Member Tier</span></div>
+              <div class="ev-metric-val" id="ev-tier-val">STANDARD</div>
+              <div class="ev-metric-unit" id="ev-tier-unit">pts to next tier</div>
+            </div>
+            <div class="ev-metric val">
+              <div class="ev-metric-top"><span class="ev-metric-icon">💵</span><span class="ev-metric-label">Cash Value</span></div>
+              <div class="ev-metric-val" id="ev-val-val">$0.00</div>
+              <div class="ev-metric-unit">@ $0.01 per point</div>
+            </div>
+          </div>
+          <div id="ev-tier-bar-wrap">
+            <div id="ev-tier-title">
+              <span>Progress to GOLD Elite</span>
+              <span id="event-segment" style="color:var(--gold)">EARN ↑</span>
+            </div>
+            <div id="ev-tier-track">
+              <div id="ev-tier-fill" style="width:0%;background:linear-gradient(90deg,#ffd700,#a855f7)"></div>
+            </div>
+            <div id="ev-tier-labels"><span>0</span><span>2,500</span><span>5,000</span><span>7,500</span><span>10K Elite</span></div>
+            <div id="ev-tier-rate-label" style="color:var(--gold)">⭐ Earning · Standard-1× · 1 pt per $1 spent</div>
+          </div>
+        </div>
+        <div id="ev-json-hdr">
+          <div class="pulse-dot" id="event-pulse"></div>
+          <span>Live Transaction CloudEvent</span>
+          <span id="event-count" style="color:var(--gold);font-weight:700">0</span>
+          <span style="font-size:8px;margin-left:auto;opacity:.6">→ Units360 RTE</span>
+        </div>
+        <div id="event-stream"></div>
+        <div id="ev-footer">
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#ffd70012;outline:1px solid #ffd70080"></span> pts Δ</span>
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#f472b612;outline:1px solid #f472b680"></span> mult Δ</span>
+          <span class="ev-legend"><span class="ev-leg-box" style="background:#10b98112;outline:1px solid #10b98180"></span> val Δ</span>
+        </div>
+      </div>
+
+      <!-- Invoice / Statement View (Act 5) -->
+      <div id="invoice-view" style="display:none;position:absolute;inset:0;overflow:hidden;padding:10px 14px;flex-direction:column;"></div>
+
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div id="commentary">
+  <span id="commentary-icon">💳</span>
+  <span id="commentary-text">Configure the <strong>reward_points unit</strong> — Units360 sets up real-time loyalty point metering for any card program. The FMT defines earn rates, multipliers, and redemption rules in seconds.</span>
+</div>
+
+<div id="controls">
+  <button class="ctrl-btn" id="btn-prev">⏮ Prev</button>
+  <button class="ctrl-btn" id="btn-play">▶ Play</button>
+  <button class="ctrl-btn" id="btn-next">Next ⏭</button>
+  <div class="ctrl-sep"></div>
+  <span class="ctrl-btn" id="btn-slower" style="cursor:pointer">🐢</span>
+  <span id="speed-label">Speed:</span><span id="speed-val">1×</span>
+  <span class="ctrl-btn" id="btn-faster" style="cursor:pointer">🐇</span>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn" id="btn-reset">↺ Reset</button>
+  <div id="kbd-hint">Space · ← → · R · ? Guide</div>
+</div>
+
+</div><!-- /app -->
+
+<div id="info-backdrop"></div>
+
+<div id="info-drawer">
+  <div id="drawer-header">
+    <div>
+      <div id="drawer-logo">Units<span>360</span>.ai</div>
+      <div id="drawer-subtitle">Platform Guide · Fintech Edition</div>
+    </div>
+    <button id="drawer-close">✕</button>
+  </div>
+  <div id="drawer-nav">
+    <span class="dnav-pill active" data-target="sec-what">What is Units360?</span>
+    <span class="dnav-pill" data-target="sec-org">Card Issuer</span>
+    <span class="dnav-pill" data-target="sec-unit">Unit</span>
+    <span class="dnav-pill" data-target="sec-account">Account</span>
+    <span class="dnav-pill" data-target="sec-txn">Transaction</span>
+    <span class="dnav-pill" data-target="sec-fmt">FMT</span>
+    <span class="dnav-pill" data-target="sec-rte">RTE</span>
+    <span class="dnav-pill" data-target="sec-cloud">CloudEvents</span>
+  </div>
+  <div id="drawer-body">
+
+    <div class="dsec" id="sec-what">
+      <div class="dsec-eyebrow">Platform Overview</div>
+      <div class="dsec-title"><span class="dsec-icon">🚀</span> What is Units360?</div>
+      <div class="dsec-body">
+        <p>Units360.ai is a <strong>low-code usage metering platform</strong> — the operating system for any business that sells or rewards by the unit. Instead of building custom ledger infrastructure, you define your unit model once, and Units360 auto-provisions everything else.</p>
+        <p>In this demo, the unit is <em>reward_points</em>. But it works equally for km, kWh, tokens, API calls, consultation hours — any measurable quantity.</p>
+        <div class="dflow">
+          <div class="dflow-node highlight">1. Define<br><small>FMT</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">2. Deploy<br><small>RTE</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">3. Stream<br><small>Txn Events</small></div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">4. Statement<br><small>Auto</small></div>
+        </div>
+        <div class="dtags">
+          <span class="dtag gold">No DevOps required</span>
+          <span class="dtag purple">Auto-generated API</span>
+          <span class="dtag green">Real-time ledger</span>
+          <span class="dtag pink">Bidirectional (earn + redeem)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-org">
+      <div class="dsec-eyebrow">Who Uses Units360 Here</div>
+      <div class="dsec-title"><span class="dsec-icon">🏦</span> The Card Issuer</div>
+      <div class="dsec-body">
+        <p>In this fintech demo, the <strong>Organization</strong> is the <em>Card Issuer</em> — the bank or fintech that runs the loyalty rewards program for its cardholders.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Organization</span><span class="dfield-val"><strong>Apex Financial</strong> (example)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their product</span><span class="dfield-val">Loyalty points earned on every card purchase</span></div>
+          <div class="dfield-row"><span class="dfield-key">Unit they use</span><span class="dfield-val"><strong>reward_points</strong> — bidirectional (earn &amp; redeem)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate plan</span><span class="dfield-val">Apex-Gold-1x · dining 3×, travel 2×, base 1×</span></div>
+          <div class="dfield-row"><span class="dfield-key">Their customer</span><span class="dfield-val">Cardholder <strong>APEX-4291</strong> — Gold member</span></div>
+        </div>
+        <div class="dcallout"><strong>Real-time points ledger</strong> means cardholders see their balance update the moment a transaction clears — no batch jobs, no overnight reconciliation. Units360 handles multipliers, tier upgrades, and redemption rules automatically.</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-unit">
+      <div class="dsec-eyebrow">Core Concept · 1 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">⭐</span> What is a Unit?</div>
+      <div class="dsec-body">
+        <p>A <strong>Unit</strong> is the fundamental thing being measured — in this case, <em>reward_points</em>. It defines what you're counting, which direction it flows, and when it resets.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">unit_id</span><span class="dfield-val"><strong>reward_points</strong></span></div>
+          <div class="dfield-row"><span class="dfield-key">display_name</span><span class="dfield-val">Apex Reward Points</span></div>
+          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val"><strong>BIDIRECTIONAL</strong> — can earn (positive) and redeem (negative)</span></div>
+          <div class="dfield-row"><span class="dfield-key">reset_period</span><span class="dfield-val">NEVER — points accumulate until redeemed or expired</span></div>
+          <div class="dfield-row"><span class="dfield-key">precision</span><span class="dfield-val">Integer (whole points per transaction)</span></div>
+        </div>
+        <div class="dtags">
+          <span class="dtag gold">reward_points · credits</span>
+          <span class="dtag purple">virtual_currency · tokens</span>
+          <span class="dtag green">kWh · km · API calls</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-account">
+      <div class="dsec-eyebrow">Core Concept · 2 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">💳</span> What is an Account?</div>
+      <div class="dsec-body">
+        <p>An <strong>Account</strong> is the entity whose usage is tracked — here, a specific cardholder. Each account maintains a live points balance and its own rate plan.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">account_id</span><span class="dfield-val"><strong>APEX-4291</strong> — cardholder identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">card_type</span><span class="dfield-val">Apex Rewards Gold · premium tier</span></div>
+          <div class="dfield-row"><span class="dfield-key">rate_plan</span><span class="dfield-val"><strong>Apex-Gold-1x</strong> — tiered by merchant category</span></div>
+          <div class="dfield-row"><span class="dfield-key">current_balance</span><span class="dfield-val">Live points total — updated per transaction</span></div>
+          <div class="dfield-row"><span class="dfield-key">tier_status</span><span class="dfield-val">GOLD → GOLD ELITE at 10,000 pts</span></div>
+        </div>
+        <p>Multiple cardholders can use the same reward_points unit but have different multipliers based on card tier, spending category, or promotional campaigns.</p>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-txn">
+      <div class="dsec-eyebrow">Core Concept · 3 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">📋</span> What is a Transaction?</div>
+      <div class="dsec-body">
+        <p>A <strong>Transaction</strong> is a single card purchase or redemption event — it carries the spend amount, merchant category, and multiplier. Points are calculated and posted instantly.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">quantity</span><span class="dfield-val"><strong>+350 pts</strong> — from a $35 dining purchase at 3×</span></div>
+          <div class="dfield-row"><span class="dfield-key">category</span><span class="dfield-val">DINING — triggers 3× bonus multiplier</span></div>
+          <div class="dfield-row"><span class="dfield-key">multiplier</span><span class="dfield-val">3× applied automatically from FMT rate rules</span></div>
+          <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Cumulative points total updated after each txn</span></div>
+          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val">EARN (positive) or REDEEM (negative)</span></div>
+        </div>
+        <div class="dcallout"><strong>At redemption</strong>, a negative-quantity transaction debits points from the ledger. Units360 enforces balance guards — a redemption that would take balance below zero is rejected automatically.</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-fmt">
+      <div class="dsec-eyebrow">Configuration Layer</div>
+      <div class="dsec-title"><span class="dsec-icon">📐</span> FMT — Fintech Metadata Template</div>
+      <div class="dsec-body">
+        <p>The <strong>FMT</strong> is Units360's low-code config for loyalty programs. Define the entire points model once — earn rates, multipliers, tier thresholds, redemption rules. No code, no schemas.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define reward_points, direction (bidirectional), precision, expiry</span></div>
+          <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Card tier, base rate plan, tier thresholds, redemption floor</span></div>
+          <div class="dfield-row"><span class="dfield-key">Transaction tab</span><span class="dfield-val">MCC-based multipliers, promo rules, balance guards</span></div>
+        </div>
+        <div class="dcallout"><strong>FMT outputs:</strong> Once saved, Units360 auto-generates a REST endpoint for transaction ingestion, a live points dashboard, tier-progress API, and a statement template. The card network sends authorization events — Units360 handles everything else.</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-rte">
+      <div class="dsec-eyebrow">Runtime Engine</div>
+      <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
+      <div class="dsec-body">
+        <p>The <strong>RTE</strong> is the live processing layer. It ingests transaction events, resolves multipliers, updates the points ledger atomically, and triggers tier-change notifications in real time.</p>
+        <div class="dfield-table">
+          <div class="dfield-row"><span class="dfield-key">Txn ingestion</span><span class="dfield-val">Accepts CloudEvents from card network via REST POST</span></div>
+          <div class="dfield-row"><span class="dfield-key">Multiplier resolver</span><span class="dfield-val">Reads MCC code → applies matching rate rule from FMT</span></div>
+          <div class="dfield-row"><span class="dfield-key">Points ledger</span><span class="dfield-val">Atomic balance update per transaction — millisecond-accurate</span></div>
+          <div class="dfield-row"><span class="dfield-key">Tier monitor</span><span class="dfield-val">Watches balance thresholds, fires tier-upgrade webhooks</span></div>
+          <div class="dfield-row"><span class="dfield-key">Redeem guard</span><span class="dfield-val">Rejects over-redemption; enforces minimum balance rules</span></div>
+        </div>
+        <div class="dflow">
+          <div class="dflow-node">Card Network</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node highlight">RTE</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Ledger</div>
+          <span class="dflow-arrow">→</span>
+          <div class="dflow-node">Statement</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-cloud">
+      <div class="dsec-eyebrow">Event Protocol</div>
+      <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The Transaction Payload</div>
+      <div class="dsec-body">
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong>. Every card transaction is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
+        <div class="dcode"><span class="cc">// Card Network → Units360 RTE (one transaction)</span>
+POST /api/v1/events/APEX-4291
+Content-Type: application/cloudevents+json
+
+{
+  <span class="ck">"specversion"</span>: <span class="cv">"1.0"</span>,
+  <span class="ck">"type"</span>:        <span class="cv">"com.units360.loyalty.earn"</span>,
+  <span class="ck">"source"</span>:      <span class="cv">"card/APEX-4291"</span>,
+  <span class="ck">"time"</span>:        <span class="cv">"2024-06-21T10:42:18Z"</span>,
+  <span class="ck">"data"</span>: {
+    <span class="ck">"unit"</span>:       <span class="cv">"reward_points"</span>,
+    <span class="ck">"qty"</span>:        <span class="cn">350</span>,
+    <span class="ck">"direction"</span>:  <span class="cv">"EARN"</span>,
+    <span class="ck">"amount_usd"</span>: <span class="cn">35.00</span>,
+    <span class="ck">"mcc"</span>:        <span class="cn">5812</span>,
+    <span class="ck">"category"</span>:   <span class="cv">"DINING"</span>,
+    <span class="ck">"multiplier"</span>: <span class="cn">3</span>
+  }
+}</div>
+        <div class="dfield-table" style="margin-top:10px">
+          <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match FMT unit_id — "reward_points" here</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">Points earned or redeemed this transaction</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.direction</span><span class="dfield-val">EARN or REDEEM — RTE applies balance guard on REDEEM</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.multiplier</span><span class="dfield-val">Applied by RTE from FMT rules — 1×, 2×, or 3× here</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const CX = 28, CY = 28;
+
+const ACT_TIMES = [
+  [540, 555],
+  [555, 660],
+  [660, 690],
+  [690, 780],
+  [780, 810],
+];
+
+const ACTS = [
+  {
+    id:'setup', label:'Rewards Configuration', eyebrow:'ACT 1 OF 5',
+    desc:'Defining the reward_points unit, member account & earn rate',
+    ptsRate:0, duration:7000, color:'gold',
+    commentaryIcon:'💳',
+    commentary:'Configure the <strong>reward_points unit</strong> — Units360 sets up real-time loyalty point metering for any card program. The FMT defines earn rates, multipliers, and redemption rules in seconds.',
+    overlayTitle:'REWARDS SETUP · FMT',
+    overlayTime:'9:00 AM',
+    overlaySub:'Configuring reward_points unit · Member APEX-4291 · Apex Gold',
+    nodeVals:['IDLE','READY','ACTIVE','0 pts'],
+    ptsStatus:'STANDBY', ptsClass:'zero',
+    multiplier:0, tierLabel:'STANDARD', segment:'SETUP', tierPct:0,
+    segLabel:'⭐ Setup · Configuring FMT · Apex-Gold-1×',
+    etaText:'—', merchAmt:'$0.00', merchLabel:'AWAITING TXN',
+  },
+  {
+    id:'earn', label:'Earn Phase — Card Purchases', eyebrow:'ACT 2 OF 5',
+    desc:'Everyday spending — 1× base + 2× travel + 3× dining',
+    ptsRate:28, duration:11000, color:'gold',
+    commentaryIcon:'⭐',
+    commentary:'<strong>Card active</strong>. Every purchase fires a CloudEvent to Units360 — grocery, fuel, and travel transactions earn points at the configured rate. Ledger updates in under 10ms per swipe.',
+    overlayTitle:'EARN PHASE · CARD ACTIVE',
+    overlayTime:'9:15 AM',
+    overlaySub:'Earning reward_points · 1× base · APEX-4291',
+    nodeVals:['ACTIVE','EARNING','LEDGER↑','—'],
+    ptsStatus:'EARNING', ptsClass:'earning',
+    multiplier:1, tierLabel:'STANDARD', segment:'EARN ↑', tierPct:18,
+    segLabel:'⭐ Everyday Spending · 1× base · $1 = 1 pt',
+    etaText:'+1×', merchAmt:'', merchLabel:'',
+  },
+  {
+    id:'bonus', label:'3× Dining Bonus Promo', eyebrow:'ACT 3 OF 5',
+    desc:'Promo multiplier fires — dining transactions earn 3× points',
+    ptsRate:85, duration:8000, color:'pink',
+    commentaryIcon:'✨',
+    commentary:'<strong>3× dining multiplier</strong> active! Units360 reads the MCC code from the CloudEvent, matches the FMT rule, and triples the earn rate automatically. Zero code change required.',
+    overlayTitle:'3× BONUS PROMO · DINING',
+    overlayTime:'10:00 AM',
+    overlaySub:'Multiplier active · MCC 5812 DINING · 3× earn',
+    nodeVals:['3× DINING','PROMO','BONUS','—'],
+    ptsStatus:'BONUS 3×', ptsClass:'bonus',
+    multiplier:3, tierLabel:'GOLD', segment:'BONUS 3× ✨', tierPct:48,
+    segLabel:'✨ Dining Promo · 3× multiplier · $1 = 3 pts',
+    etaText:'+3×', merchAmt:'', merchLabel:'',
+  },
+  {
+    id:'redeem', label:'Redeem — Flight Reward', eyebrow:'ACT 4 OF 5',
+    desc:'Cardholder redeems 6,500 pts for a $65 flight credit',
+    ptsRate:-55, duration:9000, color:'purple',
+    commentaryIcon:'✈️',
+    commentary:'<strong>Redemption in progress</strong>. Units360 posts a negative-quantity transaction — points are debited from the ledger. The RTE enforces the balance guard, preventing over-redemption.',
+    overlayTitle:'REDEEM · FLIGHT CREDIT',
+    overlayTime:'11:00 AM',
+    overlaySub:'Redeeming 6,500 pts → $65 flight credit',
+    nodeVals:['REDEEM','DEBIT','GUARD✓','—'],
+    ptsStatus:'REDEEMING', ptsClass:'redeeming',
+    multiplier:-1, tierLabel:'GOLD', segment:'REDEEM ↓', tierPct:72,
+    segLabel:'✈️ Redemption · −1 pt applied · Flight credit',
+    etaText:'−pts', merchAmt:'', merchLabel:'',
+  },
+  {
+    id:'statement', label:'Monthly Statement', eyebrow:'ACT 5 OF 5',
+    desc:'Statement generated — full earn & redeem audit trail',
+    ptsRate:0, duration:9000, color:'green',
+    commentaryIcon:'✅',
+    commentary:'Month closed. <strong>Final balance: 4,820 pts ($48.20 value)</strong>. Units360 generates the loyalty statement automatically — earn events, bonus multipliers, and redemptions in one immutable audit trail.',
+    overlayTitle:'MONTHLY STATEMENT',
+    overlayTime:'11:30 AM',
+    overlaySub:'4,820 pts · $48.20 value · GOLD tier maintained',
+    nodeVals:['SETTLED','CLOSED','STATEMENT','4,820 pts'],
+    ptsStatus:'SETTLED', ptsClass:'done',
+    multiplier:0, tierLabel:'GOLD', segment:'SETTLED ✓', tierPct:58,
+    segLabel:'✅ Statement generated · 4,820 pts · $48.20',
+    etaText:'$48.20', merchAmt:'$0.00', merchLabel:'MONTH CLOSED',
+  },
+];
+
+const FLOW_PATHS = [
+  { p0:{x:148,y:36}, cp:{x:197,y:20}, p2:{x:242,y:36} },
+  { p0:{x:348,y:36}, cp:{x:397,y:20}, p2:{x:442,y:36} },
+  { p0:{x:548,y:36}, cp:{x:580,y:20}, p2:{x:610,y:36} },
+];
+
+function bezQ(t, p0, cp, p2) {
+  const mt = 1-t;
+  return { x: mt*mt*p0.x + 2*mt*t*cp.x + t*t*p2.x,
+           y: mt*mt*p0.y + 2*mt*t*cp.y + t*t*p2.y };
+}
+
+const FMT_FIELDS = [
+  { id:'ff-unit-id',   val:'reward_points',          delay:200  },
+  { id:'ff-display',   val:'Apex Reward Points',      delay:700  },
+  { id:'ff-direction', val:'BIDIRECTIONAL',           delay:1300 },
+  { id:'ff-reset',     val:'NEVER (accumulates)',     delay:1900 },
+  { id:'ff-precision', val:'Integer (whole pts)',     delay:2400 },
+  { id:'ff-acct-id',   val:'APEX-4291',               delay:3100 },
+  { id:'ff-card',      val:'Apex Rewards Gold',       delay:3700 },
+  { id:'ff-rate',      val:'Apex-Gold-1x',            delay:4300 },
+  { id:'ff-tier',      val:'STANDARD → GOLD @ 5K',   delay:4900 },
+  { id:'ff-base',      val:'1 pt / $1 spent',         delay:5500 },
+  { id:'ff-dining',    val:'3× pts (MCC 5812)',       delay:6000 },
+  { id:'ff-redeem',    val:'100 pts = $1.00',         delay:6500 },
+];
+
+const MERCHANTS = [
+  {name:'Whole Foods', mcc:'5411', cat:'GROCERY',  amt:'68.42', mult:1},
+  {name:'Delta Air',   mcc:'4511', cat:'TRAVEL',   amt:'284.00', mult:2},
+  {name:'Nobu NYC',    mcc:'5812', cat:'DINING',   amt:'147.50', mult:3},
+  {name:'Shell',       mcc:'5541', cat:'FUEL',     amt:'52.10',  mult:1},
+  {name:'Marriott',    mcc:'7011', cat:'HOTEL',    amt:'312.00', mult:2},
+  {name:'Chipotle',    mcc:'5812', cat:'DINING',   amt:'24.80',  mult:3},
+  {name:'Amazon',      mcc:'5999', cat:'RETAIL',   amt:'89.99',  mult:1},
+  {name:'United Air',  mcc:'4511', cat:'TRAVEL',   amt:'198.00', mult:2},
+];
+
+const INVOICE_LINES = [
+  {txt:'{',                                                    color:'ev-brace'},
+  {txt:'  "statement_id": "STMT-2024-06-APEX4291",',          color:'ev-str'},
+  {txt:'  "member":       "APEX-4291",',                      color:'ev-str'},
+  {txt:'  "period":       "2024-06-01 → 2024-06-30",',        color:'ev-str'},
+  {txt:'  "earn_summary": {',                                  color:'ev-brace'},
+  {txt:'    "base_earn":    4250,',                            color:'ev-num'},
+  {txt:'    "dining_3x":   3120,',                             color:'ev-num'},
+  {txt:'    "travel_2x":   1950,',                             color:'ev-num'},
+  {txt:'    "promo_bonus":  500',                              color:'ev-num'},
+  {txt:'  },',                                                 color:'ev-brace'},
+  {txt:'  "total_earned":  9820,',                             color:'ev-num'},
+  {txt:'  "total_redeemed": 5000,',                            color:'ev-num'},
+  {txt:'  "closing_balance": 4820,',                           color:'ev-num'},
+  {txt:'  "cash_value":   "$48.20",',                         color:'ev-str'},
+  {txt:'  "tier":         "GOLD",',                           color:'ev-str'},
+  {txt:'  "status":       "SETTLED"',                         color:'ev-bool'},
+  {txt:'}',                                                    color:'ev-brace'},
+];
+
+const state = {
+  actIndex:0, actElapsed:0, playing:false, speed:1,
+  ptsBalance:0, eventCount:0, lastTs:null,
+};
+
+let flowParticles=[], fmtTimers=[], fmtDone=new Set();
+let invoiceLineIdx=0, overlayTimer=0, secondHand=0, _secPrev=null;
+let flowSpawnTimer=0;
+let txnParticles=[], txnSpawnTimer=0;
+let walletRingAnim=null;
+
+function setHandXY(id, angleDeg, length) {
+  const rad=(angleDeg-90)*Math.PI/180;
+  const el=$(id); if(!el)return;
+  el.setAttribute('x2',(CX+length*Math.cos(rad)).toFixed(2));
+  el.setAttribute('y2',(CY+length*Math.sin(rad)).toFixed(2));
+}
+
+function getCurrentMinutes() {
+  const [start,end]=ACT_TIMES[state.actIndex];
+  const t=Math.min(state.actElapsed/ACTS[state.actIndex].duration,1);
+  return start+(end-start)*t;
+}
+
+function updateClock(dtMs) {
+  const mult=state.playing?state.speed*20:1;
+  secondHand+=(dtMs/1000)*mult;
+  const totalMin=getCurrentMinutes();
+  const h=(totalMin/60)%12, m=totalMin%60, s=secondHand%60;
+  setHandXY('hand-hour',h*30+m*0.5,14);
+  setHandXY('hand-min',m*6+s*0.1,19);
+  setHandXY('hand-sec',s*6,23);
+  setHandXY('hand-sec-tail',s*6+180,9);
+  const hh=Math.floor(Math.floor(totalMin)/60);
+  const mm=Math.floor(totalMin)%60;
+  const ampm=hh>=12?'PM':'AM';
+  $('clock-time-label').textContent=`${hh%12||12}:${String(mm).padStart(2,'0')} ${ampm}`;
+}
+
+function secLoop(ts) {
+  if(_secPrev!==null)updateClock(Math.min(ts-_secPrev,100));
+  _secPrev=ts;
+  requestAnimationFrame(secLoop);
+}
+
+// Scene: card glow and merchant display
+function updateScene() {
+  const act=ACTS[state.actIndex];
+
+  const statusEl=$('scene-status');
+  if(act.id!=='setup' && act.sceneStatus) {
+    statusEl.setAttribute('opacity','1');
+    statusEl.setAttribute('fill',
+      act.color==='pink' ? '#f472b6' :
+      act.color==='purple' ? '#a855f7' :
+      act.color==='green'  ? '#10b981' : '#ffd700');
+  } else {
+    statusEl.setAttribute('opacity','0');
+  }
+
+  // Card glow on active acts
+  const glowEl=$('card-glow-el');
+  if(act.id==='setup') { glowEl.setAttribute('opacity','0'); }
+  else if(act.id==='earn') { glowEl.setAttribute('opacity',(0.5+Math.sin(Date.now()/600)*0.2).toFixed(2)); }
+  else if(act.id==='bonus') { glowEl.setAttribute('opacity',(0.7+Math.sin(Date.now()/300)*0.3).toFixed(2)); }
+  else if(act.id==='redeem') { glowEl.setAttribute('opacity',(0.3+Math.sin(Date.now()/800)*0.1).toFixed(2)); }
+  else { glowEl.setAttribute('opacity','0.2'); }
+
+  // Card status text
+  const cs=$('card-status');
+  if(act.id==='earn') cs.textContent='● ACTIVE · EARNING';
+  else if(act.id==='bonus') cs.textContent='✨ 3× DINING PROMO';
+  else if(act.id==='redeem') cs.textContent='✈ REDEEMING POINTS';
+  else if(act.id==='statement') cs.textContent='✓ MONTH SETTLED';
+  else cs.textContent='';
+
+  // Wallet display
+  const bal = Math.max(0, state.ptsBalance);
+  $('wallet-pts').textContent = Math.round(bal).toLocaleString();
+  $('wallet-val').textContent = '$' + (bal * 0.01).toFixed(2);
+  const tier = bal > 10000 ? 'GOLD ELITE' : bal > 5000 ? 'GOLD' : bal > 2000 ? 'SILVER' : 'STANDARD';
+  $('wallet-tier').textContent = tier;
+  const tierColor = tier==='GOLD ELITE'?'#f472b6':tier==='GOLD'?'#ffd700':tier==='SILVER'?'#94a3b8':'#6b5a8a';
+  $('wallet-tier').setAttribute('fill', tierColor);
+
+  // Merchant terminal
+  if(act.merchAmt) {
+    $('merch-amount').textContent = act.merchAmt;
+    $('merch-label').textContent = act.merchLabel;
+  }
+
+  // LED pulse on merchant terminal
+  if(act.id==='earn'||act.id==='bonus') {
+    const p=(Math.sin(Date.now()/250)+1)/2;
+    $('merch-led').setAttribute('opacity',(0.4+p*0.6).toFixed(2));
+    $('merch-led').setAttribute('fill', act.id==='bonus'?'#f472b6':'#10b981');
+  } else {
+    $('merch-led').setAttribute('opacity','0.3');
+    $('merch-led').setAttribute('fill','#10b981');
+  }
+
+  // Wallet ring pulse on bonus
+  if(act.id==='bonus') {
+    const rp=(Math.sin(Date.now()/400)+1)/2;
+    $('wallet-ring').setAttribute('opacity',(rp*0.6).toFixed(2));
+    $('wallet-ring').setAttribute('stroke','#f472b6');
+  } else if(act.id==='earn') {
+    const rp=(Math.sin(Date.now()/700)+1)/2;
+    $('wallet-ring').setAttribute('opacity',(rp*0.3).toFixed(2));
+    $('wallet-ring').setAttribute('stroke','#ffd700');
+  } else {
+    $('wallet-ring').setAttribute('opacity','0');
+  }
+}
+
+// Animated transaction particles (card → ledger → wallet)
+function spawnTxnParticle() {
+  const act=ACTS[state.actIndex];
+  if(act.ptsRate===0) return;
+  const ns='http://www.w3.org/2000/svg';
+  const c=document.createElementNS(ns,'circle');
+  c.setAttribute('r','4');
+  const color = act.id==='bonus'?'#f472b6': act.id==='redeem'?'#a855f7':'#ffd700';
+  c.setAttribute('fill',color);
+  c.setAttribute('opacity','0.9');
+  $('txn-particles').appendChild(c);
+  // Path: from card center (350,83) through flow nodes toward wallet (515,83)
+  txnParticles.push({el:c, t:0, color});
+}
+
+function updateTxnParticles(dtMs) {
+  const act=ACTS[state.actIndex];
+  if(act.ptsRate===0){txnParticles.forEach(p=>p.el.remove());txnParticles=[];return;}
+  if(state.playing){
+    txnSpawnTimer+=dtMs;
+    const interval=Math.max(300,1200/state.speed);
+    if(txnSpawnTimer>=interval){txnSpawnTimer=0;spawnTxnParticle();}
+  }
+  const f=state.playing?state.speed*(dtMs/16.67):0;
+  txnParticles=txnParticles.filter(p=>{
+    p.t+=0.008*f;
+    if(p.t>=1){p.el.remove();return false;}
+    // Arc from (350,83) to (515,83) with slight curve
+    const x=350+(515-350)*p.t;
+    const y=83-Math.sin(p.t*Math.PI)*30;
+    p.el.setAttribute('cx',x.toFixed(1));
+    p.el.setAttribute('cy',y.toFixed(1));
+    p.el.setAttribute('opacity',(0.9-p.t*0.5).toFixed(2));
+    return true;
+  });
+}
+
+// Flow particles
+function spawnFlowParticle() {
+  const act=ACTS[state.actIndex];
+  if(act.ptsRate===0)return;
+  const container=$('flow-particles');
+  const color=act.id==='bonus'?'#f472b6':act.id==='redeem'?'#a855f7':'#ffd700';
+  FLOW_PATHS.forEach(path=>{
+    const el=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    el.setAttribute('r','4');
+    el.setAttribute('fill',color);
+    el.setAttribute('opacity','0.9');
+    const startPt=bezQ(0,path.p0,path.cp,path.p2);
+    el.setAttribute('cx',startPt.x);el.setAttribute('cy',startPt.y);
+    container.appendChild(el);
+    flowParticles.push({el,path,t:0,speed:0.012+Math.random()*0.008});
+  });
+}
+
+function updateFlowParticles(dtMs) {
+  const act=ACTS[state.actIndex];
+  if(act.ptsRate===0){flowParticles.forEach(p=>p.el.remove());flowParticles=[];return;}
+  const f=state.playing?state.speed*(dtMs/16.67):0;
+  if(state.playing){
+    flowSpawnTimer+=dtMs;
+    const interval=Math.max(250,700/(Math.abs(act.ptsRate)/10+1));
+    if(flowSpawnTimer>=interval){flowSpawnTimer=0;spawnFlowParticle();}
+  }
+  flowParticles=flowParticles.filter(p=>{
+    p.t+=p.speed*f;
+    if(p.t>=1){p.el.remove();return false;}
+    const pos=bezQ(p.t,p.path.p0,p.path.cp,p.path.p2);
+    p.el.setAttribute('cx',pos.x.toFixed(2));
+    p.el.setAttribute('cy',pos.y.toFixed(2));
+    p.el.setAttribute('opacity',(0.9-p.t*0.5).toFixed(2));
+    return true;
+  });
+}
+
+// FMT typewriter
+function startFMTTyping() {
+  fmtDone.clear();
+  FMT_FIELDS.forEach(f=>{const el=$(f.id);if(el){el.textContent='';el.classList.remove('done');}});
+  fmtTimers.forEach(t=>clearTimeout(t)); fmtTimers=[];
+  FMT_FIELDS.forEach(field=>{
+    const t=setTimeout(()=>{if(state.actIndex!==0)return;typeField(field.id,field.val,0);},field.delay/state.speed);
+    fmtTimers.push(t);
+  });
+}
+
+function typeField(id, val, idx) {
+  if(state.actIndex!==0)return;
+  const el=$(id); if(!el)return;
+  if(idx===0)el.innerHTML='<span class="cursor"></span>';
+  if(idx<val.length){
+    el.innerHTML=val.slice(0,idx+1)+'<span class="cursor"></span>';
+    fmtTimers.push(setTimeout(()=>typeField(id,val,idx+1),50/state.speed));
+  } else {
+    el.textContent=val;
+    el.classList.add('done');
+    fmtDone.add(id);
+  }
+}
+
+// Transaction event stream
+let lastEventData=null;
+let eventSpawnTimer=0;
+let merchantIdx=0;
+
+function generateTxnEvent() {
+  const act=ACTS[state.actIndex];
+  const m=MERCHANTS[merchantIdx%MERCHANTS.length];
+  merchantIdx++;
+  const forceMult=act.id==='bonus'?3:act.id==='redeem'?-1:m.mult;
+  const amtRaw=parseFloat(m.amt)*(0.85+Math.random()*0.3);
+  const amt=amtRaw.toFixed(2);
+  const pts=act.id==='redeem'
+    ? -Math.floor(amtRaw*10)
+    : Math.floor(amtRaw*forceMult);
+  const cat=act.id==='bonus'?'DINING':act.id==='redeem'?'REDEEM':m.cat;
+  const mcc=act.id==='redeem'?'0000':m.mcc;
+  const now=new Date(2024,5,21,9+Math.floor((getCurrentMinutes()-540)/60),Math.floor(getCurrentMinutes()-540)%60,Math.floor(Math.random()*60));
+  const time=now.toISOString().replace('.000Z','Z');
+  const prev=lastEventData;
+  return {merchant:m.name, mcc, cat, amt, pts, mult:Math.abs(forceMult), time, direction:act.id==='redeem'?'REDEEM':'EARN', prev};
+}
+
+function renderTxnEvent(d) {
+  const container=$('event-stream');
+  while(container.children.length>=4)container.removeChild(container.lastChild);
+  const prevPts=d.prev?d.prev.pts:null;
+  const ptsChanged=prevPts!==null&&Math.abs(d.pts-prevPts)>30;
+  const multChanged=d.prev&&d.mult!==d.prev.mult;
+  const block=document.createElement('div');
+  block.className='event-block';
+  const pC=ptsChanged?' ev-changed':'';
+  const mC=multChanged?' ev-changed-mult':'';
+  block.innerHTML=
+    `<span class="ev-brace">{</span><br>`+
+    `&nbsp;<span class="ev-key">"type"</span>:<span class="ev-str">"com.units360.loyalty.${d.direction.toLowerCase()}"</span>,<br>`+
+    `&nbsp;<span class="ev-key">"source"</span>:<span class="ev-str">"card/APEX-4291"</span>,<br>`+
+    `&nbsp;<span class="ev-key">"time"</span>:<span class="ev-str">"${d.time}"</span>,<br>`+
+    `&nbsp;<span class="ev-key">"data"</span>:<span class="ev-brace">{</span>`+
+    `<span class="ev-key">"unit"</span>:<span class="ev-str">"reward_points"</span>,`+
+    `<span class="ev-key">"qty"</span>:<span class="ev-num${pC}">${d.pts}</span>,`+
+    `<span class="ev-key">"direction"</span>:<span class="ev-str">"${d.direction}"</span>,`+
+    `<span class="ev-key">"mcc"</span>:<span class="ev-num">${d.mcc}</span>,`+
+    `<span class="ev-key">"category"</span>:<span class="ev-str">"${d.cat}"</span>,`+
+    `<span class="ev-key">"multiplier"</span>:<span class="ev-num${mC}">${d.mult}</span>`+
+    `<span class="ev-brace">}</span><span class="ev-brace">}</span>`;
+  container.insertBefore(block,container.firstChild);
+  lastEventData=d;
+
+  // Update merchant terminal display
+  $('merch-amount').textContent='$'+d.amt;
+  $('merch-label').textContent=d.merchant.substring(0,12);
+}
+
+function updateEventDashboard() {
+  const act=ACTS[state.actIndex];
+  const bal=Math.max(0,state.ptsBalance);
+  $('ev-pts-val').textContent=Math.round(bal).toLocaleString();
+  $('ev-val-val').textContent='$'+(bal*0.01).toFixed(2);
+  const mult=act.multiplier>0?act.multiplier+'×':act.id==='redeem'?'−1':act.multiplier+'×';
+  $('ev-mult-val').textContent=mult;
+  const tier=bal>10000?'GOLD ELITE':bal>5000?'GOLD':bal>2000?'SILVER':'STANDARD';
+  $('ev-tier-val').textContent=tier;
+  $('ev-tier-unit').textContent=tier==='GOLD ELITE'?'Max tier!':((10000-bal>0?Math.max(0,10000-bal):0).toFixed(0)+' to ELITE');
+  const tierPct=Math.min(100,(bal/10000)*100);
+  $('ev-tier-fill').style.width=tierPct.toFixed(1)+'%';
+  const fillColor=act.id==='bonus'?'linear-gradient(90deg,#f472b6,#ffd700)':
+                  act.id==='redeem'?'linear-gradient(90deg,#a855f7,#c084fc)':
+                  'linear-gradient(90deg,#ffd700,#a855f7)';
+  $('ev-tier-fill').style.background=fillColor;
+  $('ev-tier-rate-label').textContent=act.segLabel;
+  $('ev-tier-rate-label').style.color=act.id==='bonus'?'var(--pink)':act.id==='redeem'?'var(--purple)':'var(--gold)';
+  $('event-segment').textContent=act.segment;
+  $('event-segment').style.color=act.id==='bonus'?'var(--pink)':act.id==='redeem'?'var(--purple)':'var(--gold)';
+
+  // Mult card bonus glow
+  const multCard=$('ev-mult-card');
+  multCard.className=act.id==='bonus'?'ev-metric mult bonus-glow':'ev-metric mult';
+  $('node-val-4').textContent=Math.round(bal).toLocaleString()+' pts';
+}
+
+// Invoice / Statement
+function renderInvoice() {
+  const container=$('invoice-view');
+  if(invoiceLineIdx>=INVOICE_LINES.length)return;
+  const line=INVOICE_LINES[invoiceLineIdx++];
+  const el=document.createElement('div');
+  el.className=`inv-json-line ${line.color} reveal`;
+  el.textContent=line.txt;
+  container.appendChild(el);
+  if(invoiceLineIdx<INVOICE_LINES.length) setTimeout(renderInvoice,280/state.speed);
+}
+
+// Overlay
+function showOverlay(act, onDone) {
+  const ov=$('overlay');
+  $('overlay-eyebrow').textContent='Units360 · Loyalty & Credit Ledger';
+  $('overlay-title').textContent=act.overlayTitle;
+  $('overlay-time').textContent=act.overlayTime;
+  $('overlay-sub').textContent=act.overlaySub;
+  ov.classList.add('show');
+  overlayTimer=setTimeout(()=>{
+    ov.classList.remove('show');
+    setTimeout(onDone,380);
+  },1800/state.speed);
+}
+
+// Act setup
+function setupAct(idx, fromOverlay=true) {
+  state.actIndex=idx;
+  state.actElapsed=0;
+  const act=ACTS[idx];
+
+  $('act-eyebrow').textContent=act.eyebrow;
+  $('act-title').textContent=act.label;
+  $('act-title').className=act.color;
+  $('act-desc').textContent=act.desc;
+
+  const commClass={gold:'',pink:'pink',purple:'purple',green:'green'}[act.color]||'';
+  $('commentary').className=commClass;
+  $('commentary-icon').textContent=act.commentaryIcon;
+  $('commentary-text').innerHTML=act.commentary;
+
+  $('pts-status').textContent=act.ptsStatus;
+  $('pts-status').className=act.ptsClass;
+  $('pts-balance').className=act.ptsClass;
+  $('pts-rate-pill').className=act.ptsRate>0?'earning':act.id==='bonus'?'bonus':act.id==='redeem'?'redeeming':act.id==='statement'?'done':'zero';
+  $('pts-rate-pill').textContent=act.ptsRate>0?`+${act.ptsRate} pts/s`:act.id==='redeem'?`−pts`:act.id==='statement'?'4,820 pts':'— pts/txn';
+
+  const pct=(idx/(ACTS.length-1))*100;
+  $('prog-fill').style.width=pct+'%';
+  document.querySelectorAll('.prog-act').forEach((el,i)=>el.classList.toggle('active',i===idx));
+
+  act.nodeVals.forEach((v,i)=>{const el=$(`node-val-${i+1}`);if(el)el.textContent=v;});
+
+  $('term-mode-badge').className=idx===0?'fmt':idx===4?'invoice':'event';
+  $('term-mode-badge').textContent=idx===0?'FMT':idx===4?'STMT':'TXN';
+
+  $('fmt-view').style.display=idx===0?'flex':'none';
+  $('event-view').style.display=(idx>=1&&idx<=3)?'flex':'none';
+  $('invoice-view').style.display=idx===4?'flex':'none';
+
+  if(idx===0) startFMTTyping();
+  if(idx===4){invoiceLineIdx=0;$('invoice-view').innerHTML='';setTimeout(renderInvoice,400);}
+  if(idx===4){
+    state.ptsBalance=4820;
+    $('pts-balance').textContent='4,820';
+    $('pts-balance').className='done';
+  }
+  if(idx>=1&&idx<=3){updateEventDashboard();$('event-count').textContent=state.eventCount;}
+
+  eventSpawnTimer=0;txnSpawnTimer=0;lastEventData=null;merchantIdx=0;
+}
+
+// Main loop
+let _prev=null;
+function loop(ts) {
+  const dtMs=_prev!==null?Math.min(ts-_prev,100):0;
+  _prev=ts;
+
+  if(state.playing){
+    state.actElapsed+=dtMs*state.speed;
+    const act=ACTS[state.actIndex];
+
+    if(act.ptsRate!==0){
+      state.ptsBalance+=act.ptsRate*(dtMs/1000)*state.speed;
+      if(state.ptsBalance<0)state.ptsBalance=0;
+      $('pts-balance').textContent=Math.round(state.ptsBalance).toLocaleString();
+    }
+
+    if(state.actIndex>=1&&state.actIndex<=3){
+      eventSpawnTimer+=dtMs;
+      const interval=Math.max(600,3500/state.speed/(Math.abs(act.ptsRate)/20+1));
+      if(eventSpawnTimer>=interval){
+        eventSpawnTimer=0;
+        state.eventCount++;
+        $('event-count').textContent=state.eventCount;
+        renderTxnEvent(generateTxnEvent());
+        updateEventDashboard();
+      }
+    }
+
+    if(state.actElapsed>=act.duration){
+      if(state.actIndex<ACTS.length-1){
+        const nextIdx=state.actIndex+1;
+        state.playing=false;
+        $('btn-play').textContent='▶ Play';
+        showOverlay(ACTS[nextIdx],()=>{
+          setupAct(nextIdx,false);
+          state.playing=true;
+          $('btn-play').textContent='⏸ Pause';
+        });
+      } else {
+        state.playing=false;
+        $('btn-play').textContent='▶ Play';
+      }
+    }
+  }
+
+  updateScene();
+  updateFlowParticles(dtMs);
+  updateTxnParticles(dtMs);
+
+  requestAnimationFrame(loop);
+}
+
+// Controls
+$('btn-play').addEventListener('click',()=>{
+  state.playing=!state.playing;
+  $('btn-play').textContent=state.playing?'⏸ Pause':'▶ Play';
+  if(state.playing&&state.actIndex===0&&state.actElapsed===0)startFMTTyping();
+});
+
+$('btn-next').addEventListener('click',()=>{
+  if(state.actIndex<ACTS.length-1){
+    clearTimeout(overlayTimer);$('overlay').classList.remove('show');
+    state.playing=false;$('btn-play').textContent='▶ Play';
+    const next=state.actIndex+1;
+    showOverlay(ACTS[next],()=>setupAct(next,false));
+  }
+});
+
+$('btn-prev').addEventListener('click',()=>{
+  if(state.actIndex>0){
+    clearTimeout(overlayTimer);$('overlay').classList.remove('show');
+    state.playing=false;$('btn-play').textContent='▶ Play';
+    const prev=state.actIndex-1;
+    const ptsAtAct=[0,0,1800,5200,4820];
+    state.ptsBalance=ptsAtAct[prev];
+    setupAct(prev,false);
+  }
+});
+
+$('btn-reset').addEventListener('click',()=>{
+  clearTimeout(overlayTimer);$('overlay').classList.remove('show');
+  state.playing=false;state.ptsBalance=0;state.eventCount=0;
+  $('btn-play').textContent='▶ Play';
+  flowParticles.forEach(p=>p.el.remove());flowParticles=[];
+  txnParticles.forEach(p=>p.el.remove());txnParticles=[];
+  $('event-stream').innerHTML='';$('invoice-view').innerHTML='';
+  setupAct(0,false);
+});
+
+$('btn-faster').addEventListener('click',()=>{
+  state.speed=Math.min(state.speed*2,8);
+  $('speed-val').textContent=state.speed+'×';
+});
+$('btn-slower').addEventListener('click',()=>{
+  state.speed=Math.max(state.speed/2,0.5);
+  $('speed-val').textContent=state.speed+'×';
+});
+
+$('btn-info').addEventListener('click',()=>{
+  $('info-drawer').classList.add('open');
+  $('info-backdrop').classList.add('show');
+});
+$('info-backdrop').addEventListener('click',()=>{
+  $('info-drawer').classList.remove('open');
+  $('info-backdrop').classList.remove('show');
+});
+$('drawer-close').addEventListener('click',()=>{
+  $('info-drawer').classList.remove('open');
+  $('info-backdrop').classList.remove('show');
+});
+document.querySelectorAll('.dnav-pill').forEach(pill=>{
+  pill.addEventListener('click',()=>{
+    document.querySelectorAll('.dnav-pill').forEach(p=>p.classList.remove('active'));
+    pill.classList.add('active');
+    const target=$(pill.dataset.target);
+    if(target)target.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key===' '||e.key==='k'){e.preventDefault();$('btn-play').click();}
+  if(e.key==='ArrowRight')$('btn-next').click();
+  if(e.key==='ArrowLeft')$('btn-prev').click();
+  if(e.key==='r'||e.key==='R')$('btn-reset').click();
+  if(e.key==='?'||e.key==='i')$('btn-info').click();
+});
+
+setupAct(0,false);
+requestAnimationFrame(loop);
+requestAnimationFrame(secLoop);
+</script>
+</body>
+</html>
