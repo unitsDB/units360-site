@@ -5,20 +5,20 @@
 <title>Units360 · AI Medical Scribe Demo</title>
 <style>
 :root{
-  --bg:#070c18;--surface:#0d1526;--surface2:#131e35;
+  --bg:#000000;--surface:#0e0e0e;--surface2:#181818;
   --teal:#00d4ff;--teal-glow:#00d4ff33;--teal-dim:#0098bb;
   --blue:#3b82f6;--amber:#f59e0b;--amber-glow:#f59e0b33;
   --red:#ef4444;--green:#10b981;--green-glow:#10b98133;
   --purple:#8b5cf6;--purple-glow:#8b5cf633;
-  --text:#e0f2fe;--muted:#64748b;--border:#1e2d4a;
+  --text:#e0f2fe;--muted:#64748b;--border:#2c2c2c;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden;font-size:15px}
 #app{display:flex;flex-direction:column;height:100vh;max-width:1280px;margin:0 auto;padding:10px 16px 0}
 
 /* OVERLAY */
 #overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(7,12,24,0.94);opacity:0;pointer-events:none;transition:opacity .35s}
+  background:rgba(0,0,0,0.96);opacity:0;pointer-events:none;transition:opacity .35s}
 #overlay.show{opacity:1;pointer-events:auto;backdrop-filter:blur(8px)}
 #ov-eye{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
 #ov-title{font-size:clamp(28px,5vw,52px);font-weight:800;letter-spacing:-1px;color:var(--text);text-align:center}
@@ -55,8 +55,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #metrics-row{display:flex;align-items:center;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 0;flex-shrink:0}
 .m-block{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 12px}
 .m-sep{width:1px;height:40px;background:var(--border)}
-.m-label{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.m-val{font-size:clamp(18px,2.5vw,28px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;transition:color .5s}
+.m-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.m-val{font-size:clamp(22px,2.8vw,32px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;transition:color .5s}
 .m-val.green{color:var(--green)}.m-val.amber{color:var(--amber)}.m-val.teal{color:var(--teal)}
 .m-sub{font-size:8.5px;color:var(--muted)}
 
@@ -65,13 +65,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #prog-bar{height:3px;background:#1e2d4a;border-radius:2px;overflow:hidden}
 #prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:2px;transition:width .12s}
 #prog-acts{display:flex;justify-content:space-between;margin-top:4px}
-.p-act{font-size:9px;color:var(--muted);cursor:pointer;transition:color .2s}.p-act:hover,.p-act.active{color:var(--teal)}
+.p-act{font-size:10.5px;color:var(--muted);cursor:pointer;transition:color .2s}.p-act:hover,.p-act.active{color:var(--teal)}
 
 /* TERMINAL */
 #term-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px 7px;border-bottom:1px solid var(--border);flex-shrink:0}
 .tdot{width:9px;height:9px;border-radius:50%}
-#term-title{font-size:11px;color:var(--muted);margin-left:4px;letter-spacing:.5px}
-#term-badge{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;transition:all .4s}
+#term-title{font-size:13px;color:var(--muted);margin-left:4px;letter-spacing:.5px}
+#term-badge{margin-left:auto;font-size:10px;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;transition:all .4s}
 #term-badge.mdt{background:#00d4ff18;color:var(--teal);border:1px solid #00d4ff40}
 #term-badge.event{background:#3b82f618;color:var(--blue);border:1px solid #3b82f640}
 #term-badge.dash{background:#10b98118;color:var(--green);border:1px solid #10b98140}
@@ -89,32 +89,32 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .msec-hdr.amber{color:var(--amber);background:#f59e0b08}
 .mrow{display:flex;align-items:center;gap:6px;padding:4px 10px;border-bottom:1px solid #0d1526}
 .mrow:last-child{border-bottom:none}
-.mkey{font-size:9.5px;color:var(--muted);min-width:82px;letter-spacing:.2px}
-.mval{font-size:10.5px;color:var(--text);flex:1;min-height:14px}
+.mkey{font-size:11px;color:var(--muted);min-width:82px;letter-spacing:.2px}
+.mval{font-size:12px;color:var(--text);flex:1;min-height:14px}
 .mval .cur{display:inline-block;width:6px;height:11px;background:var(--teal);margin-left:1px;animation:blink 1s step-end infinite;vertical-align:middle}
 .mval.done{color:var(--teal)}.mval.done.green{color:var(--green)}.mval.done.amber{color:var(--amber)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* Event view */
 #event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;display:none}
-#ev-dash{padding:7px 8px 5px;background:#040810;border-bottom:1px solid var(--border);flex-shrink:0}
+#ev-dash{padding:7px 8px 5px;background:#050505;border-bottom:1px solid var(--border);flex-shrink:0}
 .ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px}
 .ev-m{background:#0d1526;border:1px solid var(--border);border-radius:6px;padding:5px 8px;transition:border-color .4s}
 .ev-m-top{display:flex;align-items:center;gap:3px;margin-bottom:1px}
-.ev-m-ico{font-size:10px}.ev-m-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
-.ev-m-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;transition:color .5s}
-.ev-m-unit{font-size:7.5px;color:var(--muted);margin-top:1px}
+.ev-m-ico{font-size:10px}.ev-m-lbl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.ev-m-val{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;transition:color .5s}
+.ev-m-unit{font-size:9px;color:var(--muted);margin-top:1px}
 .ev-m.rev{border-color:#10b98130}.ev-m.rev .ev-m-val{color:var(--green)}
 .ev-m.cost{border-color:#f59e0b30}.ev-m.cost .ev-m-val{color:var(--amber)}
 .ev-m.sess{border-color:#00d4ff30}.ev-m.sess .ev-m-val{color:var(--teal)}
 .ev-m.margin{border-color:#00d4ff40}.ev-m.margin .ev-m-val{color:var(--teal)}
-#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:4px 10px;border-bottom:1px solid var(--border);font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
-#event-stream{flex:1;overflow:hidden;font-size:10px}
-.ev-block{padding:4px 10px;line-height:1.5;border-bottom:1px solid #0d152640;animation:evIn .25s ease}
+#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:4px 10px;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+#event-stream{flex:1;overflow:hidden;font-size:11.5px}
+.ev-block{padding:5px 10px;line-height:1.6;border-bottom:1px solid #1a1a1a;animation:evIn .25s ease;font-size:11.5px}
 .ev-block.rev-ev{border-left:2px solid #10b98150;background:#10b98106}
 .ev-block.cost-ev{border-left:2px solid #f59e0b50;background:#f59e0b06}
 @keyframes evIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
-#ev-footer{padding:3px 10px;border-top:1px solid var(--border);font-size:8px;color:var(--muted);display:flex;gap:10px;flex-shrink:0}
+#ev-footer{padding:4px 10px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);display:flex;gap:10px;flex-shrink:0}
 .evleg{display:inline-flex;align-items:center;gap:3px}
 .evleg-box{width:7px;height:7px;border-radius:1px}
 .ek{color:#7dd3fc}.es{color:#86efac}.en{color:#fbbf24}.eb{color:#f472b6}.emuted{color:var(--muted)}
@@ -123,38 +123,38 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #dash-view{position:absolute;inset:0;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:8px;display:none}
 .dash-pair{display:flex;gap:8px}
 .dash-card{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
-.dash-card-lbl{font-size:8px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
+.dash-card-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
 .dash-card-lbl.green{color:var(--green)}.dash-card-lbl.amber{color:var(--amber)}.dash-card-lbl.teal{color:var(--teal)}
-.dash-card-val{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.dash-card-val{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
 .dash-card-val.green{color:var(--green)}.dash-card-val.amber{color:var(--amber)}
-.dash-card-det{font-size:9px;color:var(--muted);margin-top:3px}
+.dash-card-det{font-size:10.5px;color:var(--muted);margin-top:3px}
 .dash-margin{background:linear-gradient(135deg,#00d4ff0a,#10b9810a);border:1px solid #00d4ff30;border-radius:8px;padding:12px;text-align:center}
-.dash-margin-lbl{font-size:8px;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin-bottom:4px}
-.dash-margin-val{font-size:36px;font-weight:900;color:var(--teal);font-variant-numeric:tabular-nums}
-.dash-margin-sub{font-size:9px;color:var(--muted);margin-top:3px}
-.dash-sid{font-size:8.5px;color:var(--muted);background:#0d1526;border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-family:'SF Mono','Fira Code',monospace;text-align:center;letter-spacing:.3px}
-.dash-equation{display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;color:var(--muted);background:#0d1526;border:1px solid var(--border);border-radius:6px;padding:6px}
+.dash-margin-lbl{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin-bottom:4px}
+.dash-margin-val{font-size:42px;font-weight:900;color:var(--teal);font-variant-numeric:tabular-nums}
+.dash-margin-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.dash-sid{font-size:10.5px;color:var(--muted);background:#0d1526;border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-family:'SF Mono','Fira Code',monospace;text-align:center;letter-spacing:.3px}
+.dash-equation{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--muted);background:#0d1526;border:1px solid var(--border);border-radius:6px;padding:6px}
 .dash-eq-val{font-weight:700}.dash-eq-val.green{color:var(--green)}.dash-eq-val.amber{color:var(--amber)}.dash-eq-val.teal{color:var(--teal)}
 
 /* Invoice view */
 #inv-view{position:absolute;inset:0;overflow:hidden;padding:10px 12px;display:flex;flex-direction:column;gap:0;display:none}
-.inv-line{font-size:10.5px;line-height:1.6;white-space:pre;animation:evIn .2s ease}
+.inv-line{font-size:12px;line-height:1.6;white-space:pre;animation:evIn .2s ease}
 
 /* COMMENTARY */
 #commentary{display:flex;align-items:flex-start;gap:10px;padding:6px 14px;background:var(--surface);border-top:1px solid var(--border);border-left:3px solid var(--teal);flex-shrink:0;min-height:36px;transition:border-color .4s}
 #commentary.amber{border-left-color:var(--amber)}#commentary.green{border-left-color:var(--green)}
 #com-icon{font-size:13px;flex-shrink:0;margin-top:1px}
-#com-text{font-size:11.5px;color:var(--text);line-height:1.5;flex:1}
+#com-text{font-size:13.5px;color:var(--text);line-height:1.5;flex:1}
 #com-text strong{color:var(--teal)}
 #commentary.amber #com-text strong{color:var(--amber)}
 #commentary.green #com-text strong{color:var(--green)}
 
 /* ACT HEADER */
 #act-hdr{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
-#act-eye{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-#act-title{font-size:15px;font-weight:700;color:var(--text);transition:color .4s}
+#act-eye{font-size:10.5px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+#act-title{font-size:18px;font-weight:700;color:var(--text);transition:color .4s}
 #act-title.amber{color:var(--amber)}#act-title.green{color:var(--green)}
-#act-desc{font-size:11px;color:var(--muted);margin-left:auto}
+#act-desc{font-size:13px;color:var(--muted);margin-left:auto}
 
 /* CONTROLS */
 #controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid var(--border);margin-top:4px}
@@ -164,7 +164,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #btn-play:hover{background:#00b8e0}
 #spd-lbl{font-size:11px;color:var(--muted)}.spd-v{font-size:11px;color:var(--teal);min-width:22px}
 .csep{width:1px;height:18px;background:var(--border);margin:0 2px}
-#kbd-hint{font-size:10px;color:var(--muted);margin-left:auto}
+#kbd-hint{font-size:11.5px;color:var(--muted);margin-left:auto}
 
 /* PLATFORM GUIDE BTN */
 #btn-guide{background:linear-gradient(135deg,#00d4ff22,#3b82f622);border:1px solid var(--teal);
@@ -177,9 +177,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #info-back{position:fixed;inset:0;z-index:205;background:rgba(4,8,18,.65);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .3s}
 #info-back.show{opacity:1;pointer-events:auto}
 #info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:210;
-  background:#070d1c;border-left:1px solid var(--border);transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+  background:#050505;border-left:1px solid var(--border);transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
 #info-drawer.open{transform:translateX(0)}
-#dr-hdr{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:linear-gradient(135deg,#0d1a2e,#0a1425)}
+#dr-hdr{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:linear-gradient(135deg,#111,#0a0a0a)}
 #dr-logo{font-size:16px;font-weight:800;color:var(--text)}#dr-logo span{color:var(--teal)}
 #dr-sub{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
 #dr-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#1e2d4a;border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
@@ -191,9 +191,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #dr-body::-webkit-scrollbar{width:4px}#dr-body::-webkit-scrollbar-thumb{background:#1e2d4a;border-radius:2px}
 .dsec{padding:16px 0;border-bottom:1px solid #0d1526}.dsec:last-child{border-bottom:none;padding-bottom:6px}
 .dsec-ey{font-size:8px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:5px;opacity:.7}
-.dsec-ttl{font-size:14px;font-weight:700;color:var(--text);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.dsec-ttl{font-size:15px;font-weight:700;color:var(--text);margin-bottom:9px;display:flex;align-items:center;gap:7px}
 .dsec-ico{font-size:17px}
-.dsec-body{font-size:11.5px;color:#94a3b8;line-height:1.7;display:flex;flex-direction:column;gap:7px}
+.dsec-body{font-size:12.5px;color:#94a3b8;line-height:1.7;display:flex;flex-direction:column;gap:7px}
 .dsec-body p{margin:0}.dsec-body strong{color:var(--text);font-weight:600}.dsec-body em{color:var(--teal);font-style:normal}
 .dft{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:3px}
 .dfr{display:flex;padding:5px 10px;border-bottom:1px solid #0d1526;align-items:flex-start;gap:10px;font-size:10.5px}
@@ -209,7 +209,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .dtag.blue{background:#3b82f615;color:var(--blue);border:1px solid #3b82f630}
 .dtag.green{background:#10b98115;color:var(--green);border:1px solid #10b98130}
 .dtag.amber{background:#f59e0b15;color:var(--amber);border:1px solid #f59e0b30}
-.dcode{background:#040810;border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:5px}
+.dcode{background:#050505;border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:5px}
 .dcode .ck{color:#7dd3fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#64748b}
 .dcallout{background:linear-gradient(135deg,#00d4ff08,#3b82f608);border:1px solid #00d4ff25;border-radius:6px;padding:9px 11px;font-size:10.5px;color:#94a3b8;line-height:1.6;margin-top:5px}
 .dcallout strong{color:var(--teal)}
@@ -236,12 +236,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
   <button id="btn-guide">ℹ Platform Guide</button>
   <div id="header-center">
     <div id="demo-title">AI Medical Scribe · Revenue + Cost Tracking</div>
-    <div id="demo-sub">ClinicMins · audio_minute (revenue) + llm_token (cost) · dual-unit metering</div>
+    <div id="demo-sub">ClinicMinds · audio_minute (revenue) + llm_token (cost) · dual-unit metering</div>
   </div>
   <div id="clock-wrap">
     <div id="clock-label">00:00</div>
     <svg id="clock-svg" viewBox="0 0 48 48">
-      <circle cx="24" cy="24" r="22" fill="#0d1526" stroke="#1e2d4a" stroke-width="1.5"/>
+      <circle cx="24" cy="24" r="22" fill="#111111" stroke="#1e2d4a" stroke-width="1.5"/>
       <g stroke="#2a3f5f" stroke-width=".8"><line x1="24" y1="3" x2="24" y2="7"/><line x1="24" y1="41" x2="24" y2="45"/><line x1="3" y1="24" x2="7" y2="24"/><line x1="41" y1="24" x2="45" y2="24"/></g>
       <line id="hand-h" x1="24" y1="24" x2="24" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
       <line id="hand-m" x1="24" y1="24" x2="24" y2="7" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round"/>
@@ -271,20 +271,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <filter id="glow-sm"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
       <!-- Background -->
-      <rect width="640" height="158" fill="#090e1e"/>
+      <rect width="640" height="158" fill="#000000"/>
       <!-- Floor -->
-      <rect x="0" y="128" width="640" height="30" fill="#0a1020"/>
+      <rect x="0" y="128" width="640" height="30" fill="#090909"/>
       <line x1="0" y1="128" x2="640" y2="128" stroke="#1e2d4a" stroke-width="1"/>
       <!-- Room divider -->
       <line x1="320" y1="0" x2="320" y2="128" stroke="#131d30" stroke-width="1" stroke-dasharray="4,4"/>
 
       <!-- === DOCTOR SIDE (left) === -->
       <!-- Exam desk -->
-      <rect x="30" y="108" width="130" height="9" rx="2" fill="#1a2844" stroke="#243660" stroke-width="1"/>
-      <rect x="38" y="117" width="4" height="11" fill="#131e35"/>
-      <rect x="148" y="117" width="4" height="11" fill="#131e35"/>
+      <rect x="30" y="108" width="130" height="9" rx="2" fill="#1c1c1c" stroke="#243660" stroke-width="1"/>
+      <rect x="38" y="117" width="4" height="11" fill="#1a1a1a"/>
+      <rect x="148" y="117" width="4" height="11" fill="#1a1a1a"/>
       <!-- Doctor: head -->
-      <circle cx="88" cy="60" r="17" fill="#0e1828" stroke="#2d4070" stroke-width="1.2"/>
+      <circle cx="88" cy="60" r="17" fill="#101010" stroke="#2d4070" stroke-width="1.2"/>
       <!-- Hair -->
       <ellipse cx="88" cy="48" rx="14" ry="6" fill="#1e3050"/>
       <!-- Eyes -->
@@ -292,7 +292,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <ellipse cx="94" cy="61" rx="3" ry="2.5" fill="#00d4ff" opacity=".5"/>
       <!-- Coat/torso -->
       <path d="M 70 77 Q 88 84 106 77 L 108 108 L 68 108 Z" fill="#e0f2fe" opacity=".15"/>
-      <path d="M 70 77 Q 88 84 106 77 L 108 108 L 68 108 Z" fill="#1a2844" stroke="#2d4070" stroke-width=".5"/>
+      <path d="M 70 77 Q 88 84 106 77 L 108 108 L 68 108 Z" fill="#1c1c1c" stroke="#2d4070" stroke-width=".5"/>
       <!-- Stethoscope hint -->
       <path d="M 84 82 Q 80 90 76 92" stroke="#00d4ff" stroke-width="1" fill="none" opacity=".5"/>
       <!-- Label -->
@@ -308,23 +308,23 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
       <!-- === PATIENT SIDE (right) === -->
       <!-- Chair -->
-      <rect x="494" y="95" width="64" height="7" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
-      <rect x="504" y="76" width="8" height="20" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+      <rect x="494" y="95" width="64" height="7" rx="2" fill="#1a1a1a" stroke="#1e2d4a" stroke-width=".5"/>
+      <rect x="504" y="76" width="8" height="20" rx="2" fill="#1a1a1a" stroke="#1e2d4a" stroke-width=".5"/>
       <!-- Patient: head -->
-      <circle cx="540" cy="60" r="16" fill="#0e1828" stroke="#2d4070" stroke-width="1"/>
+      <circle cx="540" cy="60" r="16" fill="#101010" stroke="#2d4070" stroke-width="1"/>
       <!-- Hair -->
       <ellipse cx="540" cy="49" rx="14" ry="7" fill="#2a3a5a"/>
       <!-- Eyes -->
       <ellipse cx="534" cy="62" rx="2.5" ry="2" fill="#e0f2fe" opacity=".4"/>
       <ellipse cx="546" cy="62" rx="2.5" ry="2" fill="#e0f2fe" opacity=".4"/>
       <!-- Body -->
-      <path d="M 524 76 Q 540 82 556 76 L 558 108 L 522 108 Z" fill="#1a2844" stroke="#2d4070" stroke-width=".5"/>
+      <path d="M 524 76 Q 540 82 556 76 L 558 108 L 522 108 Z" fill="#1c1c1c" stroke="#2d4070" stroke-width=".5"/>
       <!-- Label -->
       <text x="540" y="148" text-anchor="middle" fill="#4a6080" font-size="8.5" font-family="system-ui">Patient</text>
 
       <!-- === WAVEFORM / RECORDING PANEL (center) === -->
       <g id="wave-group" opacity="0">
-        <rect x="185" y="44" width="270" height="68" rx="8" fill="#0d1526" stroke="#1e2d4a" stroke-width="1"/>
+        <rect x="185" y="44" width="270" height="68" rx="8" fill="#111111" stroke="#1e2d4a" stroke-width="1"/>
         <!-- REC indicator -->
         <circle id="rec-dot" cx="202" cy="56" r="4" fill="#ef4444" opacity="0"/>
         <text id="rec-text" x="212" y="60" fill="#ef4444" font-size="8" font-family="system-ui" opacity="0">REC</text>
@@ -348,11 +348,11 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
       <!-- === CLINICMINS APP PHONE === -->
       <g transform="translate(395,68)">
-        <rect x="0" y="0" width="32" height="52" rx="5" fill="#0d1526" stroke="#00d4ff50" stroke-width="1"/>
-        <rect x="2" y="9" width="28" height="34" rx="1" fill="#070c18" stroke="#00d4ff25" stroke-width=".5"/>
+        <rect x="0" y="0" width="32" height="52" rx="5" fill="#111111" stroke="#00d4ff50" stroke-width="1"/>
+        <rect x="2" y="9" width="28" height="34" rx="1" fill="#080808" stroke="#00d4ff25" stroke-width=".5"/>
         <!-- App branding -->
         <text x="16" y="22" text-anchor="middle" fill="#00d4ff" font-size="5.5" font-family="system-ui" font-weight="700">Clinic</text>
-        <text x="16" y="30" text-anchor="middle" fill="#00d4ff" font-size="5.5" font-family="system-ui" font-weight="700">Mins</text>
+        <text x="16" y="30" text-anchor="middle" fill="#00d4ff" font-size="5.5" font-family="system-ui" font-weight="700">Minds</text>
         <!-- API call status -->
         <rect id="app-api-bar" x="3" y="36" width="0" height="4" rx="2" fill="#10b981"/>
         <text id="app-status" x="16" y="48" text-anchor="middle" fill="#4a6080" font-size="5" font-family="system-ui">IDLE</text>
@@ -361,9 +361,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <!-- === LLM CLOUD (act 3, hidden initially) === -->
       <g id="llm-group" opacity="0">
         <!-- Cloud outline -->
-        <ellipse cx="480" cy="26" rx="44" ry="20" fill="#0d1526" stroke="#8b5cf650" stroke-width="1"/>
-        <ellipse cx="460" cy="22" rx="18" ry="12" fill="#0d1526" stroke="#8b5cf640" stroke-width="1"/>
-        <ellipse cx="500" cy="20" rx="14" ry="10" fill="#0d1526" stroke="#8b5cf640" stroke-width="1"/>
+        <ellipse cx="480" cy="26" rx="44" ry="20" fill="#111111" stroke="#8b5cf650" stroke-width="1"/>
+        <ellipse cx="460" cy="22" rx="18" ry="12" fill="#111111" stroke="#8b5cf640" stroke-width="1"/>
+        <ellipse cx="500" cy="20" rx="14" ry="10" fill="#111111" stroke="#8b5cf640" stroke-width="1"/>
         <text x="480" y="29" text-anchor="middle" fill="#8b5cf6" font-size="9" font-family="system-ui" font-weight="700">GPT-4</text>
         <text id="llm-tok-text" x="480" y="40" text-anchor="middle" fill="#8b5cf6" font-size="7.5" font-family="'SF Mono','Fira Code',monospace" opacity=".7"></text>
         <!-- Glow -->
@@ -399,13 +399,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <text x="49" y="32" font-size="13" text-anchor="middle">🎙️</text>
       <text x="49" y="44" font-size="8.5" fill="#e0f2fe" text-anchor="middle" letter-spacing=".3">Audio Session</text>
       <text id="fn1-sub" x="49" y="54" font-size="7.5" fill="#64748b" text-anchor="middle">IDLE</text>
-      <!-- Node 2: ClinicMins App -->
+      <!-- Node 2: ClinicMinds App -->
       <rect x="142" y="14" width="90" height="44" rx="7" fill="url(#ng-blue)" stroke="#1e2d4a" stroke-width="1"/>
       <text x="187" y="32" font-size="13" text-anchor="middle">📲</text>
-      <text x="187" y="44" font-size="8.5" fill="#e0f2fe" text-anchor="middle" letter-spacing=".3">ClinicMins App</text>
+      <text x="187" y="44" font-size="8.5" fill="#e0f2fe" text-anchor="middle" letter-spacing=".3">ClinicMinds App</text>
       <text id="fn2-sub" x="187" y="54" font-size="7.5" fill="#64748b" text-anchor="middle">READY</text>
       <!-- Node 3: Units360 API -->
-      <rect x="280" y="14" width="94" height="44" rx="7" fill="#0d1526" stroke="#00d4ff40" stroke-width="1"/>
+      <rect x="280" y="14" width="94" height="44" rx="7" fill="#111111" stroke="#00d4ff40" stroke-width="1"/>
       <text x="327" y="32" font-size="13" text-anchor="middle">⚡</text>
       <text x="327" y="44" font-size="8.5" fill="#e0f2fe" text-anchor="middle" letter-spacing=".3">Units360 API</text>
       <text id="fn3-sub" x="327" y="54" font-size="7.5" fill="#64748b" text-anchor="middle">READY</text>
@@ -471,7 +471,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     <div class="tdot" style="background:#ef4444"></div>
     <div class="tdot" style="background:#f59e0b"></div>
     <div class="tdot" style="background:#10b981"></div>
-    <div id="term-title">ClinicMins · Units360 Terminal</div>
+    <div id="term-title">ClinicMinds · Units360 Terminal</div>
     <div id="term-badge" class="mdt">MDT</div>
   </div>
   <div id="term-tabs">
@@ -561,7 +561,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 <div id="commentary">
   <span id="com-icon">💡</span>
-  <span id="com-text"><strong>ClinicMins charges $0.50 per audio minute (revenue) and pays $0.0005 per LLM token (cost).</strong> Instead of two billing systems, they define both units in Units360 once — dual-ledger tracking with zero custom code.</span>
+  <span id="com-text"><strong>ClinicMinds charges $0.50 per audio minute (revenue) and pays $0.0005 per LLM token (cost).</strong> Instead of two billing systems, they define both units in Units360 once — dual-ledger tracking with zero custom code.</span>
 </div>
 
 <div id="controls">
@@ -588,7 +588,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
   </div>
   <div id="dr-nav">
     <span class="dpill active" data-target="sec-what">Units360?</span>
-    <span class="dpill" data-target="sec-co">ClinicMins</span>
+    <span class="dpill" data-target="sec-co">ClinicMinds</span>
     <span class="dpill" data-target="sec-rev">Revenue Unit</span>
     <span class="dpill" data-target="sec-cost">Cost Unit</span>
     <span class="dpill" data-target="sec-acct">Account</span>
@@ -604,7 +604,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ttl"><span class="dsec-ico">🚀</span>What is Units360?</div>
       <div class="dsec-body">
         <p>Units360.ai is a <strong>low-code usage metering platform</strong> — define any unit, deploy live APIs and billing dashboards in minutes. No Kafka, no ClickHouse, no DevOps team required.</p>
-        <p>In this demo, we track <em>two units simultaneously</em>: an <em>audio_minute</em> (revenue unit) and an <em>llm_token</em> (cost unit). This gives ClinicMins real-time margin visibility per session.</p>
+        <p>In this demo, we track <em>two units simultaneously</em>: an <em>audio_minute</em> (revenue unit) and an <em>llm_token</em> (cost unit). This gives ClinicMinds real-time margin visibility per session.</p>
         <div class="dflow">
           <div class="dfn hi">1. Define<br><small>MDT</small></div><span class="dfa">→</span>
           <div class="dfn">2. Deploy<br><small>RTE</small></div><span class="dfa">→</span>
@@ -617,12 +617,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
     <div class="dsec" id="sec-co">
       <div class="dsec-ey">Use Case</div>
-      <div class="dsec-ttl"><span class="dsec-ico">🏥</span>ClinicMins — AI Scribe Startup</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🏥</span>ClinicMinds — AI Scribe Startup</div>
       <div class="dsec-body">
-        <p>ClinicMins sells AI-generated clinical notes to medical practices. A doctor speaks; the app records the audio; GPT-4 transcribes and structures the note.</p>
+        <p>ClinicMinds sells AI-generated clinical notes to medical practices. A doctor speaks; the app records the audio; GPT-4 transcribes and structures the note.</p>
         <p><strong>Revenue model:</strong> charge hospitals $0.50 per recorded minute. <strong>Cost model:</strong> pay OpenAI $0.0005 per token. A 10-minute session generates ~4,200 tokens, costing $2.10 to produce and billed at $5.00 — a $2.90 margin.</p>
         <div class="dft">
-          <div class="dfr"><div class="dfk">Company</div><div class="dfv"><strong>ClinicMins Inc.</strong></div></div>
+          <div class="dfr"><div class="dfk">Company</div><div class="dfv"><strong>ClinicMinds Inc.</strong></div></div>
           <div class="dfr"><div class="dfk">Revenue unit</div><div class="dfv"><strong>audio_minute</strong> — $0.50/min</div></div>
           <div class="dfr"><div class="dfk">Cost unit</div><div class="dfv"><strong>llm_token</strong> — $0.0005/tok</div></div>
           <div class="dfr"><div class="dfk">Session margin</div><div class="dfv"><strong>~$2.90</strong> (58%) per session</div></div>
@@ -634,7 +634,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ey">Revenue Unit</div>
       <div class="dsec-ttl"><span class="dsec-ico">📒</span>audio_minute — Revenue Tracking</div>
       <div class="dsec-body">
-        <p>A <strong>revenue unit</strong> in Units360 represents a billable service. Each time ClinicMins completes a session, it fires a Units360 API call with the recorded minutes. The Revenue Ledger increments in real time.</p>
+        <p>A <strong>revenue unit</strong> in Units360 represents a billable service. Each time ClinicMinds completes a session, it fires a Units360 API call with the recorded minutes. The Revenue Ledger increments in real time.</p>
         <div class="dcode"><span class="ek">POST</span> /v1/events<br>{<br>  <span class="ck">"unit"</span>: <span class="cv">"audio_minute"</span>,<br>  <span class="ck">"qty"</span>: <span class="cn">10</span>,<br>  <span class="ck">"account"</span>: <span class="cv">"hospital-001"</span>,<br>  <span class="ck">"session_id"</span>: <span class="cv">"SCR-2024-06-21-001"</span><br>}</div>
         <div class="dtags"><span class="dtag green">REVENUE type</span><span class="dtag teal">Billable to hospital</span></div>
       </div>
@@ -644,7 +644,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ey">Cost Unit</div>
       <div class="dsec-ttl"><span class="dsec-ico">💰</span>llm_token — Cost Tracking</div>
       <div class="dsec-body">
-        <p>A <strong>cost unit</strong> in Units360 represents an operational expense. After GPT-4 processes the audio, ClinicMins fires a second API call with the token count. The Cost Ledger updates independently.</p>
+        <p>A <strong>cost unit</strong> in Units360 represents an operational expense. After GPT-4 processes the audio, ClinicMinds fires a second API call with the token count. The Cost Ledger updates independently.</p>
         <p>Both events carry the same <em>session_id</em>, so Units360 links them for per-session margin analysis.</p>
         <div class="dcode"><span class="ek">POST</span> /v1/events<br>{<br>  <span class="ck">"unit"</span>: <span class="cv">"llm_token"</span>,<br>  <span class="ck">"qty"</span>: <span class="cn">4200</span>,<br>  <span class="ck">"account"</span>: <span class="cv">"llm-openai"</span>,<br>  <span class="ck">"session_id"</span>: <span class="cv">"SCR-2024-06-21-001"</span><br>}</div>
         <div class="dtags"><span class="dtag amber">COST type</span><span class="dtag blue">Linked by session_id</span></div>
@@ -702,7 +702,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ttl"><span class="dsec-ico">☁️</span>CloudEvents 1.0</div>
       <div class="dsec-body">
         <p>Units360 events conform to the <strong>CloudEvents 1.0</strong> specification — a CNCF standard for describing event data. This means any CloudEvents-compatible system (Kafka, EventBridge, Pub/Sub) can produce events to Units360.</p>
-        <div class="dcode"><span class="ck">"specversion"</span>: <span class="cv">"1.0"</span>,<br><span class="ck">"type"</span>: <span class="cv">"io.units360.metering.event"</span>,<br><span class="ck">"source"</span>: <span class="cv">"clinicmins/session-service"</span>,<br><span class="ck">"id"</span>: <span class="cv">"evt_scr_001"</span>,<br><span class="ck">"data"</span>: { <span class="ck">"unit"</span>: <span class="cv">"audio_minute"</span>, <span class="ck">"qty"</span>: <span class="cn">10</span> }</div>
+        <div class="dcode"><span class="ck">"specversion"</span>: <span class="cv">"1.0"</span>,<br><span class="ck">"type"</span>: <span class="cv">"io.units360.metering.event"</span>,<br><span class="ck">"source"</span>: <span class="cv">"clinicminds/session-service"</span>,<br><span class="ck">"id"</span>: <span class="cv">"evt_scr_001"</span>,<br><span class="ck">"data"</span>: { <span class="ck">"unit"</span>: <span class="cv">"audio_minute"</span>, <span class="ck">"qty"</span>: <span class="cn">10</span> }</div>
       </div>
     </div>
 
@@ -716,19 +716,19 @@ const NS='http://www.w3.org/2000/svg';
 // ── ACTS ──
 const ACTS=[
   {id:'define',eye:'ACT 1 OF 5',title:'Define Units — Revenue + Cost',desc:'Two units, one platform',dur:6000,color:'teal',termMode:'mdt',
-   comIco:'💡',com:'<strong>ClinicMins charges $0.50 per audio minute (revenue) and pays $0.0005 per LLM token (cost).</strong> Instead of two billing systems, they define both in Units360 once — dual-ledger tracking with zero custom code.',
+   comIco:'💡',com:'<strong>ClinicMinds charges $0.50 per audio minute (revenue) and pays $0.0005 per LLM token (cost).</strong> Instead of two billing systems, they define both in Units360 once — dual-ledger tracking with zero custom code.',
    ovTitle:'Define Units',ovSub:'Revenue + Cost, one platform'},
   {id:'session',eye:'ACT 2 OF 5',title:'Session Recorded — 10 mins',desc:'audio_minute events → Revenue Ledger',dur:11000,color:'teal',termMode:'event',
-   comIco:'🎙️',com:'Dr. Smith records a 10-minute consultation. <strong>ClinicMins fires one API call per session chunk:</strong> <em>unit: audio_minute, qty: 10, account: hospital-001</em>. The Revenue Ledger updates instantly. Session ID links all events.',
+   comIco:'🎙️',com:'Dr. Smith records a 10-minute consultation. <strong>ClinicMinds fires one API call per session chunk:</strong> <em>unit: audio_minute, qty: 10, account: hospital-001</em>. The Revenue Ledger updates instantly. Session ID links all events.',
    ovTitle:'Session Recording',ovSub:'Audio Minutes → Revenue Ledger'},
   {id:'llm',eye:'ACT 3 OF 5',title:'LLM Transcription — 4,200 tokens',desc:'llm_token events → Cost Ledger',dur:9000,color:'amber',termMode:'event',
-   comIco:'🤖',com:'Audio sent to GPT-4. It uses <strong>4,200 tokens</strong> to transcribe the consultation. ClinicMins fires a second API call: <em>unit: llm_token, qty: 4200, account: llm-openai</em>. The same session ID links revenue and cost.',
+   comIco:'🤖',com:'Audio sent to GPT-4. It uses <strong>4,200 tokens</strong> to transcribe the consultation. ClinicMinds fires a second API call: <em>unit: llm_token, qty: 4200, account: llm-openai</em>. The same session ID links revenue and cost.',
    ovTitle:'LLM Processing',ovSub:'Tokens → Cost Ledger'},
   {id:'dashboard',eye:'ACT 4 OF 5',title:'Cost vs Revenue Dashboard',desc:'$5.00 rev · $2.10 cost · $2.90 margin',dur:7000,color:'green',termMode:'dash',
-   comIco:'📊',com:'<strong>Both units. One session ID. One platform.</strong> Units360 calculates per-session margin automatically. ClinicMins knows the exact profitability of every consultation — in real time, without a BI team or spreadsheets.',
+   comIco:'📊',com:'<strong>Both units. One session ID. One platform.</strong> Units360 calculates per-session margin automatically. ClinicMinds knows the exact profitability of every consultation — in real time, without a BI team or spreadsheets.',
    ovTitle:'Margin Analysis',ovSub:'Revenue − Cost = Profit'},
   {id:'invoice',eye:'ACT 5 OF 5',title:'Invoice Generated — Automatically',desc:'Zero manual work',dur:7500,color:'green',termMode:'inv',
-   comIco:'🧾',com:'Period closes. <strong>Units360 generates a complete invoice automatically</strong> — revenue, cost, and margin all linked by session ID. Hospital billed $5.00. OpenAI paid $2.10. ClinicMins keeps $2.90. No spreadsheets. No disputes.',
+   comIco:'🧾',com:'Period closes. <strong>Units360 generates a complete invoice automatically</strong> — revenue, cost, and margin all linked by session ID. Hospital billed $5.00. OpenAI paid $2.10. ClinicMinds keeps $2.90. No spreadsheets. No disputes.',
    ovTitle:'Invoice Generated',ovSub:'Usage → Revenue, Automatically'},
 ];
 
@@ -993,7 +993,7 @@ const INV_LINES=[
   '<span class="emuted">{</span>',
   '  <span class="ek">"invoice_id"</span>: <span class="es">"INV-SCR-2024-06-21-001"</span>,',
   '  <span class="ek">"session_id"</span>: <span class="es">"SCR-2024-06-21-001"</span>,',
-  '  <span class="ek">"provider"</span>: <span class="es">"ClinicMins Inc."</span>,',
+  '  <span class="ek">"provider"</span>: <span class="es">"ClinicMinds Inc."</span>,',
   '  <span class="ek">"customer"</span>: <span class="es">"General Hospital"</span>,',
   '  <span class="ek">"period"</span>: <span class="es">"2024-06-21"</span>,',
   '  <span class="ek">"revenue"</span>: {',
