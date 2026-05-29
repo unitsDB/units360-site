@@ -41,6 +41,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #main{display:flex;gap:12px;flex:1;min-height:0}
 #left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
 #right-panel{display:flex;flex-direction:column;flex:1;min-width:270px;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+#right-panel.inv-wide{max-width:none;flex:2.4;transition:flex .35s ease}
 
 /* SCENE */
 #scene-wrap{border-radius:10px;overflow:hidden;border:1px solid var(--border);flex:1;min-height:100px}
@@ -254,7 +255,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 /* INVOICE DOCUMENT */
 .inv-doc{background:#0a0a0a;border:1px solid #333;border-radius:8px;overflow:hidden;font-family:'SF Pro Display',system-ui,sans-serif;font-size:11.5px;height:100%;display:flex;flex-direction:column}
-.inv-lh{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px 10px;background:linear-gradient(135deg,#10b98112,#00d4ff08);border-bottom:1px solid #2a2a2a}
+.inv-lh{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px 12px;background:linear-gradient(135deg,#10b98112,#00d4ff08);border-bottom:1px solid #2a2a2a}
 .inv-logo-txt{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
 .inv-logo-txt span{color:var(--teal)}
 .inv-tagline{font-size:8.5px;color:var(--muted);letter-spacing:.5px;margin-top:1px}
@@ -262,29 +263,29 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .inv-doc-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
 .inv-doc-num{font-size:11px;font-weight:700;color:var(--green);font-family:'SF Mono','Fira Code',monospace;margin-top:2px}
 .inv-meta{display:flex;border-bottom:1px solid #2a2a2a}
-.inv-meta-cell{flex:1;padding:6px 12px;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;gap:1px}
+.inv-meta-cell{flex:1;padding:7px 16px;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;gap:1px}
 .inv-meta-cell:last-child{border-right:none}
 .inv-meta-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
 .inv-meta-val{font-size:10.5px;font-weight:600;color:var(--text)}
 .inv-meta-val.mono{font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;color:var(--teal)}
 .inv-meta-val.sent{color:var(--green)}
 .inv-parties{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #2a2a2a}
-.inv-party{padding:8px 12px;border-right:1px solid #2a2a2a}
+.inv-party{padding:9px 16px;border-right:1px solid #2a2a2a}
 .inv-party:last-child{border-right:none}
 .inv-party-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:3px}
 .inv-party-name{font-size:12px;font-weight:700;color:var(--text)}
 .inv-party-sub{font-size:9.5px;color:var(--muted);margin-top:1px}
 .inv-table{width:100%;border-collapse:collapse;font-size:10.5px}
 .inv-table thead tr{background:#111;border-bottom:1px solid #333}
-.inv-table th{padding:5px 12px;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.inv-table th{padding:6px 16px;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
 .inv-table th:last-child,.inv-table td:last-child{text-align:right}
-.inv-table td{padding:7px 12px;border-bottom:1px solid #181818}
+.inv-table td{padding:8px 16px;border-bottom:1px solid #181818}
 .inv-rev-row td{color:var(--text)}
 .inv-rev-row td:last-child{color:var(--green);font-weight:700;font-size:13px}
 .inv-rev-row td small{display:block;font-size:8.5px;color:var(--muted);margin-top:1px}
 .inv-cost-note-row td{font-size:9.5px;color:var(--muted);background:#0d0d0d;font-style:italic}
 .inv-cost-note-row td:last-child{color:var(--amber);font-weight:600;font-style:normal}
-.inv-totals{padding:8px 12px;flex-shrink:0}
+.inv-totals{padding:10px 18px;flex-shrink:0}
 .inv-t-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
 .inv-t-row span:first-child{color:var(--muted)}
 .inv-t-green{color:var(--green);font-weight:600}
@@ -293,7 +294,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .inv-t-final span:first-child{color:var(--text)}
 .inv-t-teal{color:var(--teal)}
 .inv-t-pct{font-size:9px;font-weight:500;color:var(--muted);margin-left:6px}
-.inv-footer{padding:6px 12px;background:#080808;border-top:1px solid #222;font-size:8.5px;color:var(--muted);font-family:'SF Mono','Fira Code',monospace;margin-top:auto}
+.inv-footer{padding:7px 18px;background:#080808;border-top:1px solid #222;font-size:8.5px;color:var(--muted);font-family:'SF Mono','Fira Code',monospace;margin-top:auto}
 .inv-footer span{color:var(--teal)}
 @keyframes invRowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
 .inv-reveal{animation:invRowIn .3s ease forwards}
@@ -667,7 +668,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     </div>
 
     <!-- Invoice view — real invoice document -->
-    <div id="inv-view" style="display:none;padding:10px;overflow-y:auto">
+    <div id="inv-view" style="display:none;padding:14px 18px;overflow-y:auto">
       <div class="inv-doc" id="inv-doc">
         <!-- Letterhead -->
         <div class="inv-lh inv-reveal" style="opacity:0">
@@ -1132,6 +1133,8 @@ function setAct(idx,fromNav=false){
   $('event-view').style.display=a.termMode==='event'?'flex':'none';
   $('dash-view').style.display=a.termMode==='dash'?'flex':'none';
   $('inv-view').style.display=a.termMode==='inv'?'block':'none';
+  // Widen right panel for invoice
+  if(idx===4)$('right-panel').classList.add('inv-wide');else $('right-panel').classList.remove('inv-wide');
   if(idx===0){
     if(!fromNav){S.mdtFieldR=0;S.mdtFieldC=0;S.mdtCharR=0;S.mdtCharC=0;S.mdtDoneR=false;S.mdtDoneC=false;S.mdtTab=0;
       MDT_R.forEach(f=>$(f.id)&&($(f.id).innerHTML='',$(f.id).className='mval'));

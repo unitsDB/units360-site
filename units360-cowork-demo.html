@@ -41,6 +41,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #main{display:flex;gap:12px;flex:1;min-height:0}
 #left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
 #right-panel{display:flex;flex-direction:column;flex:1;min-width:270px;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+#right-panel.inv-wide{max-width:none;flex:2.4;transition:flex .35s ease}
 
 /* SCENE */
 #scene-wrap{border-radius:10px;overflow:hidden;border:1px solid var(--border);flex:1;min-height:100px}
@@ -264,9 +265,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #event-view,#summary-view,#change-view,#inv-view{position:absolute;inset:0;overflow:hidden}
 
 /* REAL INVOICE — dual comparison */
-.inv-doc-pair{display:flex;gap:8px;height:100%;padding:10px}
+.inv-doc-pair{display:flex;gap:12px;height:100%;padding:12px 16px}
 .inv-doc-card{flex:1;background:#0a0a0a;border:1px solid #333;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;font-family:'SF Pro Display',system-ui,sans-serif}
-.inv-dc-hdr{padding:8px 10px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start}
+.inv-dc-hdr{padding:10px 14px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start}
 .inv-dc-hdr.may{background:linear-gradient(135deg,#00d4ff10,#00d4ff05)}
 .inv-dc-hdr.jun{background:linear-gradient(135deg,#f59e0b10,#f59e0b05)}
 .inv-dc-brand{font-size:13px;font-weight:800;color:var(--text);letter-spacing:-0.3px}
@@ -275,17 +276,17 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .inv-dc-period{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
 .inv-dc-num{font-size:9.5px;font-weight:700;font-family:'SF Mono','Fira Code',monospace}
 .inv-dc-num.may-num{color:var(--teal)}.inv-dc-num.jun-num{color:var(--amber)}
-.inv-dc-info{padding:5px 10px;border-bottom:1px solid #222;font-size:9.5px;display:flex;justify-content:space-between}
+.inv-dc-info{padding:6px 14px;border-bottom:1px solid #222;font-size:9.5px;display:flex;justify-content:space-between}
 .inv-dc-info-k{color:var(--muted)}.inv-dc-info-v{font-weight:600;color:var(--text)}
 .inv-dc-table{width:100%;border-collapse:collapse;font-size:9.5px}
-.inv-dc-table th{padding:4px 8px;text-align:left;font-size:7.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);background:#0d0d0d;border-bottom:1px solid #222}
+.inv-dc-table th{padding:5px 12px;text-align:left;font-size:7.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);background:#0d0d0d;border-bottom:1px solid #222}
 .inv-dc-table th:last-child,.inv-dc-table td:last-child{text-align:right}
-.inv-dc-table td{padding:5px 8px;border-bottom:1px solid #181818;color:var(--text)}
+.inv-dc-table td{padding:6px 12px;border-bottom:1px solid #181818;color:var(--text)}
 .inv-dc-table td.changed-row{color:var(--amber);font-weight:600}
 .inv-dc-table td.changed-badge::after{content:'↑';font-size:8px;margin-left:3px;color:var(--amber)}
-.inv-dc-total{display:flex;justify-content:space-between;padding:6px 10px;font-size:12px;font-weight:800;border-top:1px solid #333;margin-top:auto}
+.inv-dc-total{display:flex;justify-content:space-between;padding:8px 14px;font-size:12px;font-weight:800;border-top:1px solid #333;margin-top:auto}
 .inv-dc-total .may-total{color:var(--teal)}.inv-dc-total .jun-total{color:var(--amber)}
-.inv-dc-rate{padding:4px 10px;font-size:8.5px;color:var(--muted);background:#080808;border-top:1px solid #1a1a1a;font-family:'SF Mono','Fira Code',monospace}
+.inv-dc-rate{padding:5px 14px;font-size:8.5px;color:var(--muted);background:#080808;border-top:1px solid #1a1a1a;font-family:'SF Mono','Fira Code',monospace}
 .inv-dc-rate.changed{color:var(--amber)}
 @keyframes invCardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .inv-doc-card.reveal{animation:invCardIn .4s ease forwards}
@@ -1081,6 +1082,8 @@ function setAct(idx,fromNav=false){
   $('summary-view').style.display=a.termMode==='sum'?'flex':'none';
   $('change-view').style.display=a.termMode==='change'?'flex':'none';
   $('inv-view').style.display=a.termMode==='inv'?'block':'none';
+  // Widen right panel for invoice
+  if(idx===4)$('right-panel').classList.add('inv-wide');else $('right-panel').classList.remove('inv-wide');
   if(idx===0&&!fromNav){
     S.mdtFieldU=0;S.mdtFieldC=0;S.mdtCharU=0;S.mdtCharC=0;S.mdtDoneU=false;S.mdtTab=0;
     MDT_U.forEach(f=>$(f.id)&&($(f.id).innerHTML='',$(f.id).className='mval'));
