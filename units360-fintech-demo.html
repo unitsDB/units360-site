@@ -408,7 +408,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <circle id="wallet-ring" cx="100" cy="70" r="40" fill="none" stroke="#ffd700" stroke-width="1.5" opacity="0"/>
         </g>
 
-        <!-- Animated transaction dots (from card → Units360 → wallet) -->
+        <!-- POS tap rings (animate on each payment) -->
+        <g id="pos-tap-rings"></g>
+        <!-- POS screen flash overlay -->
+        <rect id="pos-screen-flash" x="26" y="28" width="94" height="62" rx="4" fill="#ffd700" opacity="0" pointer-events="none"/>
+
+        <!-- Animated transaction dots (card ↔ wallet) -->
         <g id="txn-particles"></g>
 
         <!-- Scene status text -->
@@ -891,6 +896,12 @@ const FLOW_PATHS = [
   { p0:{x:348,y:36}, cp:{x:397,y:20}, p2:{x:442,y:36} },
   { p0:{x:548,y:36}, cp:{x:580,y:20}, p2:{x:610,y:36} },
 ];
+// Reversed paths for redeem act (wallet → ledger → engine → card)
+const FLOW_PATHS_REV = [
+  { p0:{x:610,y:36}, cp:{x:580,y:20}, p2:{x:548,y:36} },
+  { p0:{x:442,y:36}, cp:{x:397,y:20}, p2:{x:348,y:36} },
+  { p0:{x:242,y:36}, cp:{x:197,y:20}, p2:{x:148,y:36} },
+];
 
 function bezQ(t, p0, cp, p2) {
   const mt = 1-t;
@@ -954,6 +965,7 @@ let invoiceLineIdx=0, overlayTimer=0, secondHand=0, _secPrev=null;
 let flowSpawnTimer=0;
 let txnParticles=[], txnSpawnTimer=0;
 let walletRingAnim=null;
+let posTapRings=[], posFlashTimer=0;
 
 function setHandXY(id, angleDeg, length) {
   const rad=(angleDeg-90)*Math.PI/180;
@@ -1059,7 +1071,7 @@ function updateScene() {
   }
 }
 
-// Animated transaction particles (card → ledger → wallet)
+// Animated transaction particles (card ↔ wallet, direction flips for redeem)
 function spawnTxnParticle() {
   const act=ACTS[state.actIndex];
   if(act.ptsRate===0) return;
@@ -1070,8 +1082,7 @@ function spawnTxnParticle() {
   c.setAttribute('fill',color);
   c.setAttribute('opacity','0.9');
   $('txn-particles').appendChild(c);
-  // Path: from card center (350,83) through flow nodes toward wallet (515,83)
-  txnParticles.push({el:c, t:0, color});
+  txnParticles.push({el:c, t:0, color, redeem: act.id==='redeem'});
 }
 
 function updateTxnParticles(dtMs) {
@@ -1086,9 +1097,10 @@ function updateTxnParticles(dtMs) {
   txnParticles=txnParticles.filter(p=>{
     p.t+=0.008*f;
     if(p.t>=1){p.el.remove();return false;}
-    // Arc from (350,83) to (515,83) with slight curve
-    const x=350+(515-350)*p.t;
-    const y=83-Math.sin(p.t*Math.PI)*30;
+    // Earn: card (270,82) → wallet (515,80)   Redeem: wallet (515,80) → card (270,82)
+    const [x0,y0,x1,y1] = p.redeem ? [515,80,270,82] : [270,82,515,80];
+    const x=x0+(x1-x0)*p.t;
+    const y=(y0+(y1-y0)*p.t) - Math.sin(p.t*Math.PI)*28;
     p.el.setAttribute('cx',x.toFixed(1));
     p.el.setAttribute('cy',y.toFixed(1));
     p.el.setAttribute('opacity',(0.9-p.t*0.5).toFixed(2));
@@ -1096,13 +1108,57 @@ function updateTxnParticles(dtMs) {
   });
 }
 
-// Flow particles
+// POS tap animation — rings expand from contactless symbol on the card
+function triggerPosTap(color) {
+  // Screen flash on POS terminal
+  const flash=$('pos-screen-flash');
+  flash.setAttribute('fill', color||'#ffd700');
+  posFlashTimer=220;
+
+  // Tap rings from contactless area on card (scene coords ~258, 62)
+  const ns='http://www.w3.org/2000/svg';
+  for(let i=0;i<3;i++){
+    setTimeout(()=>{
+      const ring=document.createElementNS(ns,'circle');
+      ring.setAttribute('cx','258');
+      ring.setAttribute('cy','62');
+      ring.setAttribute('r','8');
+      ring.setAttribute('fill','none');
+      ring.setAttribute('stroke', color||'#ffd700');
+      ring.setAttribute('stroke-width','2');
+      ring.setAttribute('opacity','0.9');
+      $('pos-tap-rings').appendChild(ring);
+      posTapRings.push({el:ring, r:8, life:0});
+    }, i*80);
+  }
+}
+
+function updatePosTap(dtMs) {
+  // Flash decay
+  if(posFlashTimer>0){
+    posFlashTimer=Math.max(0,posFlashTimer-dtMs);
+    $('pos-screen-flash').setAttribute('opacity',(posFlashTimer/220*0.35).toFixed(2));
+  }
+  // Tap ring expansion
+  posTapRings=posTapRings.filter(r=>{
+    r.life+=dtMs;
+    r.r+=0.22*(dtMs/16.67);
+    if(r.life>500){r.el.remove();return false;}
+    r.el.setAttribute('r',r.r.toFixed(1));
+    r.el.setAttribute('opacity',(1-r.life/500).toFixed(2));
+    r.el.setAttribute('stroke-width',(2-r.life/500).toFixed(2));
+    return true;
+  });
+}
+
+// Flow particles (reversed for redeem: wallet → ledger → engine → card)
 function spawnFlowParticle() {
   const act=ACTS[state.actIndex];
   if(act.ptsRate===0)return;
   const container=$('flow-particles');
   const color=act.id==='bonus'?'#f472b6':act.id==='redeem'?'#a855f7':'#ffd700';
-  FLOW_PATHS.forEach(path=>{
+  const paths=act.id==='redeem'?FLOW_PATHS_REV:FLOW_PATHS;
+  paths.forEach(path=>{
     const el=document.createElementNS('http://www.w3.org/2000/svg','circle');
     el.setAttribute('r','4');
     el.setAttribute('fill',color);
@@ -1207,6 +1263,10 @@ function renderTxnEvent(d) {
     `<span class="ev-brace">}</span><span class="ev-brace">}</span>`;
   container.insertBefore(block,container.firstChild);
   lastEventData=d;
+
+  // POS tap animation
+  const tapColor=d.direction==='REDEEM'?'#a855f7':d.mult>=3?'#f472b6':'#ffd700';
+  triggerPosTap(tapColor);
 
   // Update merchant terminal display
   $('merch-amount').textContent='$'+d.amt;
@@ -1361,6 +1421,7 @@ function loop(ts) {
   updateScene();
   updateFlowParticles(dtMs);
   updateTxnParticles(dtMs);
+  updatePosTap(dtMs);
 
   requestAnimationFrame(loop);
 }
@@ -1398,6 +1459,8 @@ $('btn-reset').addEventListener('click',()=>{
   $('btn-play').textContent='▶ Play';
   flowParticles.forEach(p=>p.el.remove());flowParticles=[];
   txnParticles.forEach(p=>p.el.remove());txnParticles=[];
+  posTapRings.forEach(r=>r.el.remove());posTapRings=[];
+  posFlashTimer=0;$('pos-screen-flash').setAttribute('opacity','0');
   $('event-stream').innerHTML='';$('invoice-view').innerHTML='';
   setupAct(0,false);
 });
