@@ -28,6 +28,8 @@ units360-site/
 | Utilities & Energy | `units360-energy-demo.html` | ✅ Live |
 | Mobility & Logistics | `units360-logistics-demo.html` | ✅ Live |
 | Fintech & Banking | `units360-fintech-demo.html` | ✅ Live |
+| Healthcare AI (Scribe) | `units360-scribe-demo.html` | ✅ Live |
+| Co-working Space | `units360-cowork-demo.html` | ✅ Live |
 | Healthcare | — | 🔜 Coming soon |
 
 ---

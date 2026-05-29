@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units360 · Co-working Space Demo</title>
+<style>
+:root{
+  --bg:#070c18;--surface:#0d1526;--surface2:#131e35;
+  --teal:#00d4ff;--teal-glow:#00d4ff33;
+  --blue:#3b82f6;--amber:#f59e0b;--amber-glow:#f59e0b33;
+  --red:#ef4444;--green:#10b981;--green-glow:#10b98133;
+  --purple:#8b5cf6;--credit:#00d4ff;
+  --text:#e0f2fe;--muted:#64748b;--border:#1e2d4a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh;max-width:1280px;margin:0 auto;padding:10px 16px 0}
+
+/* OVERLAY */
+#overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(7,12,24,0.94);opacity:0;pointer-events:none;transition:opacity .35s}
+#overlay.show{opacity:1;pointer-events:auto;backdrop-filter:blur(8px)}
+#ov-eye{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+#ov-title{font-size:clamp(26px,4.5vw,50px);font-weight:800;letter-spacing:-1px;color:var(--text);text-align:center}
+#ov-time{font-size:clamp(14px,2.5vw,22px);color:var(--teal);margin-top:10px;font-weight:300;letter-spacing:2px}
+#ov-sub{font-size:13px;color:var(--muted);margin-top:12px;letter-spacing:1px}
+
+/* HEADER */
+#header{display:flex;align-items:center;gap:10px;padding:4px 0 8px;flex-shrink:0}
+#logo{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+#logo span{color:var(--teal)}
+#badge{font-size:10px;padding:3px 8px;border:1px solid var(--teal);border-radius:4px;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase}
+#header-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px}
+#demo-title{font-size:13px;color:var(--muted);letter-spacing:.5px}
+#demo-sub{font-size:11px;color:var(--muted);opacity:.6}
+#clock-wrap{display:flex;align-items:center;gap:8px}
+#clock-label{font-size:12px;color:var(--teal);font-variant-numeric:tabular-nums;letter-spacing:.5px;min-width:56px;text-align:right}
+#clock-svg{width:48px;height:48px;flex-shrink:0}
+
+/* MAIN */
+#main{display:flex;gap:12px;flex:1;min-height:0}
+#left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
+#right-panel{display:flex;flex-direction:column;flex:1;min-width:270px;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+
+/* SCENE */
+#scene-wrap{border-radius:10px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;height:158px}
+#scene-svg{width:100%;height:100%;display:block}
+
+/* FLOW */
+#flow-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px 6px;flex-shrink:0}
+#flow-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+#flow-svg{width:100%;display:block;height:72px}
+
+/* METRICS */
+#metrics-row{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 0;flex-shrink:0}
+.m-block{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 10px}
+.m-sep{width:1px;height:40px;background:var(--border)}
+.m-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.m-val{font-size:clamp(16px,2.2vw,26px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;transition:color .5s}
+.m-val.teal{color:var(--teal)}.m-val.green{color:var(--green)}.m-val.amber{color:var(--amber)}.m-val.red{color:var(--red)}
+.m-sub{font-size:8px;color:var(--muted);text-align:center}
+
+/* PROGRESS */
+#prog-wrap{flex-shrink:0;padding:0 2px}
+#prog-bar{height:3px;background:#1e2d4a;border-radius:2px;overflow:hidden}
+#prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:2px;transition:width .12s}
+#prog-acts{display:flex;justify-content:space-between;margin-top:4px}
+.p-act{font-size:9px;color:var(--muted);cursor:pointer;transition:color .2s}.p-act:hover,.p-act.active{color:var(--teal)}
+
+/* TERMINAL */
+#term-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px 7px;border-bottom:1px solid var(--border);flex-shrink:0}
+.tdot{width:9px;height:9px;border-radius:50%}
+#term-title{font-size:11px;color:var(--muted);margin-left:4px;letter-spacing:.5px}
+#term-badge{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;transition:all .4s}
+#term-badge.mdt{background:#00d4ff18;color:var(--teal);border:1px solid #00d4ff40}
+#term-badge.event{background:#3b82f618;color:var(--blue);border:1px solid #3b82f640}
+#term-badge.change{background:#f59e0b18;color:var(--amber);border:1px solid #f59e0b40}
+#term-badge.inv{background:#10b98118;color:var(--green);border:1px solid #10b98140}
+#term-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.ttab{font-size:9.5px;padding:5px 12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.ttab.active{color:var(--teal);border-bottom-color:var(--teal)}
+#term-body{flex:1;overflow:hidden;position:relative;font-family:'SF Mono','Fira Code',monospace;font-size:11.5px}
+
+/* MDT view */
+#mdt-view{position:absolute;inset:0;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.msec{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.msec-hdr{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;padding:5px 10px;border-bottom:1px solid var(--border)}
+.msec-hdr.teal{color:var(--teal);background:#00d4ff08}.msec-hdr.blue{color:var(--blue);background:#3b82f608}
+.mrow{display:flex;align-items:center;gap:6px;padding:4px 10px;border-bottom:1px solid #0d1526}
+.mrow:last-child{border-bottom:none}
+.mkey{font-size:9.5px;color:var(--muted);min-width:88px;letter-spacing:.2px}
+.mval{font-size:10.5px;color:var(--text);flex:1;min-height:14px}
+.mval .cur{display:inline-block;width:6px;height:11px;background:var(--teal);margin-left:1px;animation:blink 1s step-end infinite;vertical-align:middle}
+.mval.done{color:var(--teal)}.mval.done.blue{color:var(--blue)}.mval.done.amber{color:var(--amber)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Event view */
+#event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;display:none}
+#ev-dash{padding:7px 8px 5px;background:#040810;border-bottom:1px solid var(--border);flex-shrink:0}
+.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px}
+.ev-m{background:#0d1526;border:1px solid var(--border);border-radius:6px;padding:5px 8px;transition:border-color .4s}
+.ev-m-top{display:flex;align-items:center;gap:3px;margin-bottom:1px}
+.ev-m-ico{font-size:10px}.ev-m-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.ev-m-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;transition:color .5s}
+.ev-m-unit{font-size:7.5px;color:var(--muted);margin-top:1px}
+.ev-m.credits{border-color:#00d4ff30}.ev-m.credits .ev-m-val{color:var(--teal)}
+.ev-m.balance{border-color:#10b98130}.ev-m.balance .ev-m-val{color:var(--green)}
+.ev-m.balance.warn .ev-m-val{color:var(--amber)}.ev-m.balance.warn{border-color:#f59e0b30}
+.ev-m.desk{border-color:#3b82f630}.ev-m.desk .ev-m-val{color:var(--blue)}
+.ev-m.room{border-color:#8b5cf630}.ev-m.room .ev-m-val{color:#a78bfa}
+#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:4px 10px;border-bottom:1px solid var(--border);font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+#event-stream{flex:1;overflow:hidden;font-size:10px}
+.ev-block{padding:4px 10px;line-height:1.5;border-bottom:1px solid #0d152640;animation:evIn .25s ease}
+.ev-block.desk-ev{border-left:2px solid #3b82f650;background:#3b82f606}
+.ev-block.room-ev{border-left:2px solid #8b5cf650;background:#8b5cf606}
+.ev-block.print-ev{border-left:2px solid #f59e0b50;background:#f59e0b06}
+@keyframes evIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+#ev-footer{padding:3px 10px;border-top:1px solid var(--border);font-size:8px;color:var(--muted);display:flex;gap:8px;flex-shrink:0}
+.evleg{display:inline-flex;align-items:center;gap:3px}
+.evleg-box{width:7px;height:7px;border-radius:1px}
+.ek{color:#7dd3fc}.es{color:#86efac}.en{color:#fbbf24}.emuted{color:var(--muted)}
+
+/* Summary/bar chart view */
+#summary-view{position:absolute;inset:0;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:10px;display:none}
+.sum-title{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)}
+.bar-row{display:flex;flex-direction:column;gap:4px}
+.bar-label-row{display:flex;justify-content:space-between;font-size:10px}
+.bar-name{color:var(--text)}.bar-amt{font-variant-numeric:tabular-nums;font-weight:600}
+.bar-track{height:16px;background:#1e2d4a;border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;width:0%;transition:width .05s}
+.bar-fill.desk{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.bar-fill.room{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.bar-fill.print{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.sum-total{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.sum-bal-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.sum-bal-track{height:12px;background:#1e2d4a;border-radius:6px;overflow:hidden;position:relative}
+.sum-bal-fill{height:100%;border-radius:6px;transition:width .08s,background .5s}
+.sum-bal-nums{display:flex;justify-content:space-between;font-size:10px;margin-top:4px;font-variant-numeric:tabular-nums;font-weight:600}
+
+/* Rate change view */
+#change-view{position:absolute;inset:0;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:8px;display:none}
+.chg-title{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--amber)}
+.chg-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.chg-hdr{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;padding:5px 10px;border-bottom:1px solid var(--border)}
+.chg-hdr.old{color:var(--muted);background:#1e2d4a20}
+.chg-hdr.new{color:var(--amber);background:#f59e0b08}
+.chg-row{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #0d1526}
+.chg-row:last-child{border-bottom:none}
+.chg-key{font-size:9.5px;color:var(--muted);min-width:90px}
+.chg-val{font-size:10.5px;flex:1}
+.chg-val.old-val{color:var(--muted);text-decoration:line-through}
+.chg-val.new-val{color:var(--amber);font-weight:600}
+.chg-badge{font-size:8px;padding:1px 6px;border-radius:10px;font-weight:700;letter-spacing:.5px}
+.chg-badge.changed{background:#f59e0b20;color:var(--amber);border:1px solid #f59e0b40}
+.chg-badge.unchanged{background:#1e2d4a;color:var(--muted)}
+.chg-eff{font-size:9px;color:var(--muted);background:#0d1526;border:1px solid var(--border);border-radius:4px;padding:4px 8px;text-align:center}
+.chg-eff strong{color:var(--amber)}
+
+/* Invoice comparison view */
+#inv-view{position:absolute;inset:0;overflow:hidden;padding:10px 12px;display:flex;flex-direction:column;gap:6px;display:none}
+.inv-pair{display:flex;gap:8px;flex:1}
+.inv-card{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.inv-card-hdr{font-size:8.5px;letter-spacing:1.5px;text-transform:uppercase;padding:5px 10px;border-bottom:1px solid var(--border)}
+.inv-card-hdr.may{color:var(--teal);background:#00d4ff08}
+.inv-card-hdr.jun{color:var(--amber);background:#f59e0b08}
+.inv-rows{flex:1;overflow:hidden}
+.inv-r{display:flex;justify-content:space-between;padding:4px 10px;border-bottom:1px solid #0d152640;font-size:9.5px}
+.inv-r:last-child{border-bottom:none}
+.inv-r-k{color:var(--muted)}.inv-r-v{font-weight:600}
+.inv-total-row{display:flex;justify-content:space-between;padding:6px 10px;font-size:11px;font-weight:800;border-top:1px solid var(--border)}
+.inv-total-row.may .inv-r-v{color:var(--teal)}.inv-total-row.jun .inv-r-v{color:var(--amber)}
+.inv-insight{background:linear-gradient(135deg,#f59e0b08,#ef444408);border:1px solid #f59e0b30;border-radius:6px;padding:8px 10px;font-size:10px;color:#94a3b8;line-height:1.5}
+.inv-insight strong{color:var(--amber)}
+
+/* COMMENTARY */
+#commentary{display:flex;align-items:flex-start;gap:10px;padding:6px 14px;background:var(--surface);border-top:1px solid var(--border);border-left:3px solid var(--teal);flex-shrink:0;min-height:36px;transition:border-color .4s}
+#commentary.amber{border-left-color:var(--amber)}#commentary.green{border-left-color:var(--green)}#commentary.red{border-left-color:var(--red)}
+#com-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+#com-text{font-size:11.5px;color:var(--text);line-height:1.5;flex:1}
+#com-text strong{color:var(--teal)}
+#commentary.amber #com-text strong{color:var(--amber)}
+#commentary.green #com-text strong{color:var(--green)}
+
+/* ACT HEADER */
+#act-hdr{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
+#act-eye{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+#act-title{font-size:15px;font-weight:700;color:var(--text);transition:color .4s}
+#act-title.amber{color:var(--amber)}#act-title.green{color:var(--green)}#act-title.red{color:var(--red)}
+#act-desc{font-size:11px;color:var(--muted);margin-left:auto}
+
+/* CONTROLS */
+#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid var(--border);margin-top:4px}
+.cbtn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.cbtn:hover{border-color:var(--teal);color:var(--teal)}.cbtn:active{transform:scale(.97)}
+#btn-play{background:var(--teal);border-color:var(--teal);color:#070c18;font-weight:600;min-width:62px}
+#btn-play:hover{background:#00b8e0}
+.spd-v{font-size:11px;color:var(--teal);min-width:22px}
+.csep{width:1px;height:18px;background:var(--border);margin:0 2px}
+#kbd-hint{font-size:10px;color:var(--muted);margin-left:auto}
+
+/* PLATFORM GUIDE */
+#btn-guide{background:linear-gradient(135deg,#00d4ff22,#3b82f622);border:1px solid var(--teal);border-radius:20px;color:var(--teal);font-size:11px;font-weight:700;padding:5px 13px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;box-shadow:0 0 10px #00d4ff22}
+#btn-guide:hover{background:var(--teal);color:#070c18;box-shadow:0 0 18px #00d4ff55}
+#btn-guide:active{transform:scale(.97)}
+
+/* INFO DRAWER */
+#info-back{position:fixed;inset:0;z-index:205;background:rgba(4,8,18,.65);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .3s}
+#info-back.show{opacity:1;pointer-events:auto}
+#info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:210;background:#070d1c;border-left:1px solid var(--border);transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+#info-drawer.open{transform:translateX(0)}
+#dr-hdr{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:linear-gradient(135deg,#0d1a2e,#0a1425)}
+#dr-logo{font-size:16px;font-weight:800;color:var(--text)}#dr-logo span{color:var(--teal)}
+#dr-sub{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+#dr-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#1e2d4a;border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#dr-close:hover{background:#2a3f5f;color:var(--text)}
+#dr-nav{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.dpill{font-size:8.5px;padding:3px 8px;border-radius:12px;background:#1e2d4a;color:var(--muted);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
+.dpill:hover{background:#2a3f5f;color:var(--text)}.dpill.active{background:#00d4ff15;color:var(--teal);border-color:#00d4ff40}
+#dr-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:0;scroll-behavior:smooth}
+#dr-body::-webkit-scrollbar{width:4px}#dr-body::-webkit-scrollbar-thumb{background:#1e2d4a;border-radius:2px}
+.dsec{padding:16px 0;border-bottom:1px solid #0d1526}.dsec:last-child{border-bottom:none;padding-bottom:6px}
+.dsec-ey{font-size:8px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:5px;opacity:.7}
+.dsec-ttl{font-size:14px;font-weight:700;color:var(--text);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.dsec-ico{font-size:17px}
+.dsec-body{font-size:11.5px;color:#94a3b8;line-height:1.7;display:flex;flex-direction:column;gap:7px}
+.dsec-body p{margin:0}.dsec-body strong{color:var(--text);font-weight:600}.dsec-body em{color:var(--teal);font-style:normal}
+.dft{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:3px}
+.dfr{display:flex;padding:5px 10px;border-bottom:1px solid #0d1526;align-items:flex-start;gap:10px;font-size:10.5px}
+.dfr:last-child{border-bottom:none}
+.dfk{color:var(--teal);min-width:100px;font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;flex-shrink:0;margin-top:1px}
+.dfv{color:#94a3b8;line-height:1.5}.dfv strong{color:var(--text)}
+.dflow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:6px 0;padding:9px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:10.5px}
+.dfn{padding:3px 9px;border-radius:4px;background:#1e2d4a;color:var(--text);text-align:center;font-size:9.5px;line-height:1.4}
+.dfn.hi{background:#00d4ff15;border:1px solid #00d4ff40;color:var(--teal)}.dfa{color:var(--muted);font-size:13px}
+.dtags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.dtag{font-size:8.5px;padding:2px 7px;border-radius:10px;letter-spacing:.4px}
+.dtag.teal{background:#00d4ff15;color:var(--teal);border:1px solid #00d4ff30}
+.dtag.blue{background:#3b82f615;color:var(--blue);border:1px solid #3b82f630}
+.dtag.green{background:#10b98115;color:var(--green);border:1px solid #10b98130}
+.dtag.amber{background:#f59e0b15;color:var(--amber);border:1px solid #f59e0b30}
+.dcode{background:#040810;border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:5px}
+.dcode .ck{color:#7dd3fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#64748b}
+.dcallout{background:linear-gradient(135deg,#00d4ff08,#3b82f608);border:1px solid #00d4ff25;border-radius:6px;padding:9px 11px;font-size:10.5px;color:#94a3b8;line-height:1.6;margin-top:5px}
+.dcallout strong{color:var(--teal)}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pls 1s ease infinite}
+@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+</style>
+</head>
+<body>
+
+<a href="index.html" style="position:fixed;top:14px;left:18px;z-index:9999;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(13,21,38,0.82);backdrop-filter:blur(16px);border:1px solid rgba(30,48,88,0.9);color:#64748b;font-family:system-ui,sans-serif;font-size:12px;font-weight:500;text-decoration:none;transition:color .2s,border-color .2s;" onmouseover="this.style.color='#e0f2fe';this.style.borderColor='#00d4ff'" onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(30,48,88,0.9)'">← Units360.ai</a>
+
+<div id="overlay">
+  <div id="ov-eye">Units360 · Co-working Space</div>
+  <div id="ov-title"></div>
+  <div id="ov-time"></div>
+  <div id="ov-sub"></div>
+</div>
+
+<div id="app">
+
+<div id="header">
+  <div id="logo">Units<span>360</span></div>
+  <div id="badge">Demo · Co-working</div>
+  <button id="btn-guide">ℹ Platform Guide</button>
+  <div id="header-center">
+    <div id="demo-title">WorkNest Co-working · Credit-Based Pricing</div>
+    <div id="demo-sub">Credits → desk hours, room time, print pages · live conversion rules · auto-invoice</div>
+  </div>
+  <div id="clock-wrap">
+    <div id="clock-label">00:00</div>
+    <svg id="clock-svg" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="22" fill="#0d1526" stroke="#1e2d4a" stroke-width="1.5"/>
+      <g stroke="#2a3f5f" stroke-width=".8"><line x1="24" y1="3" x2="24" y2="7"/><line x1="24" y1="41" x2="24" y2="45"/><line x1="3" y1="24" x2="7" y2="24"/><line x1="41" y1="24" x2="45" y2="24"/></g>
+      <line id="hand-h" x1="24" y1="24" x2="24" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+      <line id="hand-m" x1="24" y1="24" x2="24" y2="7" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round"/>
+      <line id="hand-s" x1="24" y1="24" x2="24" y2="5" stroke="#ef4444" stroke-width="1" stroke-linecap="round"/>
+      <line id="hand-st" x1="24" y1="24" x2="24" y2="30" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="24" cy="24" r="2" fill="#ef4444"/>
+    </svg>
+  </div>
+</div>
+
+<div id="act-hdr">
+  <div id="act-eye">ACT 1 OF 5</div>
+  <div id="act-title">Define Units &amp; Conversion Rules</div>
+  <div id="act-desc">4 units + conversion table</div>
+</div>
+
+<div id="main">
+<div id="left-panel">
+
+  <!-- Scene -->
+  <div id="scene-wrap">
+    <svg id="scene-svg" viewBox="0 0 640 158" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="desk-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#3b82f6" stop-opacity=".6"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
+        <radialGradient id="room-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#8b5cf6" stop-opacity=".5"/><stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient>
+        <filter id="glow-f"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Background -->
+      <rect width="640" height="158" fill="#080d1c"/>
+      <!-- Floor -->
+      <rect x="0" y="128" width="640" height="30" fill="#090e1e"/>
+      <line x1="0" y1="128" x2="640" y2="128" stroke="#1a2540" stroke-width="1"/>
+      <!-- Ceiling line -->
+      <line x1="0" y1="18" x2="640" y2="18" stroke="#131d30" stroke-width="1"/>
+      <!-- Subtle grid floor -->
+      <line x1="0" y1="143" x2="640" y2="143" stroke="#0d1526" stroke-width=".5"/>
+      <line x1="160" y1="128" x2="160" y2="158" stroke="#0d1526" stroke-width=".5"/>
+      <line x1="320" y1="128" x2="320" y2="158" stroke="#0d1526" stroke-width=".5"/>
+      <line x1="480" y1="128" x2="480" y2="158" stroke="#0d1526" stroke-width=".5"/>
+
+      <!-- === CHECK-IN KIOSK (left) === -->
+      <rect x="18" y="34" width="52" height="80" rx="4" fill="#0d1526" stroke="#1e2d4a" stroke-width="1"/>
+      <rect x="21" y="38" width="46" height="52" rx="2" fill="#070c18" stroke="#00d4ff30" stroke-width=".5"/>
+      <text x="44" y="54" text-anchor="middle" fill="#00d4ff" font-size="7" font-family="system-ui" font-weight="700">WorkNest</text>
+      <line x1="21" y1="57" x2="67" y2="57" stroke="#1e2d4a" stroke-width=".5"/>
+      <text x="44" y="67" text-anchor="middle" fill="#64748b" font-size="6.5" font-family="system-ui">Acme Design</text>
+      <text id="kiosk-credits" x="44" y="78" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'SF Mono','Fira Code',monospace" font-weight="700">100 cr</text>
+      <rect x="27" y="82" width="34" height="5" rx="2" fill="#1e2d4a"/>
+      <rect id="kiosk-bar" x="27" y="82" width="34" height="5" rx="2" fill="#00d4ff" opacity=".5"/>
+      <text x="44" y="102" text-anchor="middle" fill="#4a6080" font-size="6" font-family="system-ui">CHECK-IN</text>
+      <!-- Kiosk base -->
+      <rect x="34" y="114" width="20" height="14" rx="2" fill="#131e35"/>
+      <text x="44" y="148" text-anchor="middle" fill="#4a6080" font-size="8.5" font-family="system-ui">Check-in</text>
+
+      <!-- === HOT DESKS (center-left) === -->
+      <!-- Desk 1 (occupied) -->
+      <rect id="desk1" x="94" y="90" width="58" height="30" rx="3" fill="#0d1526" stroke="#1e2d4a" stroke-width="1"/>
+      <rect id="desk1-screen" x="96" y="92" width="40" height="24" rx="2" fill="#070c18" stroke="#1e2d4a" stroke-width=".5"/>
+      <!-- Person at desk 1 -->
+      <circle cx="148" cy="74" r="10" fill="#0e1828" stroke="#2d4070" stroke-width=".8"/>
+      <path d="M 138 84 Q 148 88 158 84 L 160 90 L 136 90 Z" fill="#1a2844" stroke="#2d4070" stroke-width=".5"/>
+      <circle id="desk1-glow" cx="115" cy="104" r="12" fill="url(#desk-glow)" opacity="0"/>
+      <text x="115" y="148" text-anchor="middle" fill="#4a6080" font-size="8" font-family="system-ui">Desk A</text>
+
+      <!-- Desk 2 (occupied) -->
+      <rect id="desk2" x="164" y="90" width="58" height="30" rx="3" fill="#0d1526" stroke="#1e2d4a" stroke-width="1"/>
+      <rect id="desk2-screen" x="166" y="92" width="40" height="24" rx="2" fill="#070c18" stroke="#1e2d4a" stroke-width=".5"/>
+      <!-- Person at desk 2 -->
+      <circle cx="214" cy="74" r="10" fill="#0e1828" stroke="#2d4070" stroke-width=".8"/>
+      <path d="M 204 84 Q 214 88 224 84 L 226 90 L 202 90 Z" fill="#1a2844" stroke="#2d4070" stroke-width=".5"/>
+      <circle id="desk2-glow" cx="183" cy="104" r="12" fill="url(#desk-glow)" opacity="0"/>
+      <text x="183" y="148" text-anchor="middle" fill="#4a6080" font-size="8" font-family="system-ui">Desk B</text>
+
+      <!-- Desk 3 (empty) -->
+      <rect x="234" y="90" width="58" height="30" rx="3" fill="#0a1020" stroke="#131d30" stroke-width="1"/>
+      <text x="263" y="148" text-anchor="middle" fill="#2a3a5a" font-size="8" font-family="system-ui">Desk C</text>
+
+      <!-- === CONFERENCE ROOM (center-right) === -->
+      <rect x="300" y="26" width="130" height="90" rx="4" fill="#0a1020" stroke="#1e2d4a" stroke-width="1.5"/>
+      <!-- Room label -->
+      <text x="365" y="40" text-anchor="middle" fill="#8b5cf6" font-size="8" font-family="system-ui" font-weight="600" letter-spacing="1">CONF ROOM</text>
+      <line x1="300" y1="44" x2="430" y2="44" stroke="#1e2d4a" stroke-width=".5"/>
+      <!-- Table -->
+      <ellipse cx="365" cy="82" rx="44" ry="22" fill="#0d1526" stroke="#1e2d4a" stroke-width="1"/>
+      <!-- Chairs around table (simple rectangles) -->
+      <rect x="340" y="55" width="14" height="7" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+      <rect x="362" y="55" width="14" height="7" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+      <rect x="340" y="100" width="14" height="7" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+      <rect x="362" y="100" width="14" height="7" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+      <rect x="306" y="74" width="7" height="14" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+      <rect x="417" y="74" width="7" height="14" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+      <!-- Room status -->
+      <circle id="room-dot" cx="415" cy="36" r="4" fill="#10b981" opacity=".5"/>
+      <text id="room-status" x="406" y="39" text-anchor="end" fill="#64748b" font-size="7.5" font-family="system-ui">AVAILABLE</text>
+      <!-- Room glow overlay -->
+      <rect id="room-glow-rect" x="300" y="26" width="130" height="90" rx="4" fill="#8b5cf6" opacity="0"/>
+      <text x="365" y="148" text-anchor="middle" fill="#4a6080" font-size="8.5" font-family="system-ui">Conference</text>
+
+      <!-- === PRINTER (right) === -->
+      <g transform="translate(472,48)">
+        <!-- Printer body -->
+        <rect x="0" y="20" width="70" height="40" rx="4" fill="#0d1526" stroke="#f59e0b50" stroke-width="1"/>
+        <!-- Paper slot -->
+        <rect x="8" y="10" width="54" height="12" rx="2" fill="#131e35" stroke="#1e2d4a" stroke-width=".5"/>
+        <rect id="printer-paper" x="24" y="10" width="22" height="12" rx="1" fill="#e0f2fe" opacity="0"/>
+        <!-- Display -->
+        <rect x="8" y="26" width="54" height="14" rx="2" fill="#070c18" stroke="#f59e0b30" stroke-width=".5"/>
+        <text id="printer-status" x="35" y="36" text-anchor="middle" fill="#64748b" font-size="6.5" font-family="system-ui">IDLE</text>
+        <!-- Buttons -->
+        <circle cx="54" cy="50" r="4" fill="#1e2d4a" stroke="#2d4070" stroke-width=".5"/>
+        <circle id="printer-light" cx="54" cy="50" r="3" fill="#10b981" opacity=".3"/>
+        <text x="35" y="78" text-anchor="middle" fill="#4a6080" font-size="8" font-family="system-ui" transform="translate(0,28)">Printer</text>
+      </g>
+
+      <!-- Scene particles -->
+      <g id="scene-ptcls"></g>
+    </svg>
+  </div>
+
+  <!-- Flow -->
+  <div id="flow-wrap">
+    <div id="flow-label">Live Credit Flow</div>
+    <svg id="flow-svg" viewBox="0 0 640 72" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ng-teal" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d4ff20"/><stop offset="100%" stop-color="#00d4ff08"/></linearGradient>
+        <linearGradient id="ng-blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f620"/><stop offset="100%" stop-color="#3b82f608"/></linearGradient>
+        <linearGradient id="ng-green" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10b98120"/><stop offset="100%" stop-color="#10b98108"/></linearGradient>
+        <linearGradient id="ng-amber" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f59e0b20"/><stop offset="100%" stop-color="#f59e0b08"/></linearGradient>
+        <linearGradient id="ng-purple" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8b5cf620"/><stop offset="100%" stop-color="#8b5cf608"/></linearGradient>
+      </defs>
+      <!-- Paths -->
+      <path id="fp0" d="M 76 36 Q 97 18 118 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+      <path id="fp1" d="M 190 36 Q 211 18 232 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+      <path id="fp2" d="M 304 36 Q 325 18 346 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+      <path id="fp3" d="M 418 36 Q 439 18 460 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+      <path id="fp4" d="M 532 36 Q 553 18 574 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+      <!-- Node 1: WorkNest Space -->
+      <rect x="4" y="14" width="72" height="44" rx="7" fill="url(#ng-teal)" stroke="#1e2d4a" stroke-width="1"/>
+      <text x="40" y="32" font-size="12" text-anchor="middle">🏢</text>
+      <text x="40" y="44" font-size="7.5" fill="#e0f2fe" text-anchor="middle">WorkNest</text>
+      <text id="fn1-sub" x="40" y="54" font-size="7" fill="#64748b" text-anchor="middle">IDLE</text>
+      <!-- Node 2: Booking System -->
+      <rect x="118" y="14" width="72" height="44" rx="7" fill="url(#ng-blue)" stroke="#1e2d4a" stroke-width="1"/>
+      <text x="154" y="32" font-size="12" text-anchor="middle">🖥️</text>
+      <text x="154" y="44" font-size="7.5" fill="#e0f2fe" text-anchor="middle">Booking Sys</text>
+      <text id="fn2-sub" x="154" y="54" font-size="7" fill="#64748b" text-anchor="middle">READY</text>
+      <!-- Node 3: Units360 API -->
+      <rect x="232" y="14" width="72" height="44" rx="7" fill="#0d1526" stroke="#00d4ff40" stroke-width="1"/>
+      <text x="268" y="32" font-size="12" text-anchor="middle">⚡</text>
+      <text x="268" y="44" font-size="7.5" fill="#e0f2fe" text-anchor="middle">Units360 API</text>
+      <text id="fn3-sub" x="268" y="54" font-size="7" fill="#64748b" text-anchor="middle">READY</text>
+      <!-- Node 4: Credit Ledger -->
+      <rect x="346" y="14" width="72" height="44" rx="7" fill="url(#ng-teal)" stroke="#00d4ff30" stroke-width="1"/>
+      <text x="382" y="32" font-size="12" text-anchor="middle">🪙</text>
+      <text x="382" y="44" font-size="7.5" fill="#e0f2fe" text-anchor="middle">Credit Ledger</text>
+      <text id="fn4-sub" x="382" y="54" font-size="7" fill="#64748b" text-anchor="middle">100 cr</text>
+      <!-- Node 5: Conversion Engine -->
+      <rect x="460" y="14" width="72" height="44" rx="7" fill="url(#ng-purple)" stroke="#8b5cf630" stroke-width="1"/>
+      <text x="496" y="32" font-size="12" text-anchor="middle">🔄</text>
+      <text x="496" y="44" font-size="7.5" fill="#e0f2fe" text-anchor="middle">Conversion</text>
+      <text id="fn5-sub" x="496" y="54" font-size="7" fill="#64748b" text-anchor="middle">RULES</text>
+      <!-- Node 6: Invoice -->
+      <rect x="574" y="14" width="62" height="44" rx="7" fill="url(#ng-green)" stroke="#10b98130" stroke-width="1"/>
+      <text x="605" y="32" font-size="12" text-anchor="middle">🧾</text>
+      <text x="605" y="44" font-size="7.5" fill="#e0f2fe" text-anchor="middle">Invoice</text>
+      <text id="fn6-sub" x="605" y="54" font-size="7" fill="#64748b" text-anchor="middle">PENDING</text>
+      <!-- Particles -->
+      <g id="flow-ptcls"></g>
+    </svg>
+  </div>
+
+  <!-- Metrics -->
+  <div id="metrics-row">
+    <div class="m-block">
+      <div class="m-label">Credits Used</div>
+      <div class="m-val teal" id="m-used">0</div>
+      <div class="m-sub">of 100 total</div>
+    </div>
+    <div class="m-sep"></div>
+    <div class="m-block">
+      <div class="m-label">Balance</div>
+      <div class="m-val green" id="m-bal">100</div>
+      <div class="m-sub" id="m-bal-sub">credits remaining</div>
+    </div>
+    <div class="m-sep"></div>
+    <div class="m-block">
+      <div class="m-label">Desk Hours</div>
+      <div class="m-val blue" id="m-desk" style="color:var(--blue)">0</div>
+      <div class="m-sub">hrs used</div>
+    </div>
+    <div class="m-sep"></div>
+    <div class="m-block">
+      <div class="m-label">Room Hours</div>
+      <div class="m-val" id="m-room" style="color:#a78bfa">0</div>
+      <div class="m-sub">hrs used</div>
+    </div>
+    <div class="m-sep"></div>
+    <div class="m-block">
+      <div class="m-label">Print Pages</div>
+      <div class="m-val amber" id="m-print">0</div>
+      <div class="m-sub">pages printed</div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div id="prog-wrap">
+    <div id="prog-bar"><div id="prog-fill"></div></div>
+    <div id="prog-acts">
+      <span class="p-act active" data-act="0">Define</span>
+      <span class="p-act" data-act="1">Customer Uses</span>
+      <span class="p-act" data-act="2">Month Summary</span>
+      <span class="p-act" data-act="3">Rate Change</span>
+      <span class="p-act" data-act="4">Invoice</span>
+    </div>
+  </div>
+
+</div><!-- /left-panel -->
+
+<!-- Right panel -->
+<div id="right-panel">
+  <div id="term-hdr">
+    <div class="tdot" style="background:#ef4444"></div>
+    <div class="tdot" style="background:#f59e0b"></div>
+    <div class="tdot" style="background:#10b981"></div>
+    <div id="term-title">WorkNest · Units360 Terminal</div>
+    <div id="term-badge" class="mdt">MDT</div>
+  </div>
+  <div id="term-tabs">
+    <div class="ttab active" id="tab-units" onclick="switchMdtTab(0)">UNITS</div>
+    <div class="ttab" id="tab-conv" onclick="switchMdtTab(1)">CONVERSIONS</div>
+  </div>
+  <div id="term-body">
+
+    <!-- MDT view -->
+    <div id="mdt-view">
+      <div class="msec" id="mdt-units-sec">
+        <div class="msec-hdr teal">🪙 Unit Definitions (4 units)</div>
+        <div class="mrow"><span class="mkey">credit</span><span class="mval" id="mf-u0"></span></div>
+        <div class="mrow"><span class="mkey">hot_desk_hour</span><span class="mval" id="mf-u1"></span></div>
+        <div class="mrow"><span class="mkey">room_hour</span><span class="mval" id="mf-u2"></span></div>
+        <div class="mrow"><span class="mkey">print_page</span><span class="mval" id="mf-u3"></span></div>
+      </div>
+      <div class="msec" id="mdt-conv-sec" style="display:none">
+        <div class="msec-hdr blue">🔄 Conversion Rules</div>
+        <div class="mrow"><span class="mkey">1 credit =</span><span class="mval" id="mf-c0"></span></div>
+        <div class="mrow"><span class="mkey">1 credit =</span><span class="mval" id="mf-c1"></span></div>
+        <div class="mrow"><span class="mkey">1 credit =</span><span class="mval" id="mf-c2"></span></div>
+        <div class="mrow"><span class="mkey">effective</span><span class="mval" id="mf-c3"></span></div>
+      </div>
+    </div>
+
+    <!-- Event view -->
+    <div id="event-view">
+      <div id="ev-dash">
+        <div class="ev-grid">
+          <div class="ev-m credits"><div class="ev-m-top"><span class="ev-m-ico">🪙</span><span class="ev-m-lbl">Credits Used</span></div><div class="ev-m-val" id="ev-used">0</div><div class="ev-m-unit">of 100 total this month</div></div>
+          <div class="ev-m balance" id="ev-bal-card"><div class="ev-m-top"><span class="ev-m-ico">💳</span><span class="ev-m-lbl">Balance</span></div><div class="ev-m-val" id="ev-bal">100</div><div class="ev-m-unit">credits remaining</div></div>
+          <div class="ev-m desk"><div class="ev-m-top"><span class="ev-m-ico">🖥️</span><span class="ev-m-lbl">Desk Hours</span></div><div class="ev-m-val" id="ev-desk">0</div><div class="ev-m-unit">hot desk hrs used</div></div>
+          <div class="ev-m room"><div class="ev-m-top"><span class="ev-m-ico">🚪</span><span class="ev-m-lbl">Room Hours</span></div><div class="ev-m-val" id="ev-room">0</div><div class="ev-m-unit">conference hrs used</div></div>
+        </div>
+      </div>
+      <div id="ev-json-hdr"><div class="pulse-dot"></div><span>CloudEvent Stream</span><span id="ev-count" style="color:var(--teal);font-weight:700;margin-left:4px">0</span><span style="font-size:8px;margin-left:auto;opacity:.6">→ RTE</span></div>
+      <div id="event-stream"></div>
+      <div id="ev-footer">
+        <span class="evleg"><span class="evleg-box" style="background:#3b82f612;outline:1px solid #3b82f650"></span>desk</span>
+        <span class="evleg"><span class="evleg-box" style="background:#8b5cf612;outline:1px solid #8b5cf650"></span>room</span>
+        <span class="evleg"><span class="evleg-box" style="background:#f59e0b12;outline:1px solid #f59e0b50"></span>print</span>
+      </div>
+    </div>
+
+    <!-- Summary view (Act 3) -->
+    <div id="summary-view">
+      <div class="sum-title">May 2024 — Credit Usage Breakdown</div>
+      <div class="bar-row">
+        <div class="bar-label-row"><span class="bar-name">🖥️ Hot Desk (60 hrs)</span><span class="bar-amt" style="color:var(--blue)" id="bar-desk-lbl">0 credits</span></div>
+        <div class="bar-track"><div class="bar-fill desk" id="bar-desk" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label-row"><span class="bar-name">🚪 Room (10 hrs × 2)</span><span class="bar-amt" style="color:#a78bfa" id="bar-room-lbl">0 credits</span></div>
+        <div class="bar-track"><div class="bar-fill room" id="bar-room" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label-row"><span class="bar-name">🖨️ Printing (120 pages)</span><span class="bar-amt" style="color:var(--amber)" id="bar-print-lbl">0 credits</span></div>
+        <div class="bar-track"><div class="bar-fill print" id="bar-print" style="width:0%"></div></div>
+      </div>
+      <div class="sum-total">
+        <div class="sum-bal-label">Total Balance Used (100 credit plan)</div>
+        <div class="sum-bal-track"><div id="sum-bar-fill" class="sum-bal-fill" style="width:0%;background:var(--green)"></div></div>
+        <div class="sum-bal-nums"><span id="sum-used-lbl" style="color:var(--green)">0 used</span><span style="color:var(--muted)">100 plan</span></div>
+      </div>
+    </div>
+
+    <!-- Rate change view (Act 4) -->
+    <div id="change-view">
+      <div class="chg-title">⚠ Conversion Rule Updated — Effective June 1</div>
+      <div class="chg-card">
+        <div class="chg-hdr old">May 2024 — Old Rate</div>
+        <div class="chg-row"><span class="chg-key">1 credit =</span><span class="chg-val old-val">30 min room</span><span class="chg-badge unchanged">unchanged</span></div>
+        <div class="chg-row"><span class="chg-key">hot_desk</span><span class="chg-val" style="color:var(--muted)">1 credit / hr</span><span class="chg-badge unchanged">unchanged</span></div>
+        <div class="chg-row"><span class="chg-key">print_page</span><span class="chg-val" style="color:var(--muted)">10 pages / credit</span><span class="chg-badge unchanged">unchanged</span></div>
+      </div>
+      <div class="chg-card">
+        <div class="chg-hdr new">June 2024 — New Rate</div>
+        <div class="chg-row"><span class="chg-key">1 credit =</span><span class="chg-val new-val">15 min room ↑</span><span class="chg-badge changed">CHANGED</span></div>
+        <div class="chg-row"><span class="chg-key">hot_desk</span><span class="chg-val" style="color:var(--muted)">1 credit / hr</span><span class="chg-badge unchanged">unchanged</span></div>
+        <div class="chg-row"><span class="chg-key">print_page</span><span class="chg-val" style="color:var(--muted)">10 pages / credit</span><span class="chg-badge unchanged">unchanged</span></div>
+      </div>
+      <div class="chg-eff">Effective <strong>2024-06-01</strong> · Old rate applied to all May transactions · New rate applies from June 1</div>
+    </div>
+
+    <!-- Invoice comparison view (Act 5) -->
+    <div id="inv-view">
+      <div class="inv-pair">
+        <div class="inv-card">
+          <div class="inv-card-hdr may">📋 May Invoice</div>
+          <div class="inv-rows">
+            <div class="inv-r"><span class="inv-r-k">Desk (60 hrs)</span><span class="inv-r-v" style="color:var(--blue)">60 cr</span></div>
+            <div class="inv-r"><span class="inv-r-k">Room (10 hrs)</span><span class="inv-r-v" style="color:#a78bfa">20 cr</span></div>
+            <div class="inv-r"><span class="inv-r-k">Print (120 pg)</span><span class="inv-r-v" style="color:var(--amber)">12 cr</span></div>
+            <div class="inv-r"><span class="inv-r-k">Rate: 1cr=30min</span><span class="inv-r-v" style="color:var(--muted)">old</span></div>
+          </div>
+          <div class="inv-total-row may"><span>Total</span><span class="inv-r-v">92 cr</span></div>
+        </div>
+        <div class="inv-card">
+          <div class="inv-card-hdr jun">📋 June Invoice</div>
+          <div class="inv-rows">
+            <div class="inv-r"><span class="inv-r-k">Desk (60 hrs)</span><span class="inv-r-v" style="color:var(--blue)">60 cr</span></div>
+            <div class="inv-r"><span class="inv-r-k">Room (10 hrs)</span><span class="inv-r-v" style="color:var(--amber)">40 cr ↑</span></div>
+            <div class="inv-r"><span class="inv-r-k">Print (120 pg)</span><span class="inv-r-v" style="color:var(--amber)">12 cr</span></div>
+            <div class="inv-r"><span class="inv-r-k">Rate: 1cr=15min</span><span class="inv-r-v" style="color:var(--amber)">new</span></div>
+          </div>
+          <div class="inv-total-row jun"><span>Total</span><span class="inv-r-v">112 cr ↑</span></div>
+        </div>
+      </div>
+      <div class="inv-insight">Room rate change: <strong>10 hours costs 20 more credits</strong> in June. May invoice used old rate automatically. Both generated with zero manual work — Units360 applied the correct rate per period.</div>
+    </div>
+
+  </div>
+</div><!-- /right-panel -->
+</div><!-- /main -->
+
+<div id="commentary">
+  <span id="com-icon">💡</span>
+  <span id="com-text"><strong>WorkNest sells Credits — a flexible billing currency that converts to desk hours, room time, and print pages.</strong> Units360 manages the credit ledger and conversion rules in one place. Change a rate once; all invoices apply it automatically.</span>
+</div>
+
+<div id="controls">
+  <button class="cbtn" id="btn-prev">⏮ Prev</button>
+  <button class="cbtn" id="btn-play">▶ Play</button>
+  <button class="cbtn" id="btn-next">Next ⏭</button>
+  <div class="csep"></div>
+  <span class="cbtn" id="btn-slower" style="cursor:pointer">🐢</span>
+  <span style="font-size:11px;color:var(--muted)">Speed:</span><span class="spd-v" id="spd-v">1×</span>
+  <span class="cbtn" id="btn-faster" style="cursor:pointer">🐇</span>
+  <div class="csep"></div>
+  <button class="cbtn" id="btn-reset">↺ Reset</button>
+  <div id="kbd-hint">Space · ← → · R · ? Guide</div>
+</div>
+
+</div><!-- /app -->
+
+<!-- Info Drawer -->
+<div id="info-back"></div>
+<div id="info-drawer">
+  <div id="dr-hdr">
+    <div><div id="dr-logo">Units<span>360</span>.ai</div><div id="dr-sub">Platform Guide · Co-working Edition</div></div>
+    <button id="dr-close">✕</button>
+  </div>
+  <div id="dr-nav">
+    <span class="dpill active" data-target="sec-what">Units360?</span>
+    <span class="dpill" data-target="sec-co">WorkNest</span>
+    <span class="dpill" data-target="sec-credit">Credits</span>
+    <span class="dpill" data-target="sec-units">Service Units</span>
+    <span class="dpill" data-target="sec-acct">Accounts</span>
+    <span class="dpill" data-target="sec-txn">Transactions</span>
+    <span class="dpill" data-target="sec-conv">Conversions</span>
+    <span class="dpill" data-target="sec-mdt">MDT</span>
+    <span class="dpill" data-target="sec-rte">RTE</span>
+  </div>
+  <div id="dr-body">
+
+    <div class="dsec" id="sec-what">
+      <div class="dsec-ey">Platform Overview</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🚀</span>What is Units360?</div>
+      <div class="dsec-body">
+        <p>Units360.ai is a <strong>low-code usage metering platform</strong>. Define any measurable unit — tokens, credits, kWh, API calls, hours — and the platform auto-provisions the ledger, billing APIs, and invoicing logic instantly.</p>
+        <p>In this demo, Credits are the billing currency. They convert to <em>hot_desk_hour</em>, <em>room_hour</em>, and <em>print_page</em>. When WorkNest changes a conversion rate, all future invoices pick it up automatically.</p>
+        <div class="dflow">
+          <div class="dfn hi">1. Define<br><small>MDT</small></div><span class="dfa">→</span>
+          <div class="dfn">2. Deploy<br><small>RTE</small></div><span class="dfa">→</span>
+          <div class="dfn">3. Stream<br><small>Events</small></div><span class="dfa">→</span>
+          <div class="dfn">4. Invoice<br><small>Auto</small></div>
+        </div>
+        <div class="dtags"><span class="dtag teal">No DevOps</span><span class="dtag blue">Credit ledger</span><span class="dtag amber">Rate versioning</span><span class="dtag green">Auto-invoice</span></div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-co">
+      <div class="dsec-ey">Use Case</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🏢</span>WorkNest — Co-working Space</div>
+      <div class="dsec-body">
+        <p>WorkNest sells monthly credit packages to businesses. Acme Design buys 100 credits/month. Those credits convert to services at defined rates: 1 credit = 1 desk hour, 1 credit = 30 min of a conference room, 1 credit = 10 print pages.</p>
+        <p>As demand grows, WorkNest can change conversion rates (e.g. conference rooms become more expensive) without rebuilding any billing infrastructure.</p>
+        <div class="dft">
+          <div class="dfr"><div class="dfk">Company</div><div class="dfv"><strong>WorkNest</strong> — co-working space operator</div></div>
+          <div class="dfr"><div class="dfk">Customer</div><div class="dfv"><strong>Acme Design</strong> — 100 credits/month plan</div></div>
+          <div class="dfr"><div class="dfk">Billing unit</div><div class="dfv"><strong>credit</strong> — internal currency</div></div>
+          <div class="dfr"><div class="dfk">Services</div><div class="dfv">desk, room, print — all priced in credits</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-credit">
+      <div class="dsec-ey">Core Concept</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🪙</span>Credit — The Billing Currency</div>
+      <div class="dsec-body">
+        <p>A <strong>credit</strong> is an abstract billing unit. Customers pre-purchase credits; services debit them. This decouples the customer's billing experience from the underlying service pricing.</p>
+        <p>WorkNest can change service rates (credits required per service unit) without re-negotiating customer contracts. The credit price stays the same; the conversion rate changes.</p>
+        <div class="dcode"><span class="ck">"unit_id"</span>: <span class="cv">"credit"</span>,<br><span class="ck">"type"</span>: <span class="cv">"BILLING_CURRENCY"</span>,<br><span class="ck">"account"</span>: <span class="cv">"acme-design"</span>,<br><span class="ck">"balance"</span>: <span class="cn">100</span>, <span class="cc">// monthly plan</span></div>
+        <div class="dtags"><span class="dtag teal">Pre-purchased</span><span class="dtag blue">Convertible</span><span class="dtag amber">Rate-versioned</span></div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-units">
+      <div class="dsec-ey">Service Units</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🔄</span>Service Units — What Credits Buy</div>
+      <div class="dsec-body">
+        <p>Each service at WorkNest is also a Units360 unit. When a customer uses a desk or books a room, the booking system fires a CloudEvent. Units360 converts the service usage to credits and debits the account.</p>
+        <div class="dft">
+          <div class="dfr"><div class="dfk">hot_desk_hour</div><div class="dfv"><strong>1 credit</strong> per hour at any desk</div></div>
+          <div class="dfr"><div class="dfk">room_hour</div><div class="dfv"><strong>2 credits</strong> per hour (May rate: 1cr=30min)</div></div>
+          <div class="dfr"><div class="dfk">print_page</div><div class="dfv"><strong>0.1 credits</strong> per page (10 pages = 1 credit)</div></div>
+        </div>
+        <div class="dcallout"><strong>Rate versioning:</strong> when WorkNest changes room_hour to 4 credits/hour in June, all June invoices apply the new rate. May invoices are already locked at the old rate. No manual recalculation.</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-acct">
+      <div class="dsec-ey">Core Concept</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🏦</span>Account</div>
+      <div class="dsec-body">
+        <p>An <strong>Account</strong> is a billing entity — a customer, team, or cost centre. Each account has a balance per unit. For WorkNest, Acme Design's account tracks their credit balance and sub-balances per service.</p>
+        <div class="dft">
+          <div class="dfr"><div class="dfk">account_id</div><div class="dfv"><strong>acme-design</strong></div></div>
+          <div class="dfr"><div class="dfk">credit_balance</div><div class="dfv">starts at 100, decrements on usage</div></div>
+          <div class="dfr"><div class="dfk">plan</div><div class="dfv">100 credits / month, renews monthly</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-txn">
+      <div class="dsec-ey">Core Concept</div>
+      <div class="dsec-ttl"><span class="dsec-ico">⚡</span>Transaction</div>
+      <div class="dsec-body">
+        <p>Every service usage event creates an immutable <strong>Transaction</strong> in the ledger. Each transaction records the unit, quantity, credits debited, and the conversion rate at the time of the event — ensuring accurate historical invoicing.</p>
+        <div class="dcode">{<br>  <span class="ck">"unit"</span>: <span class="cv">"hot_desk_hour"</span>,<br>  <span class="ck">"qty"</span>: <span class="cn">1</span>,<br>  <span class="ck">"credits_debited"</span>: <span class="cn">1</span>,<br>  <span class="ck">"rate_applied"</span>: <span class="cv">"2024-05-01"</span>,<br>  <span class="ck">"account"</span>: <span class="cv">"acme-design"</span><br>}</div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-conv">
+      <div class="dsec-ey">Platform Feature</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🔄</span>Conversion Rules</div>
+      <div class="dsec-body">
+        <p><strong>Conversion Rules</strong> define how service units translate to credits. They are versioned by effective date — a rate change creates a new rule version without invalidating historical records.</p>
+        <div class="dcode"><span class="ck">"conversions"</span>: [<br>  { <span class="ck">"service"</span>: <span class="cv">"room_hour"</span>, <span class="ck">"credits"</span>: <span class="cn">2</span>,<br>    <span class="ck">"effective"</span>: <span class="cv">"2024-05-01"</span> },<br>  { <span class="ck">"service"</span>: <span class="cv">"room_hour"</span>, <span class="ck">"credits"</span>: <span class="cn">4</span>,<br>    <span class="ck">"effective"</span>: <span class="cv">"2024-06-01"</span> } <span class="cc">// new</span><br>]</div>
+        <p>Units360 applies the correct version for each billing period automatically. No retroactive changes. No manual overrides needed.</p>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-mdt">
+      <div class="dsec-ey">Platform Component</div>
+      <div class="dsec-ttl"><span class="dsec-ico">📋</span>MDT — Metering Definition Template</div>
+      <div class="dsec-body">
+        <p>The <strong>MDT</strong> defines your entire metering model: units, accounts, conversion rules, alert thresholds, and billing periods. Submit once; the RTE handles everything else.</p>
+        <div class="dtags"><span class="dtag teal">Declarative YAML/JSON</span><span class="dtag blue">Version-controlled</span><span class="dtag green">Zero-DevOps deploy</span></div>
+      </div>
+    </div>
+
+    <div class="dsec" id="sec-rte">
+      <div class="dsec-ey">Platform Component</div>
+      <div class="dsec-ttl"><span class="dsec-ico">⚙️</span>RTE — Real-Time Engine</div>
+      <div class="dsec-body">
+        <p>The <strong>RTE</strong> processes every CloudEvent in real time: validates the event, applies the correct conversion rule version, debits the account, and updates all ledger balances atomically — all under 50ms.</p>
+        <div class="dcallout"><strong>Rate changes take effect immediately.</strong> When WorkNest updates the conference room rate, the RTE picks up the new rule for all events timestamped on or after the effective date. Historical transactions are never modified.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+
+// ── ACTS ──
+const ACTS=[
+  {id:'define',eye:'ACT 1 OF 5',title:'Define Units & Conversion Rules',desc:'4 units + conversion table',dur:7000,color:'teal',termMode:'mdt',
+   comIco:'💡',com:'<strong>WorkNest sells Credits as a billing currency.</strong> They define 4 units in Units360: credit, hot_desk_hour, room_hour, print_page — plus the conversion rules linking them. One MDT. No database schema. No engineering sprint.',
+   ovTitle:'Define Units',ovSub:'Credits + Conversion Rules'},
+  {id:'usage',eye:'ACT 2 OF 5',title:'Customer Uses the Space',desc:'Credit events fire in real time',dur:11000,color:'teal',termMode:'event',
+   comIco:'🏢',com:'Acme Design checks in. As they use desks, book rooms, and print, the booking system fires CloudEvents to Units360. <strong>Credits decrement automatically</strong> — no manual tracking, no reconciliation at month end.',
+   ovTitle:'Customer Active',ovSub:'Usage Events → Credit Ledger'},
+  {id:'summary',eye:'ACT 3 OF 5',title:'Month Summary',desc:'92 of 100 credits used',dur:8000,color:'teal',termMode:'sum',
+   comIco:'📊',com:'Month ends. <strong>Units360 aggregates all usage automatically.</strong> Desk hours, room bookings, and print jobs — all summarised by unit. Balance bar shows 92/100 credits used. Invoice ready to generate.',
+   ovTitle:'Month Summary',ovSub:'Usage Aggregated Automatically'},
+  {id:'change',eye:'ACT 4 OF 5',title:'Conversion Rate Updated',desc:'1 credit = 15 min room (was 30)',dur:7000,color:'amber',termMode:'change',
+   comIco:'⚠️',com:'WorkNest raises conference room prices. <strong>One MDT update: 1 credit = 15 min room, effective June 1.</strong> May invoices use the old rate. June invoices use the new rate. Zero migration work. No customer contract changes needed.',
+   ovTitle:'Rate Change',ovSub:'Effective June 1 · Old Rate Preserved'},
+  {id:'invoice',eye:'ACT 5 OF 5',title:'Two Invoices — Auto-Generated',desc:'May vs June · correct rates applied',dur:7000,color:'green',termMode:'inv',
+   comIco:'🧾',com:'<strong>Two billing periods. Two rates. Both invoiced correctly — automatically.</strong> May: room = 20 credits (30 min rate). June: room = 40 credits (15 min rate). Units360 applied the right version to each period. Zero manual work.',
+   ovTitle:'Invoices Generated',ovSub:'Both Periods · Zero Manual Work'},
+];
+
+// ── FLOW PATHS ──
+const FPATHS=[
+  {p0:{x:76,y:36},cp:{x:97,y:18},p2:{x:118,y:36}},
+  {p0:{x:190,y:36},cp:{x:211,y:18},p2:{x:232,y:36}},
+  {p0:{x:304,y:36},cp:{x:325,y:18},p2:{x:346,y:36}},
+  {p0:{x:418,y:36},cp:{x:439,y:18},p2:{x:460,y:36}},
+  {p0:{x:532,y:36},cp:{x:553,y:18},p2:{x:574,y:36}},
+];
+
+// ── MDT DATA ──
+const MDT_U=[
+  {id:'mf-u0',val:'billing_currency · account: acme-design'},
+  {id:'mf-u1',val:'service · 1 credit / hr'},
+  {id:'mf-u2',val:'service · 2 credits / hr'},
+  {id:'mf-u3',val:'service · 0.1 credit / page'},
+];
+const MDT_C=[
+  {id:'mf-c0',val:'1 hot_desk_hour'},
+  {id:'mf-c1',val:'30 min room_hour (0.5 hr)'},
+  {id:'mf-c2',val:'10 print_pages'},
+  {id:'mf-c3',val:'2024-05-01 · version 1'},
+];
+
+// ── USAGE EVENTS ──
+const USAGE_EVTS=[
+  {t:1500,type:'desk',qty:1,cr:1,msg:'hot_desk_hour × 1',desk:1,room:0,print:0},
+  {t:3200,type:'desk',qty:1,cr:1,msg:'hot_desk_hour × 1',desk:1,room:0,print:0},
+  {t:5000,type:'room',qty:1,cr:2,msg:'room_hour × 1',desk:0,room:1,print:0},
+  {t:7000,type:'print',qty:20,cr:2,msg:'print_page × 20',desk:0,room:0,print:20},
+  {t:8800,type:'desk',qty:2,cr:2,msg:'hot_desk_hour × 2',desk:2,room:0,print:0},
+  {t:10200,type:'room',qty:1,cr:2,msg:'room_hour × 1',desk:0,room:1,print:0},
+];
+
+// ── STATE ──
+const S={
+  act:0,elapsed:0,playing:false,speed:1,
+  particles:[],pTimer:0,
+  credUsed:0,credBal:100,
+  deskHrs:0,roomHrs:0,printPages:0,
+  evCount:0,
+  clockSecs:0,
+  mdtFieldU:0,mdtFieldC:0,mdtCharU:0,mdtCharC:0,mdtTab:0,mdtDoneU:false,
+  firedEvts:[],
+  barDesk:0,barRoom:0,barPrint:0,barTarget:{desk:60,room:20,print:12},
+  raf:null,lastT:null,
+};
+
+// ── BEZIER ──
+function bezQ(t,p0,cp,p2){const m=1-t;return{x:m*m*p0.x+2*m*t*cp.x+t*t*p2.x,y:m*m*p0.y+2*m*t*cp.y+t*t*p2.y};}
+
+// ── PARTICLES ──
+const pLayer=$('flow-ptcls');
+function spawnParticle(seg,color){
+  const path=FPATHS[seg];
+  const el=document.createElementNS(NS,'circle');
+  el.setAttribute('r',3+Math.random()*1.5);el.setAttribute('fill',color);el.setAttribute('opacity','0.9');
+  el.style.filter=`drop-shadow(0 0 3px ${color})`;pLayer.appendChild(el);
+  S.particles.push({el,path,t:0,speed:0.012+Math.random()*0.008});
+}
+function updateParticles(dt){
+  S.particles=S.particles.filter(p=>{
+    p.t+=p.speed*S.speed*(dt/16.67);
+    if(p.t>=1){p.el.remove();return false;}
+    const pt=bezQ(Math.min(1,p.t),p.path.p0,p.path.cp,p.path.p2);
+    p.el.setAttribute('cx',pt.x.toFixed(1));p.el.setAttribute('cy',pt.y.toFixed(1));return true;
+  });
+}
+function clearParticles(){S.particles.forEach(p=>p.el.remove());S.particles=[];}
+
+// ── CLOCK ──
+function updateClock(dt){
+  if(!S.playing)return;
+  S.clockSecs+=dt*S.speed/1000;
+  const s=S.clockSecs%60,m=Math.floor(S.clockSecs/60)%60;
+  const ang=t=>t*6*Math.PI/180;
+  const sa=ang(s),ma=ang(m+s/60);
+  const hx=(x,r,a)=>x+r*Math.sin(a),hy=(y,r,a)=>y-r*Math.cos(a);
+  $('hand-s').setAttribute('x2',hx(24,18,sa).toFixed(1));$('hand-s').setAttribute('y2',hy(24,18,sa).toFixed(1));
+  $('hand-st').setAttribute('x2',hx(24,-6,sa).toFixed(1));$('hand-st').setAttribute('y2',hy(24,-6,sa).toFixed(1));
+  $('hand-m').setAttribute('x2',hx(24,17,ma).toFixed(1));$('hand-m').setAttribute('y2',hy(24,17,ma).toFixed(1));
+  $('clock-label').textContent=`${String(m).padStart(2,'0')}:${String(Math.floor(s)).padStart(2,'0')}`;
+}
+
+// ── MDT TYPEWRITER ──
+function updateMdt(dt){
+  if(S.act!==0||!S.playing)return;
+  const fields=S.mdtTab===0?MDT_U:MDT_C;
+  const fi=S.mdtTab===0?S.mdtFieldU:S.mdtFieldC;
+  if(fi>=fields.length){if(S.mdtTab===0&&!S.mdtDoneU){S.mdtDoneU=true;setTimeout(()=>switchMdtTab(1),600);}return;}
+  const f=fields[fi];const el=$(f.id);if(!el)return;
+  const ci=S.mdtTab===0?S.mdtCharU:S.mdtCharC;
+  if(Math.random()<(dt/Math.max(1,35/S.speed))){
+    if(ci<f.val.length){
+      const nc=ci+1;if(S.mdtTab===0)S.mdtCharU=nc;else S.mdtCharC=nc;
+      el.innerHTML=f.val.slice(0,nc)+'<span class="cur"></span>';
+    } else {
+      el.innerHTML=f.val;el.classList.add('done');
+      if(S.mdtTab===0){S.mdtFieldU++;S.mdtCharU=0;}else{S.mdtFieldC++;S.mdtCharC=0;}
+    }
+  }
+}
+function switchMdtTab(i){
+  S.mdtTab=i;
+  ['tab-units','tab-conv'].forEach((id,j)=>$(id).classList.toggle('active',j===i));
+  $('mdt-units-sec').style.display=i===0?'':'none';
+  $('mdt-conv-sec').style.display=i===1?'':'none';
+}
+
+// ── EVENT STREAM ──
+const eStream=$('event-stream');
+function addEvent(ev){
+  S.evCount++;$('ev-count').textContent=S.evCount;
+  S.credUsed+=ev.cr;S.credBal=Math.max(0,100-S.credUsed);
+  S.deskHrs+=ev.desk;S.roomHrs+=ev.room;S.printPages+=ev.print;
+  // Update all meters
+  $('ev-used').textContent=S.credUsed;$('ev-bal').textContent=S.credBal;
+  $('ev-desk').textContent=S.deskHrs;$('ev-room').textContent=S.roomHrs;
+  $('m-used').textContent=S.credUsed;
+  const bal=$('m-bal');bal.textContent=S.credBal;
+  const pct=S.credUsed/100;
+  if(pct>0.9){bal.className='m-val red';}else if(pct>0.7){bal.className='m-val amber';}else{bal.className='m-val green';}
+  $('m-desk').textContent=S.deskHrs;$('m-room').textContent=S.roomHrs;$('m-print').textContent=S.printPages;
+  $('fn4-sub').textContent=S.credBal+' cr';
+  // Balance card warning
+  const bc=$('ev-bal-card');
+  if(pct>0.8){bc.className='ev-m balance warn';}else{bc.className='ev-m balance';}
+  // Kiosk
+  $('kiosk-credits').textContent=S.credBal+' cr';
+  $('kiosk-bar').setAttribute('width',(34*(1-pct)).toFixed(1));
+  // Scene highlights
+  if(ev.type==='desk'){$('desk1-glow').setAttribute('opacity','0.8');setTimeout(()=>$('desk1-glow').setAttribute('opacity','0'),800);}
+  if(ev.type==='room'){$('room-glow-rect').setAttribute('opacity','0.06');$('room-dot').setAttribute('fill','#f59e0b');$('room-status').textContent='OCCUPIED';setTimeout(()=>{$('room-glow-rect').setAttribute('opacity','0');$('room-dot').setAttribute('fill','#10b981');$('room-status').textContent='AVAILABLE';},2000);}
+  if(ev.type==='print'){$('printer-status').textContent='PRINTING';$('printer-paper').setAttribute('opacity','0.9');$('printer-light').setAttribute('fill','#f59e0b');$('printer-light').setAttribute('opacity','0.8');setTimeout(()=>{$('printer-status').textContent='DONE';$('printer-paper').setAttribute('opacity','0');$('printer-light').setAttribute('fill','#10b981');$('printer-light').setAttribute('opacity','0.5');},1200);}
+  // Colors
+  const colors={desk:'#3b82f6',room:'#8b5cf6',print:'#f59e0b'};
+  const cls={desk:'desk-ev',room:'room-ev',print:'print-ev'};
+  const c=colors[ev.type]||'#00d4ff';
+  const ts=new Date();
+  const time=`${String(ts.getHours()).padStart(2,'0')}:${String(ts.getMinutes()).padStart(2,'0')}:${String(ts.getSeconds()).padStart(2,'0')}`;
+  eStream.insertAdjacentHTML('afterbegin',`<div class="ev-block ${cls[ev.type]}"><span class="emuted">${time}</span> <span style="color:${c}">${ev.msg}</span> <span class="emuted">−${ev.cr} cr</span><br><span class="emuted">balance:</span> <span style="color:var(--teal)">${S.credBal}</span> <span class="emuted">/ 100 · acme-design</span></div>`);
+  while(eStream.children.length>6)eStream.removeChild(eStream.lastChild);
+  // Flow particles
+  [0,1,2,3].forEach(seg=>spawnParticle(seg,c));
+}
+
+// ── SUMMARY BARS ──
+function updateSummaryBars(dt){
+  if(S.act!==2||!S.playing)return;
+  const speed=dt*S.speed*0.015;
+  const upd=(cur,tgt)=>Math.min(tgt,cur+speed);
+  S.barDesk=upd(S.barDesk,S.barTarget.desk);
+  S.barRoom=upd(S.barRoom,S.barTarget.room);
+  S.barPrint=upd(S.barPrint,S.barTarget.print);
+  $('bar-desk').style.width=(S.barDesk/100*100)+'%';
+  $('bar-room').style.width=(S.barRoom/100*100)+'%';
+  $('bar-print').style.width=(S.barPrint/100*100)+'%';
+  $('bar-desk-lbl').textContent=Math.round(S.barDesk)+' credits';
+  $('bar-room-lbl').textContent=Math.round(S.barRoom)+' credits';
+  $('bar-print-lbl').textContent=Math.round(S.barPrint)+' credits';
+  const total=Math.round(S.barDesk+S.barRoom+S.barPrint);
+  const pct=total/100;
+  $('sum-bar-fill').style.width=(pct*100)+'%';
+  $('sum-bar-fill').style.background=pct>0.9?'var(--amber)':pct>0.7?'linear-gradient(90deg,var(--green),var(--amber))':'var(--green)';
+  $('sum-used-lbl').textContent=total+' used';$('sum-used-lbl').style.color=pct>0.9?'var(--amber)':'var(--green)';
+}
+
+// ── ACT TRANSITIONS ──
+function overlayShow(title,sub){
+  $('ov-title').textContent=title;$('ov-sub').textContent=sub;$('ov-time').textContent='';
+  $('overlay').classList.add('show');
+}
+function overlayHide(){$('overlay').classList.remove('show');}
+
+function setAct(idx,fromNav=false){
+  if(idx<0||idx>=ACTS.length)return;
+  const a=ACTS[idx];S.act=idx;S.elapsed=0;S.firedEvts=[];clearParticles();
+  $('act-eye').textContent=a.eye;
+  $('act-title').textContent=a.title;
+  $('act-title').className=a.color!=='teal'?a.color:'';
+  $('act-desc').textContent=a.desc;
+  $('com-icon').textContent=a.comIco;$('com-text').innerHTML=a.com;
+  $('commentary').className=a.color!=='teal'?a.color:'';
+  const pct=(idx/(ACTS.length-1))*100;
+  $('prog-fill').style.width=pct+'%';
+  document.querySelectorAll('.p-act').forEach((el,i)=>el.classList.toggle('active',i===idx));
+  $('btn-prev').disabled=idx===0;$('btn-next').disabled=idx===ACTS.length-1;
+  const modeLabel={mdt:'MDT',event:'EVENTS',sum:'SUMMARY',change:'CHANGE',inv:'INVOICE'};
+  const modeCls={mdt:'mdt',event:'event',sum:'event',change:'change',inv:'inv'};
+  $('term-badge').textContent=modeLabel[a.termMode]||'MDT';
+  $('term-badge').className=modeCls[a.termMode]||'mdt';
+  // Show/hide views
+  $('mdt-view').style.display=a.termMode==='mdt'?'':'none';
+  $('event-view').style.display=a.termMode==='event'?'flex':'none';
+  $('summary-view').style.display=a.termMode==='sum'?'flex':'none';
+  $('change-view').style.display=a.termMode==='change'?'flex':'none';
+  $('inv-view').style.display=a.termMode==='inv'?'flex':'none';
+  $('term-tabs').style.display=idx===0?'flex':'none';
+  if(idx===0&&!fromNav){
+    S.mdtFieldU=0;S.mdtFieldC=0;S.mdtCharU=0;S.mdtCharC=0;S.mdtDoneU=false;S.mdtTab=0;
+    MDT_U.forEach(f=>$(f.id)&&($(f.id).innerHTML='',$(f.id).className='mval'));
+    MDT_C.forEach(f=>$(f.id)&&($(f.id).innerHTML='',$(f.id).className='mval'));
+    switchMdtTab(0);
+  }
+  if(idx===2){S.barDesk=0;S.barRoom=0;S.barPrint=0;}
+}
+
+// ── MAIN LOOP ──
+function tickAct(dt){
+  S.pTimer+=dt;
+  if(S.act===1){
+    if(S.pTimer>1000/S.speed){S.pTimer=0;spawnParticle(0,'#00d4ff');spawnParticle(1,'#00d4ff');}
+    USAGE_EVTS.forEach((ev,i)=>{
+      if(!S.firedEvts.includes(i)&&S.elapsed>=ev.t){S.firedEvts.push(i);addEvent(ev);}
+    });
+  }
+  if(S.act===2){
+    if(S.pTimer>1200/S.speed){S.pTimer=0;spawnParticle(2,'#00d4ff');spawnParticle(3,'#8b5cf6');spawnParticle(4,'#10b981');}
+  }
+}
+
+function loop(ts){
+  S.raf=requestAnimationFrame(loop);
+  if(!S.playing){S.lastT=null;return;}
+  const dt=S.lastT?Math.min(ts-S.lastT,80):16.67;S.lastT=ts;
+  S.elapsed+=dt*S.speed;
+  updateClock(dt);updateParticles(dt);updateMdt(dt);updateSummaryBars(dt);tickAct(dt);
+  if(S.elapsed>=ACTS[S.act].dur){
+    if(S.act<ACTS.length-1){
+      const next=S.act+1;overlayShow(ACTS[next].ovTitle,ACTS[next].ovSub);
+      setTimeout(()=>{overlayHide();setAct(next);},1400);
+      S.playing=false;S.lastT=null;setTimeout(()=>{S.playing=true;},1400);
+    } else{S.playing=false;updatePlayBtn();}
+  }
+}
+
+function updatePlayBtn(){$('btn-play').textContent=S.playing?'⏸ Pause':'▶ Play';}
+
+// ── CONTROLS ──
+$('btn-play').onclick=()=>{S.playing=!S.playing;S.lastT=null;updatePlayBtn();};
+$('btn-prev').onclick=()=>{S.playing=false;updatePlayBtn();setAct(S.act-1,true);};
+$('btn-next').onclick=()=>{S.playing=false;updatePlayBtn();setAct(S.act+1,true);};
+$('btn-reset').onclick=()=>{
+  S.playing=false;S.clockSecs=0;S.credUsed=0;S.credBal=100;S.deskHrs=0;S.roomHrs=0;S.printPages=0;S.evCount=0;
+  $('ev-used').textContent='0';$('ev-bal').textContent='100';$('ev-desk').textContent='0';$('ev-room').textContent='0';
+  $('m-used').textContent='0';$('m-bal').textContent='100';$('m-bal').className='m-val green';
+  $('m-desk').textContent='0';$('m-room').textContent='0';$('m-print').textContent='0';
+  $('fn4-sub').textContent='100 cr';$('kiosk-credits').textContent='100 cr';$('kiosk-bar').setAttribute('width','34');
+  eStream.innerHTML='';$('ev-count').textContent='0';
+  updatePlayBtn();setAct(0);
+};
+const SPEEDS=[0.5,1,2,3];let spIdx=1;
+$('btn-slower').onclick=()=>{spIdx=Math.max(0,spIdx-1);S.speed=SPEEDS[spIdx];$('spd-v').textContent=S.speed+'×';};
+$('btn-faster').onclick=()=>{spIdx=Math.min(SPEEDS.length-1,spIdx+1);S.speed=SPEEDS[spIdx];$('spd-v').textContent=S.speed+'×';};
+document.querySelectorAll('.p-act').forEach(el=>{el.addEventListener('click',()=>{S.playing=false;updatePlayBtn();setAct(+el.dataset.act,true);});});
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.code==='Space'){e.preventDefault();S.playing=!S.playing;S.lastT=null;updatePlayBtn();}
+  else if(e.code==='ArrowLeft'){S.playing=false;updatePlayBtn();setAct(S.act-1,true);}
+  else if(e.code==='ArrowRight'){S.playing=false;updatePlayBtn();setAct(S.act+1,true);}
+  else if(e.key==='r'||e.key==='R')$('btn-reset').click();
+  else if(e.key==='?')toggleDrawer();
+});
+function toggleDrawer(){const o=$('info-drawer').classList.toggle('open');$('info-back').classList.toggle('show',o);}
+$('btn-guide').onclick=toggleDrawer;$('dr-close').onclick=toggleDrawer;$('info-back').onclick=toggleDrawer;
+document.querySelectorAll('.dpill').forEach(p=>{
+  p.onclick=function(){document.querySelectorAll('.dpill').forEach(x=>x.classList.remove('active'));this.classList.add('active');const t=$(this.dataset.target);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});};
+});
+
+// ── INIT ──
+setAct(0);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
