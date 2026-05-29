@@ -79,10 +79,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #term-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
 .ttab{font-size:9.5px;padding:5px 12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .ttab.active{color:var(--teal);border-bottom-color:var(--teal)}
-#term-body{flex:1;overflow:hidden;position:relative;font-family:'SF Mono','Fira Code',monospace;font-size:11.5px}
+/* #term-body replaced by new rule in new_css */
 
 /* MDT view */
-#mdt-view{position:absolute;inset:0;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+/* mdt-view replaced by mdt-always structure */
 .msec{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden}
 .msec-hdr{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;padding:5px 10px;border-bottom:1px solid var(--border)}
 .msec-hdr.green{color:var(--green);background:#10b98108}
@@ -96,7 +96,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* Event view */
-#event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;display:none}
+/* event-view now in dyn-area */
 #ev-dash{padding:7px 8px 5px;background:#050505;border-bottom:1px solid var(--border);flex-shrink:0}
 .ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px}
 .ev-m{background:#111;border:1px solid var(--border);border-radius:6px;padding:5px 8px;transition:border-color .4s}
@@ -120,7 +120,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .ek{color:#7dd3fc}.es{color:#86efac}.en{color:#fbbf24}.eb{color:#f472b6}.emuted{color:var(--muted)}
 
 /* Dashboard view */
-#dash-view{position:absolute;inset:0;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:8px;display:none}
+/* dash-view now in dyn-area */
 .dash-pair{display:flex;gap:8px}
 .dash-card{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
 .dash-card-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
@@ -137,7 +137,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .dash-eq-val{font-weight:700}.dash-eq-val.green{color:var(--green)}.dash-eq-val.amber{color:var(--amber)}.dash-eq-val.teal{color:var(--teal)}
 
 /* Invoice view */
-#inv-view{position:absolute;inset:0;overflow:hidden;padding:10px 12px;display:flex;flex-direction:column;gap:0;display:none}
+/* inv-view now in dyn-area */
 .inv-line{font-size:12px;line-height:1.6;white-space:pre;animation:evIn .2s ease}
 
 /* COMMENTARY */
@@ -233,6 +233,70 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .li-tot-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px}
 .li-tot-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
 .li-tot-val.green{color:var(--green)}.li-tot-val.amber{color:var(--amber)}.li-tot-val.teal{color:var(--teal)}
+
+/* ACT FLASH (replaces overlay) */
+@keyframes actFlash{0%,15%{background:rgba(0,212,255,0.10);box-shadow:inset 0 0 0 1px rgba(0,212,255,0.2);border-radius:6px}100%{background:transparent;box-shadow:none}}
+#act-hdr.flash{animation:actFlash 1.4s ease forwards}
+
+/* MDT ALWAYS-VISIBLE */
+#term-body{flex:1;overflow:hidden;display:flex;flex-direction:column;font-family:'SF Mono','Fira Code',monospace;font-size:11.5px}
+#mdt-always{flex-shrink:0;border-bottom:1px solid var(--border);overflow:hidden;transition:max-height .4s ease}
+#mdt-full{padding:10px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:280px}
+#mdt-compact{padding:6px 10px;display:none;flex-direction:column;gap:4px}
+.mc-chip{font-size:10.5px;padding:5px 10px;border-radius:5px;font-family:'SF Mono','Fira Code',monospace;letter-spacing:.2px;display:flex;align-items:center;gap:6px}
+.mc-chip.green{background:#10b98110;border:1px solid #10b98135;color:var(--green)}
+.mc-chip.amber{background:#f59e0b10;border:1px solid #f59e0b35;color:var(--amber)}
+.mc-chip-key{color:var(--muted);font-size:9.5px}
+
+/* DYNAMIC AREA */
+#dyn-area{flex:1;min-height:0;overflow:hidden;position:relative}
+#event-view,#dash-view,#inv-view{position:absolute;inset:0;overflow:hidden}
+
+/* INVOICE DOCUMENT */
+.inv-doc{background:#0a0a0a;border:1px solid #333;border-radius:8px;overflow:hidden;font-family:'SF Pro Display',system-ui,sans-serif;font-size:11.5px;height:100%;display:flex;flex-direction:column}
+.inv-lh{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px 10px;background:linear-gradient(135deg,#10b98112,#00d4ff08);border-bottom:1px solid #2a2a2a}
+.inv-logo-txt{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+.inv-logo-txt span{color:var(--teal)}
+.inv-tagline{font-size:8.5px;color:var(--muted);letter-spacing:.5px;margin-top:1px}
+.inv-lh-right{text-align:right}
+.inv-doc-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.inv-doc-num{font-size:11px;font-weight:700;color:var(--green);font-family:'SF Mono','Fira Code',monospace;margin-top:2px}
+.inv-meta{display:flex;border-bottom:1px solid #2a2a2a}
+.inv-meta-cell{flex:1;padding:6px 12px;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;gap:1px}
+.inv-meta-cell:last-child{border-right:none}
+.inv-meta-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.inv-meta-val{font-size:10.5px;font-weight:600;color:var(--text)}
+.inv-meta-val.mono{font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;color:var(--teal)}
+.inv-meta-val.sent{color:var(--green)}
+.inv-parties{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #2a2a2a}
+.inv-party{padding:8px 12px;border-right:1px solid #2a2a2a}
+.inv-party:last-child{border-right:none}
+.inv-party-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:3px}
+.inv-party-name{font-size:12px;font-weight:700;color:var(--text)}
+.inv-party-sub{font-size:9.5px;color:var(--muted);margin-top:1px}
+.inv-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.inv-table thead tr{background:#111;border-bottom:1px solid #333}
+.inv-table th{padding:5px 12px;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.inv-table th:last-child,.inv-table td:last-child{text-align:right}
+.inv-table td{padding:7px 12px;border-bottom:1px solid #181818}
+.inv-rev-row td{color:var(--text)}
+.inv-rev-row td:last-child{color:var(--green);font-weight:700;font-size:13px}
+.inv-rev-row td small{display:block;font-size:8.5px;color:var(--muted);margin-top:1px}
+.inv-cost-note-row td{font-size:9.5px;color:var(--muted);background:#0d0d0d;font-style:italic}
+.inv-cost-note-row td:last-child{color:var(--amber);font-weight:600;font-style:normal}
+.inv-totals{padding:8px 12px;flex-shrink:0}
+.inv-t-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.inv-t-row span:first-child{color:var(--muted)}
+.inv-t-green{color:var(--green);font-weight:600}
+.inv-t-amber{color:var(--amber);font-weight:600}
+.inv-t-final{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800;padding:7px 0 4px;margin-top:3px;border-top:1px solid #333}
+.inv-t-final span:first-child{color:var(--text)}
+.inv-t-teal{color:var(--teal)}
+.inv-t-pct{font-size:9px;font-weight:500;color:var(--muted);margin-left:6px}
+.inv-footer{padding:6px 12px;background:#080808;border-top:1px solid #222;font-size:8.5px;color:var(--muted);font-family:'SF Mono','Fira Code',monospace;margin-top:auto}
+.inv-footer span{color:var(--teal)}
+@keyframes invRowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.inv-reveal{animation:invRowIn .3s ease forwards}
 </style>
 </head>
 <body>
@@ -514,36 +578,46 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     <div id="term-title">ClinicMinds · Units360 Terminal</div>
     <div id="term-badge" class="mdt">MDT</div>
   </div>
-  <div id="term-tabs">
-    <div class="ttab active" id="tab-rev" onclick="switchMdtTab(0)">REVENUE UNIT</div>
-    <div class="ttab" id="tab-cost" onclick="switchMdtTab(1)">COST UNIT</div>
-  </div>
   <div id="term-body">
 
-    <!-- MDT view -->
-    <div id="mdt-view">
-      <div class="msec" id="mdt-rev-sec">
-        <div class="msec-hdr green">💚 Revenue Unit — audio_minute</div>
-        <div class="mrow"><span class="mkey">unit_id</span><span class="mval" id="mf-r0"></span></div>
-        <div class="mrow"><span class="mkey">display_name</span><span class="mval" id="mf-r1"></span></div>
-        <div class="mrow"><span class="mkey">type</span><span class="mval" id="mf-r2"></span></div>
-        <div class="mrow"><span class="mkey">account</span><span class="mval" id="mf-r3"></span></div>
-        <div class="mrow"><span class="mkey">rate</span><span class="mval" id="mf-r4"></span></div>
-        <div class="mrow"><span class="mkey">reset_period</span><span class="mval" id="mf-r5"></span></div>
+    <!-- ── ALWAYS-VISIBLE MDT UNITS ── -->
+    <div id="mdt-always">
+
+      <!-- Full typewriter form (Act 1 only) -->
+      <div id="mdt-full">
+        <div class="msec" id="mdt-rev-sec">
+          <div class="msec-hdr green">💚 Revenue Unit — audio_minute</div>
+          <div class="mrow"><span class="mkey">unit_id</span><span class="mval" id="mf-r0"></span></div>
+          <div class="mrow"><span class="mkey">display_name</span><span class="mval" id="mf-r1"></span></div>
+          <div class="mrow"><span class="mkey">type</span><span class="mval" id="mf-r2"></span></div>
+          <div class="mrow"><span class="mkey">account</span><span class="mval" id="mf-r3"></span></div>
+          <div class="mrow"><span class="mkey">rate</span><span class="mval" id="mf-r4"></span></div>
+          <div class="mrow"><span class="mkey">reset_period</span><span class="mval" id="mf-r5"></span></div>
+        </div>
+        <div class="msec" id="mdt-cost-sec">
+          <div class="msec-hdr amber">🟡 Cost Unit — llm_token</div>
+          <div class="mrow"><span class="mkey">unit_id</span><span class="mval" id="mf-c0"></span></div>
+          <div class="mrow"><span class="mkey">display_name</span><span class="mval" id="mf-c1"></span></div>
+          <div class="mrow"><span class="mkey">type</span><span class="mval" id="mf-c2"></span></div>
+          <div class="mrow"><span class="mkey">account</span><span class="mval" id="mf-c3"></span></div>
+          <div class="mrow"><span class="mkey">rate</span><span class="mval" id="mf-c4"></span></div>
+          <div class="mrow"><span class="mkey">reset_period</span><span class="mval" id="mf-c5"></span></div>
+        </div>
       </div>
-      <div class="msec" id="mdt-cost-sec">
-        <div class="msec-hdr amber">🟡 Cost Unit — llm_token</div>
-        <div class="mrow"><span class="mkey">unit_id</span><span class="mval" id="mf-c0"></span></div>
-        <div class="mrow"><span class="mkey">display_name</span><span class="mval" id="mf-c1"></span></div>
-        <div class="mrow"><span class="mkey">type</span><span class="mval" id="mf-c2"></span></div>
-        <div class="mrow"><span class="mkey">account</span><span class="mval" id="mf-c3"></span></div>
-        <div class="mrow"><span class="mkey">rate</span><span class="mval" id="mf-c4"></span></div>
-        <div class="mrow"><span class="mkey">reset_period</span><span class="mval" id="mf-c5"></span></div>
+
+      <!-- Compact chips (Acts 2–5) -->
+      <div id="mdt-compact">
+        <div class="mc-chip green"><span>💚</span><span>audio_minute</span><span class="mc-chip-key">REVENUE</span><span>·</span><span>$0.50 / min</span><span class="mc-chip-key">hospital-001</span></div>
+        <div class="mc-chip amber"><span>🟡</span><span>llm_token</span><span class="mc-chip-key">COST</span><span>·</span><span>$0.0005 / tok</span><span class="mc-chip-key">llm-openai</span></div>
       </div>
+
     </div>
 
+    <!-- ── DYNAMIC AREA: events / dashboard / invoice ── -->
+    <div id="dyn-area">
+
     <!-- Event stream view -->
-    <div id="event-view">
+    <div id="event-view" style="display:none;flex-direction:column">
       <div id="ev-dash">
         <div class="ev-grid">
           <div class="ev-m rev"><div class="ev-m-top"><span class="ev-m-ico">📒</span><span class="ev-m-lbl">Revenue</span></div><div class="ev-m-val" id="ev-rev">$0.00</div><div class="ev-m-unit">audio minutes billed</div></div>
@@ -561,7 +635,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     </div>
 
     <!-- Dashboard view -->
-    <div id="dash-view">
+    <div id="dash-view" style="display:none;flex-direction:column">
       <div class="dash-pair">
         <div class="dash-card">
           <div class="dash-card-lbl green">💚 Revenue</div>
@@ -592,8 +666,78 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dash-sid">Session ID: SCR-2024-06-21-001 · Linked across both units</div>
     </div>
 
-    <!-- Invoice view -->
-    <div id="inv-view"></div>
+    <!-- Invoice view — real invoice document -->
+    <div id="inv-view" style="display:none;padding:10px;overflow-y:auto">
+      <div class="inv-doc" id="inv-doc">
+        <!-- Letterhead -->
+        <div class="inv-lh inv-reveal" style="opacity:0">
+          <div>
+            <div class="inv-logo-txt">Clinic<span>Minds</span></div>
+            <div class="inv-tagline">AI Clinical Documentation · Invoice</div>
+          </div>
+          <div class="inv-lh-right">
+            <div class="inv-doc-label">Invoice</div>
+            <div class="inv-doc-num">#INV-2024-06-21-001</div>
+          </div>
+        </div>
+        <!-- Meta -->
+        <div class="inv-meta inv-reveal" style="opacity:0">
+          <div class="inv-meta-cell">
+            <div class="inv-meta-lbl">Date</div>
+            <div class="inv-meta-val">June 21, 2024</div>
+          </div>
+          <div class="inv-meta-cell">
+            <div class="inv-meta-lbl">Session ID</div>
+            <div class="inv-meta-val mono">SCR-2024-06-21-001</div>
+          </div>
+          <div class="inv-meta-cell">
+            <div class="inv-meta-lbl">Status</div>
+            <div class="inv-meta-val sent">✓ SENT</div>
+          </div>
+        </div>
+        <!-- Parties -->
+        <div class="inv-parties inv-reveal" style="opacity:0">
+          <div class="inv-party">
+            <div class="inv-party-lbl">From</div>
+            <div class="inv-party-name">ClinicMinds Inc.</div>
+            <div class="inv-party-sub">AI Scribe · SaaS Provider</div>
+          </div>
+          <div class="inv-party">
+            <div class="inv-party-lbl">Bill To</div>
+            <div class="inv-party-name">General Hospital</div>
+            <div class="inv-party-sub">Dr. Smith · Dept. of Medicine</div>
+          </div>
+        </div>
+        <!-- Line items -->
+        <table class="inv-table">
+          <thead class="inv-reveal" style="opacity:0">
+            <tr><th>Description</th><th>Qty</th><th>Unit Rate</th><th>Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr class="inv-rev-row inv-reveal" style="opacity:0">
+              <td>Audio Session Recording<br><small>Consultation · June 21, 2024</small></td>
+              <td>10 min</td><td>$0.50/min</td><td>$5.00</td>
+            </tr>
+            <tr class="inv-cost-note-row inv-reveal" style="opacity:0">
+              <td colspan="3">⚡ LLM Processing (GPT-4 · 4,200 tokens · $0.0005/tok)</td>
+              <td>−$2.10</td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- Totals -->
+        <div class="inv-totals inv-reveal" style="opacity:0">
+          <div class="inv-t-row"><span>Gross Revenue</span><span class="inv-t-green">$5.00</span></div>
+          <div class="inv-t-row"><span>Processing Cost</span><span class="inv-t-amber">(−$2.10)</span></div>
+          <div class="inv-t-final"><span>Net Margin</span><div><span class="inv-t-teal">$2.90</span><span class="inv-t-pct">58% margin</span></div></div>
+        </div>
+        <!-- Footer -->
+        <div class="inv-footer inv-reveal" style="opacity:0">
+          Powered by <span>Units360.ai</span> · Metering Engine · session_id: SCR-2024-06-21-001
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /dyn-area -->
 
   </div>
 </div><!-- /right-panel -->
@@ -902,9 +1046,7 @@ function updateMdt(dt){
 }
 function switchMdtTab(i){
   S.mdtTab=i;
-  ['tab-rev','tab-cost'].forEach((id,j)=>$(id).classList.toggle('active',j===i));
-  $('mdt-rev-sec').style.display=i===0?'':'none';
-  $('mdt-cost-sec').style.display=i===1?'':'none';
+  // Both sections always visible — typewriter moves to cost section automatically
 }
 
 // ── EVENT STREAM ──
@@ -982,24 +1124,19 @@ function setAct(idx,fromNav=false){
   const modeMap={mdt:'mdt',event:'event',dash:'dash',inv:'inv'};
   $('term-badge').className=modeMap[a.termMode]||'mdt';
   $('term-badge').textContent={mdt:'MDT',event:'EVENTS',dash:'DASHBOARD',inv:'INVOICE'}[a.termMode]||'MDT';
-  // Show correct view
-  $('mdt-view').style.display=a.termMode==='mdt'?'':'none';
+  // MDT: full form in act 0, compact chips in acts 1+
+  const isAct0=idx===0;
+  $('mdt-full').style.display=isAct0?'flex':'none';
+  $('mdt-compact').style.display=isAct0?'none':'flex';
+  // Dynamic area: show correct view
   $('event-view').style.display=a.termMode==='event'?'flex':'none';
   $('dash-view').style.display=a.termMode==='dash'?'flex':'none';
-  $('inv-view').style.display=a.termMode==='inv'?'flex':'none';
-  // Act-specific setup
+  $('inv-view').style.display=a.termMode==='inv'?'block':'none';
   if(idx===0){
-    // Show tabs for MDT
-    $('term-tabs').style.display='flex';
-    $('mdt-rev-sec').style.display='';
-    $('mdt-cost-sec').style.display='none';
     if(!fromNav){S.mdtFieldR=0;S.mdtFieldC=0;S.mdtCharR=0;S.mdtCharC=0;S.mdtDoneR=false;S.mdtDoneC=false;S.mdtTab=0;
       MDT_R.forEach(f=>$(f.id)&&($(f.id).innerHTML='',$(f.id).className='mval'));
       MDT_C.forEach(f=>$(f.id)&&($(f.id).innerHTML='',$(f.id).className='mval'));
-      switchMdtTab(0);
     }
-  } else {
-    $('term-tabs').style.display='none';
   }
   if(idx===1){
     // Show scene elements
@@ -1027,48 +1164,26 @@ function setAct(idx,fromNav=false){
     $('dv-rev').textContent='$5.00';$('dv-cost').textContent='$2.10';$('dv-margin').textContent='$2.90';
   }
   if(idx===4){
-    $('inv-view').innerHTML='';S.invLines=0;S.invTimer=0;
+    S.invLines=0;S.invTimer=0;
+    // Reset all reveal rows to hidden
+    document.querySelectorAll('.inv-reveal').forEach(el=>{el.style.opacity='0';el.classList.remove('inv-reveal-anim');});
   }
 }
 
-// ── INVOICE TYPING ──
-const INV_LINES=[
-  '<span class="emuted">{</span>',
-  '  <span class="ek">"invoice_id"</span>: <span class="es">"INV-SCR-2024-06-21-001"</span>,',
-  '  <span class="ek">"session_id"</span>: <span class="es">"SCR-2024-06-21-001"</span>,',
-  '  <span class="ek">"provider"</span>: <span class="es">"ClinicMinds Inc."</span>,',
-  '  <span class="ek">"customer"</span>: <span class="es">"General Hospital"</span>,',
-  '  <span class="ek">"period"</span>: <span class="es">"2024-06-21"</span>,',
-  '  <span class="ek">"revenue"</span>: {',
-  '    <span class="ek">"unit"</span>: <span class="es">"audio_minute"</span>,',
-  '    <span class="ek">"qty"</span>: <span class="en">10</span>,',
-  '    <span class="ek">"rate"</span>: <span class="en">0.50</span>,',
-  '    <span class="ek">"total"</span>: <span class="en">5.00</span>',
-  '  },',
-  '  <span class="ek">"cost"</span>: {',
-  '    <span class="ek">"unit"</span>: <span class="es">"llm_token"</span>,',
-  '    <span class="ek">"qty"</span>: <span class="en">4200</span>,',
-  '    <span class="ek">"rate"</span>: <span class="en">0.0005</span>,',
-  '    <span class="ek">"total"</span>: <span class="en">2.10</span>',
-  '  },',
-  '  <span class="ek">"margin"</span>: <span class="en">2.90</span>,',
-  '  <span class="ek">"margin_pct"</span>: <span class="en">58</span>,',
-  '  <span class="ek">"status"</span>: <span class="es">"SENT"</span>',
-  '<span class="emuted">}</span>',
-];
-
+// ── INVOICE REVEAL ──
+function revealInvoice(){
+  const rows=document.querySelectorAll('.inv-reveal');
+  rows.forEach((el,i)=>{
+    setTimeout(()=>{
+      el.style.opacity='1';
+      el.classList.add('inv-reveal-anim');
+    }, i*180/S.speed);
+  });
+}
 function updateInvoice(dt){
-  if(S.act!==4||!S.playing||S.invLines>=INV_LINES.length)return;
+  if(S.act!==4||!S.playing||S.invLines>0)return;
   S.invTimer+=dt;
-  const delay=Math.max(80,220/S.speed);
-  if(S.invTimer>=delay){
-    S.invTimer=0;
-    const div=document.createElement('div');
-    div.className='inv-line';
-    div.innerHTML=INV_LINES[S.invLines];
-    $('inv-view').appendChild(div);
-    S.invLines++;
-  }
+  if(S.invTimer>300){S.invLines=1;revealInvoice();}
 }
 
 // ── ACT-SPECIFIC TICK ──
@@ -1128,10 +1243,12 @@ function loop(ts){
   if(S.elapsed>=ACTS[S.act].dur){
     if(S.act<ACTS.length-1){
       const next=S.act+1;
-      overlayShow(ACTS[next].ovTitle,ACTS[next].ovSub);
-      setTimeout(()=>{overlayHide();setAct(next);},1400);
       S.playing=false;S.lastT=null;
-      setTimeout(()=>{S.playing=true;},1400);
+      setAct(next);
+      // Flash act header, brief pause so user can read
+      const ah=$('act-hdr');
+      ah.classList.remove('flash');void ah.offsetWidth;ah.classList.add('flash');
+      setTimeout(()=>{S.playing=true;updatePlayBtn();},1000);
     } else {S.playing=false;updatePlayBtn();}
   }
 }
