@@ -44,7 +44,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #right-panel.inv-wide{max-width:none;flex:2.4;transition:flex .35s ease}
 
 /* SCENE */
-#scene-wrap{border-radius:10px;overflow:hidden;border:1px solid var(--border);flex:1;min-height:100px}
+#scene-wrap{border-radius:10px;overflow:hidden;border:1.5px solid #94a3b8;box-shadow:0 1px 4px rgba(15,23,42,0.08);flex:1;min-height:100px}
 #scene-svg{width:100%;height:100%;display:block}
 
 /* FLOW */
@@ -186,7 +186,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #act-hdr{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
 #act-eye{font-size:10.5px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
 #act-title{font-size:18px;font-weight:700;color:var(--text);transition:color .4s}
-#act-title.amber{color:var(--amber)}#act-title.green{color:var(--green)}#act-title.red{color:var(--red)}
+#act-title.amber{color:var(--amber);animation:warnPulse 1.6s ease-in-out infinite}
+#act-title.green{color:var(--green)}#act-title.red{color:var(--red)}
+@keyframes warnPulse{0%,100%{opacity:1}50%{opacity:0.45}}
 #act-desc{font-size:13px;color:var(--muted);margin-left:auto}
 
 /* CONTROLS */
@@ -334,7 +336,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 <div id="act-hdr">
   <div id="act-eye">ACT 1 OF 5</div>
   <div id="act-title">Define Units &amp; Conversion Rules</div>
-  <div id="act-desc">4 units + conversion table</div>
+  <div id="act-desc">1 billing unit · 3 service units · conversion table</div>
 </div>
 
 <div id="main">
@@ -350,11 +352,14 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       </defs>
       <!-- Background -->
       <rect width="640" height="158" fill="#eef2f7"/>
+      <!-- Title bar -->
+      <rect x="0" y="0" width="640" height="18" fill="#f1f5f9"/>
+      <text x="320" y="12" text-anchor="middle" fill="#475569" font-size="7.5" font-family="system-ui" font-weight="700" letter-spacing="2">WORKNEST CO-WORKING · FLOOR PLAN</text>
       <!-- Floor -->
       <rect x="0" y="128" width="640" height="30" fill="#e2e8f0"/>
       <line x1="0" y1="128" x2="640" y2="128" stroke="#94a3b8" stroke-width="1"/>
       <!-- Ceiling line -->
-      <line x1="0" y1="18" x2="640" y2="18" stroke="#cbd5e1" stroke-width="1"/>
+      <line x1="0" y1="18" x2="640" y2="18" stroke="#94a3b8" stroke-width="1"/>
       <!-- Subtle grid floor -->
       <line x1="0" y1="143" x2="640" y2="143" stroke="#cbd5e1" stroke-width=".5"/>
       <line x1="160" y1="128" x2="160" y2="158" stroke="#cbd5e1" stroke-width=".5"/>
@@ -363,13 +368,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
       <!-- === CHECK-IN KIOSK (left) === -->
       <rect x="18" y="34" width="52" height="80" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-      <rect x="21" y="38" width="46" height="52" rx="2" fill="#f0f9ff" stroke="#bae6fd" stroke-width=".5"/>
-      <text x="44" y="54" text-anchor="middle" fill="#0891b2" font-size="7" font-family="system-ui" font-weight="700">WorkNest</text>
+      <rect x="21" y="38" width="46" height="52" rx="2" fill="#f1f5f9" stroke="#e2e8f0" stroke-width=".5"/>
+      <text x="44" y="54" text-anchor="middle" fill="#475569" font-size="7" font-family="system-ui" font-weight="700">WorkNest</text>
       <line x1="21" y1="57" x2="67" y2="57" stroke="#e2e8f0" stroke-width=".5"/>
       <text x="44" y="67" text-anchor="middle" fill="#64748b" font-size="6.5" font-family="system-ui">Acme Design</text>
-      <text id="kiosk-credits" x="44" y="78" text-anchor="middle" fill="#0891b2" font-size="9" font-family="'SF Mono','Fira Code',monospace" font-weight="700">100 cr</text>
+      <text id="kiosk-credits" x="44" y="78" text-anchor="middle" fill="#475569" font-size="9" font-family="'SF Mono','Fira Code',monospace" font-weight="700">100 cr</text>
       <rect x="27" y="82" width="34" height="5" rx="2" fill="#e2e8f0"/>
-      <rect id="kiosk-bar" x="27" y="82" width="34" height="5" rx="2" fill="#0891b2" opacity=".6"/>
+      <rect id="kiosk-bar" x="27" y="82" width="34" height="5" rx="2" fill="#94a3b8" opacity=".8"/>
       <text x="44" y="102" text-anchor="middle" fill="#94a3b8" font-size="6" font-family="system-ui">CHECK-IN</text>
       <!-- Kiosk base -->
       <rect x="34" y="114" width="20" height="14" rx="2" fill="#e2e8f0"/>
@@ -378,7 +383,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <!-- === HOT DESKS (center-left) === -->
       <!-- Desk 1 (occupied) -->
       <rect id="desk1" x="94" y="90" width="58" height="30" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-      <rect id="desk1-screen" x="96" y="92" width="40" height="24" rx="2" fill="#eef4ff" stroke="#c7d2fe" stroke-width=".5"/>
+      <rect id="desk1-screen" x="96" y="92" width="40" height="24" rx="2" fill="#f1f5f9" stroke="#e2e8f0" stroke-width=".5"/>
       <!-- Person at desk 1 -->
       <circle cx="148" cy="74" r="10" fill="#dde4f0" stroke="#94a3b8" stroke-width=".8"/>
       <path d="M 138 84 Q 148 88 158 84 L 160 90 L 136 90 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width=".5"/>
@@ -387,7 +392,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
       <!-- Desk 2 (occupied) -->
       <rect id="desk2" x="164" y="90" width="58" height="30" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-      <rect id="desk2-screen" x="166" y="92" width="40" height="24" rx="2" fill="#eef4ff" stroke="#c7d2fe" stroke-width=".5"/>
+      <rect id="desk2-screen" x="166" y="92" width="40" height="24" rx="2" fill="#f1f5f9" stroke="#e2e8f0" stroke-width=".5"/>
       <!-- Person at desk 2 -->
       <circle cx="214" cy="74" r="10" fill="#dde4f0" stroke="#94a3b8" stroke-width=".8"/>
       <path d="M 204 84 Q 214 88 224 84 L 226 90 L 202 90 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width=".5"/>
@@ -399,39 +404,32 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <text x="263" y="148" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="system-ui">Desk C</text>
 
       <!-- === CONFERENCE ROOM (center-right) === -->
-      <rect x="300" y="26" width="130" height="90" rx="4" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.5"/>
-      <!-- Room label -->
-      <text x="365" y="40" text-anchor="middle" fill="#7c3aed" font-size="8" font-family="system-ui" font-weight="600" letter-spacing="1">CONF ROOM</text>
-      <line x1="300" y1="44" x2="430" y2="44" stroke="#ddd6fe" stroke-width=".5"/>
+      <rect x="300" y="26" width="130" height="90" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
       <!-- Table -->
-      <ellipse cx="365" cy="82" rx="44" ry="22" fill="#ede9fe" stroke="#c4b5fd" stroke-width="1"/>
-      <!-- Chairs around table (simple rectangles) -->
-      <rect x="340" y="55" width="14" height="7" rx="2" fill="#ddd6fe" stroke="#c4b5fd" stroke-width=".5"/>
-      <rect x="362" y="55" width="14" height="7" rx="2" fill="#ddd6fe" stroke="#c4b5fd" stroke-width=".5"/>
-      <rect x="340" y="100" width="14" height="7" rx="2" fill="#ddd6fe" stroke="#c4b5fd" stroke-width=".5"/>
-      <rect x="362" y="100" width="14" height="7" rx="2" fill="#ddd6fe" stroke="#c4b5fd" stroke-width=".5"/>
-      <rect x="306" y="74" width="7" height="14" rx="2" fill="#ddd6fe" stroke="#c4b5fd" stroke-width=".5"/>
-      <rect x="417" y="74" width="7" height="14" rx="2" fill="#ddd6fe" stroke="#c4b5fd" stroke-width=".5"/>
-      <!-- Room status -->
-      <circle id="room-dot" cx="415" cy="36" r="4" fill="#059669" opacity=".7"/>
-      <text id="room-status" x="406" y="39" text-anchor="end" fill="#64748b" font-size="7.5" font-family="system-ui">AVAILABLE</text>
+      <ellipse cx="365" cy="82" rx="40" ry="20" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.2"/>
+      <!-- Chairs around table -->
+      <rect x="342" y="57" width="12" height="6" rx="2" fill="#dde3ea" stroke="#cbd5e1" stroke-width=".5"/>
+      <rect x="360" y="57" width="12" height="6" rx="2" fill="#dde3ea" stroke="#cbd5e1" stroke-width=".5"/>
+      <rect x="342" y="101" width="12" height="6" rx="2" fill="#dde3ea" stroke="#cbd5e1" stroke-width=".5"/>
+      <rect x="360" y="101" width="12" height="6" rx="2" fill="#dde3ea" stroke="#cbd5e1" stroke-width=".5"/>
+      <rect x="307" y="75" width="6" height="12" rx="2" fill="#dde3ea" stroke="#cbd5e1" stroke-width=".5"/>
+      <rect x="418" y="75" width="6" height="12" rx="2" fill="#dde3ea" stroke="#cbd5e1" stroke-width=".5"/>
       <!-- Room glow overlay -->
-      <rect id="room-glow-rect" x="300" y="26" width="130" height="90" rx="4" fill="#8b5cf6" opacity="0"/>
-      <text x="365" y="148" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="system-ui">Conference</text>
+      <rect id="room-glow-rect" x="300" y="26" width="130" height="90" rx="4" fill="#64748b" opacity="0"/>
+      <text x="365" y="148" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="system-ui">Conference Room</text>
 
       <!-- === PRINTER (right) === -->
       <g transform="translate(472,48)">
         <!-- Printer body -->
-        <rect x="0" y="20" width="70" height="40" rx="4" fill="#ffffff" stroke="#fcd34d" stroke-width="1"/>
+        <rect x="0" y="20" width="70" height="40" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
         <!-- Paper slot -->
-        <rect x="8" y="10" width="54" height="12" rx="2" fill="#f8fafc" stroke="#e2e8f0" stroke-width=".5"/>
+        <rect x="8" y="10" width="54" height="12" rx="2" fill="#f1f5f9" stroke="#e2e8f0" stroke-width=".5"/>
         <rect id="printer-paper" x="24" y="10" width="22" height="12" rx="1" fill="#ffffff" opacity="0"/>
         <!-- Display -->
-        <rect x="8" y="26" width="54" height="14" rx="2" fill="#fffbeb" stroke="#fde68a" stroke-width=".5"/>
-        <text id="printer-status" x="35" y="36" text-anchor="middle" fill="#64748b" font-size="6.5" font-family="system-ui">IDLE</text>
+        <rect x="8" y="26" width="54" height="14" rx="2" fill="#f1f5f9" stroke="#e2e8f0" stroke-width=".5"/>
         <!-- Buttons -->
         <circle cx="54" cy="50" r="4" fill="#e2e8f0" stroke="#cbd5e1" stroke-width=".5"/>
-        <circle id="printer-light" cx="54" cy="50" r="3" fill="#059669" opacity=".5"/>
+        <circle cx="54" cy="50" r="3" fill="#cbd5e1"/>
         <text x="35" y="78" text-anchor="middle" fill="#64748b" font-size="8" font-family="system-ui" transform="translate(0,28)">Printer</text>
       </g>
 
@@ -442,7 +440,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
   <!-- Flow -->
   <div id="flow-wrap">
-    <div id="flow-label">Live Credit Flow</div>
+    <div id="flow-label">How it Works</div>
     <svg id="flow-svg" viewBox="0 0 640 72" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="ng-teal" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d4ff20"/><stop offset="100%" stop-color="#00d4ff08"/></linearGradient>
@@ -546,7 +544,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     <div class="tdot" style="background:#f59e0b"></div>
     <div class="tdot" style="background:#10b981"></div>
     <div id="term-title">WorkNest · Units360 Terminal</div>
-    <div id="term-badge" class="mdt">MDT</div>
+    <div id="term-badge" class="mdt">SETUP</div>
   </div>
   <div id="term-body">
 
@@ -559,7 +557,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <div class="msec-hdr teal">🪙 Unit Definitions (4 units)</div>
           <div class="mrow"><span class="mkey">credit</span><span class="mval" id="mf-u0"></span></div>
           <div class="mrow"><span class="mkey">hot_desk_hour</span><span class="mval" id="mf-u1"></span></div>
-          <div class="mrow"><span class="mkey">room_hour</span><span class="mval" id="mf-u2"></span></div>
+          <div class="mrow"><span class="mkey">conference_room_hour</span><span class="mval" id="mf-u2"></span></div>
           <div class="mrow"><span class="mkey">print_page</span><span class="mval" id="mf-u3"></span></div>
         </div>
         <div class="msec" id="mdt-conv-sec">
@@ -573,7 +571,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
       <!-- Compact chips (Acts 2+) -->
       <div id="mdt-compact">
-        <div class="mc-chip teal">🪙 credit · hot_desk_hour · room_hour · print_page<span class="mc-chip-key">4 units · acme-design</span></div>
+        <div class="mc-chip teal">🪙 credit · hot_desk_hour · conference_room_hour · print_page<span class="mc-chip-key">1 billing unit · 3 service units · acme-design</span></div>
         <div class="mc-chip blue" id="mdt-conv-chip">🔄 1cr=1desk·hr · 1cr=30min·room · 1cr=10pages<span class="mc-chip-key">May 2024</span></div>
       </div>
 
@@ -592,7 +590,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <div class="ev-m room"><div class="ev-m-top"><span class="ev-m-ico">🚪</span><span class="ev-m-lbl">Room Hours</span></div><div class="ev-m-val" id="ev-room">0</div><div class="ev-m-unit">conference hrs used</div></div>
         </div>
       </div>
-      <div id="ev-json-hdr"><div class="pulse-dot"></div><span>CloudEvent Stream</span><span id="ev-count" style="color:var(--teal);font-weight:700;margin-left:4px">0</span><span style="font-size:8px;margin-left:auto;opacity:.6">→ RTE</span></div>
+      <div id="ev-json-hdr"><div class="pulse-dot"></div><span>Live Usage</span><span id="ev-count" style="color:var(--teal);font-weight:700;margin-left:4px">0</span></div>
       <div id="event-stream"></div>
       <div id="ev-footer">
         <span class="evleg"><span class="evleg-box" style="background:#3b82f612;outline:1px solid #3b82f650"></span>desk</span>
@@ -672,7 +670,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
             </tbody>
           </table>
           <div class="inv-dc-total"><span>Total Used</span><span class="may-total">92 cr</span></div>
-          <div class="inv-dc-rate">room rule: 1cr = 30 min · v1 · May 2024</div>
+          <div class="inv-dc-rate">conference_room_hour rule: 2cr/hr · v1 · May 2024</div>
         </div>
 
         <!-- JUNE INVOICE -->
@@ -702,7 +700,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
             </tbody>
           </table>
           <div class="inv-dc-total"><span>Total Used</span><span class="jun-total">112 cr ↑</span></div>
-          <div class="inv-dc-rate changed">room rule: 1cr = 15 min · v2 · Jun 2024 ↑</div>
+          <div class="inv-dc-rate changed">conference_room_hour rule: 4cr/hr · v2 · Jun 2024 ↑</div>
         </div>
 
       </div>
@@ -716,7 +714,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 <div id="commentary">
   <span id="com-icon">💡</span>
-  <span id="com-text"><strong>WorkNest sells Credits — a flexible billing currency that converts to desk hours, room time, and print pages.</strong> Units360 manages the credit ledger and conversion rules in one place. Change a rate once; all invoices apply it automatically.</span>
+  <span id="com-text"><strong>WorkNest uses Credit as a Billing Unit.</strong> They define 3 service units — hot_desk_hour, conference_room_hour, and print_page. A Conversion Table maps each service unit to credits. Change a rate once; all invoices apply it automatically.</span>
 </div>
 
 <div id="controls">
@@ -749,8 +747,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     <span class="dpill" data-target="sec-acct">Accounts</span>
     <span class="dpill" data-target="sec-txn">Transactions</span>
     <span class="dpill" data-target="sec-conv">Conversions</span>
-    <span class="dpill" data-target="sec-mdt">MDT</span>
-    <span class="dpill" data-target="sec-rte">RTE</span>
+    <span class="dpill" data-target="sec-mdt">Configuration</span>
+    <span class="dpill" data-target="sec-rte">Processing</span>
   </div>
   <div id="dr-body">
 
@@ -759,10 +757,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ttl"><span class="dsec-ico">🚀</span>What is Units360?</div>
       <div class="dsec-body">
         <p>Units360.ai is a <strong>low-code usage metering platform</strong>. Define any measurable unit — tokens, credits, kWh, API calls, hours — and the platform auto-provisions the ledger, billing APIs, and invoicing logic instantly.</p>
-        <p>In this demo, Credits are the billing currency. They convert to <em>hot_desk_hour</em>, <em>room_hour</em>, and <em>print_page</em>. When WorkNest changes a conversion rate, all future invoices pick it up automatically.</p>
+        <p>In this demo, <strong>Credit</strong> is the Billing Unit. WorkNest defines 3 service units — <em>hot_desk_hour</em>, <em>conference_room_hour</em>, and <em>print_page</em>. A Conversion Table maps each service unit to credits. When WorkNest changes a rate, all future invoices pick it up automatically.</p>
         <div class="dflow">
-          <div class="dfn hi">1. Define<br><small>MDT</small></div><span class="dfa">→</span>
-          <div class="dfn">2. Deploy<br><small>RTE</small></div><span class="dfa">→</span>
+          <div class="dfn hi">1. Define<br><small>Config</small></div><span class="dfa">→</span>
+          <div class="dfn">2. Deploy<br><small>Engine</small></div><span class="dfa">→</span>
           <div class="dfn">3. Stream<br><small>Events</small></div><span class="dfa">→</span>
           <div class="dfn">4. Invoice<br><small>Auto</small></div>
         </div>
@@ -774,20 +772,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ey">Use Case</div>
       <div class="dsec-ttl"><span class="dsec-ico">🏢</span>WorkNest — Co-working Space</div>
       <div class="dsec-body">
-        <p>WorkNest sells monthly credit packages to businesses. Acme Design buys 100 credits/month. Those credits convert to services at defined rates: 1 credit = 1 desk hour, 1 credit = 30 min of a conference room, 1 credit = 10 print pages.</p>
+        <p>WorkNest sells monthly credit packages to businesses. Acme Design buys 100 credits/month. Credits are the Billing Unit — a Conversion Table maps them to service units: 1 hot_desk_hour = 1 credit, 1 conference_room_hour = 2 credits, 1 print_page = 0.1 credits.</p>
         <p>As demand grows, WorkNest can change conversion rates (e.g. conference rooms become more expensive) without rebuilding any billing infrastructure.</p>
         <div class="dft">
           <div class="dfr"><div class="dfk">Company</div><div class="dfv"><strong>WorkNest</strong> — co-working space operator</div></div>
           <div class="dfr"><div class="dfk">Customer</div><div class="dfv"><strong>Acme Design</strong> — 100 credits/month plan</div></div>
           <div class="dfr"><div class="dfk">Billing unit</div><div class="dfv"><strong>credit</strong> — internal currency</div></div>
-          <div class="dfr"><div class="dfk">Services</div><div class="dfv">desk, room, print — all priced in credits</div></div>
+          <div class="dfr"><div class="dfk">Services</div><div class="dfv">hot_desk_hour, conference_room_hour, print_page — mapped to credits via Conversion Table</div></div>
         </div>
       </div>
     </div>
 
     <div class="dsec" id="sec-credit">
       <div class="dsec-ey">Core Concept</div>
-      <div class="dsec-ttl"><span class="dsec-ico">🪙</span>Credit — The Billing Currency</div>
+      <div class="dsec-ttl"><span class="dsec-ico">🪙</span>Credit — The Billing Unit</div>
       <div class="dsec-body">
         <p>A <strong>credit</strong> is an abstract billing unit. Customers pre-purchase credits; services debit them. This decouples the customer's billing experience from the underlying service pricing.</p>
         <p>WorkNest can change service rates (credits required per service unit) without re-negotiating customer contracts. The credit price stays the same; the conversion rate changes.</p>
@@ -800,13 +798,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ey">Service Units</div>
       <div class="dsec-ttl"><span class="dsec-ico">🔄</span>Service Units — What Credits Buy</div>
       <div class="dsec-body">
-        <p>Each service at WorkNest is also a Units360 unit. When a customer uses a desk or books a room, the booking system fires a CloudEvent. Units360 converts the service usage to credits and debits the account.</p>
+        <p>Each service at WorkNest is also a Units360 unit. When a customer uses a desk or books a room, the booking system records the usage. Units360 converts the service usage to credits and debits the account.</p>
         <div class="dft">
           <div class="dfr"><div class="dfk">hot_desk_hour</div><div class="dfv"><strong>1 credit</strong> per hour at any desk</div></div>
-          <div class="dfr"><div class="dfk">room_hour</div><div class="dfv"><strong>2 credits</strong> per hour (May rate: 1cr=30min)</div></div>
+          <div class="dfr"><div class="dfk">conference_room_hour</div><div class="dfv"><strong>2 credits</strong> per hour (May rate; updated to 4 cr/hr in June)</div></div>
           <div class="dfr"><div class="dfk">print_page</div><div class="dfv"><strong>0.1 credits</strong> per page (10 pages = 1 credit)</div></div>
         </div>
-        <div class="dcallout"><strong>Rate versioning:</strong> when WorkNest changes room_hour to 4 credits/hour in June, all June invoices apply the new rate. May invoices are already locked at the old rate. No manual recalculation.</div>
+        <div class="dcallout"><strong>Rate versioning:</strong> when WorkNest changes conference_room_hour to 4 credits/hour in June, all June invoices apply the new rate. May invoices are already locked at the old rate. No manual recalculation.</div>
       </div>
     </div>
 
@@ -837,26 +835,26 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-ttl"><span class="dsec-ico">🔄</span>Conversion Rules</div>
       <div class="dsec-body">
         <p><strong>Conversion Rules</strong> define how service units translate to credits. They are versioned by effective date — a rate change creates a new rule version without invalidating historical records.</p>
-        <div class="dcode"><span class="ck">"conversions"</span>: [<br>  { <span class="ck">"service"</span>: <span class="cv">"room_hour"</span>, <span class="ck">"credits"</span>: <span class="cn">2</span>,<br>    <span class="ck">"effective"</span>: <span class="cv">"2024-05-01"</span> },<br>  { <span class="ck">"service"</span>: <span class="cv">"room_hour"</span>, <span class="ck">"credits"</span>: <span class="cn">4</span>,<br>    <span class="ck">"effective"</span>: <span class="cv">"2024-06-01"</span> } <span class="cc">// new</span><br>]</div>
+        <div class="dcode"><span class="ck">"conversions"</span>: [<br>  { <span class="ck">"service"</span>: <span class="cv">"conference_room_hour"</span>, <span class="ck">"credits"</span>: <span class="cn">2</span>,<br>    <span class="ck">"effective"</span>: <span class="cv">"2024-05-01"</span> },<br>  { <span class="ck">"service"</span>: <span class="cv">"conference_room_hour"</span>, <span class="ck">"credits"</span>: <span class="cn">4</span>,<br>    <span class="ck">"effective"</span>: <span class="cv">"2024-06-01"</span> } <span class="cc">// new</span><br>]</div>
         <p>Units360 applies the correct version for each billing period automatically. No retroactive changes. No manual overrides needed.</p>
       </div>
     </div>
 
     <div class="dsec" id="sec-mdt">
       <div class="dsec-ey">Platform Component</div>
-      <div class="dsec-ttl"><span class="dsec-ico">📋</span>MDT — Metering Definition Template</div>
+      <div class="dsec-ttl"><span class="dsec-ico">📋</span>Configuration</div>
       <div class="dsec-body">
-        <p>The <strong>MDT</strong> defines your entire metering model: units, accounts, conversion rules, alert thresholds, and billing periods. Submit once; the RTE handles everything else.</p>
+        <p>The <strong>configuration</strong> defines your entire metering model: units, accounts, conversion rules, alert thresholds, and billing periods. Submit once; Units360 handles everything else.</p>
         <div class="dtags"><span class="dtag teal">Declarative YAML/JSON</span><span class="dtag blue">Version-controlled</span><span class="dtag green">Zero-DevOps deploy</span></div>
       </div>
     </div>
 
     <div class="dsec" id="sec-rte">
       <div class="dsec-ey">Platform Component</div>
-      <div class="dsec-ttl"><span class="dsec-ico">⚙️</span>RTE — Real-Time Engine</div>
+      <div class="dsec-ttl"><span class="dsec-ico">⚙️</span>Real-Time Processing</div>
       <div class="dsec-body">
-        <p>The <strong>RTE</strong> processes every CloudEvent in real time: validates the event, applies the correct conversion rule version, debits the account, and updates all ledger balances atomically — all under 50ms.</p>
-        <div class="dcallout"><strong>Rate changes take effect immediately.</strong> When WorkNest updates the conference room rate, the RTE picks up the new rule for all events timestamped on or after the effective date. Historical transactions are never modified.</div>
+        <p>Units360 processes every usage event in real time: validates the event, applies the correct conversion rule version, debits the account, and updates all ledger balances atomically — all under 50ms.</p>
+        <div class="dcallout"><strong>Rate changes take effect immediately.</strong> When WorkNest updates the conference room rate, Units360 picks up the new rule for all events timestamped on or after the effective date. Historical transactions are never modified.</div>
       </div>
     </div>
 
@@ -869,20 +867,20 @@ const NS='http://www.w3.org/2000/svg';
 
 // ── ACTS ──
 const ACTS=[
-  {id:'define',eye:'ACT 1 OF 5',title:'Define Units & Conversion Rules',desc:'4 units + conversion table',dur:7000,color:'teal',termMode:'mdt',
-   comIco:'💡',com:'<strong>WorkNest sells Credits as a billing currency.</strong> They define 4 units in Units360: credit, hot_desk_hour, room_hour, print_page — plus the conversion rules linking them. One MDT. No database schema. No engineering sprint.',
-   ovTitle:'Define Units',ovSub:'Credits + Conversion Rules'},
+  {id:'define',eye:'ACT 1 OF 5',title:'Define Units & Conversion Rules',desc:'1 billing unit · 3 service units · conversion table',dur:7000,color:'teal',termMode:'mdt',
+   comIco:'💡',com:'<strong>WorkNest uses Credit as a Billing Unit.</strong> They define 3 service units: hot_desk_hour, conference_room_hour, print_page. A Conversion Table maps each service unit to credits.',
+   ovTitle:'Define Units',ovSub:'1 Billing Unit · 3 Service Units'},
   {id:'usage',eye:'ACT 2 OF 5',title:'Customer Uses the Space',desc:'Credit events fire in real time',dur:11000,color:'teal',termMode:'event',
-   comIco:'🏢',com:'Acme Design checks in. As they use desks, book rooms, and print, the booking system fires CloudEvents to Units360. <strong>Credits decrement automatically</strong> — no manual tracking, no reconciliation at month end.',
+   comIco:'🏢',com:'Acme Design checks in. As they use desks, book rooms, and print, the booking system updates Units360. <strong>Credits decrement automatically</strong> — no manual tracking, no reconciliation at month end.',
    ovTitle:'Customer Active',ovSub:'Usage Events → Credit Ledger'},
   {id:'summary',eye:'ACT 3 OF 5',title:'Month Summary',desc:'92 of 100 credits used',dur:8000,color:'teal',termMode:'sum',
-   comIco:'📊',com:'Month ends. <strong>Units360 aggregates all usage automatically.</strong> Desk hours, room bookings, and print jobs — all summarised by unit. Balance bar shows 92/100 credits used. Invoice ready to generate.',
+   comIco:'📊',com:'Month ends. <strong>Acme Design</strong> is a customer on the 100-credit plan. Units360 automatically totals their usage — desk hours, room bookings, and print jobs. <strong>92 of 100 credits used.</strong> Invoice is ready to generate.',
    ovTitle:'Month Summary',ovSub:'Usage Aggregated Automatically'},
-  {id:'change',eye:'ACT 4 OF 5',title:'Conversion Rate Updated',desc:'1 credit = 15 min room (was 30)',dur:7000,color:'amber',termMode:'change',
-   comIco:'⚠️',com:'WorkNest raises conference room prices. <strong>One MDT update: 1 credit = 15 min room, effective June 1.</strong> May invoices use the old rate. June invoices use the new rate. Zero migration work. No customer contract changes needed.',
+  {id:'change',eye:'ACT 4 OF 5',title:'Conversion Rate Updated',desc:'conference_room_hour: 4 cr/hr (was 2)',dur:7000,color:'amber',termMode:'change',
+   comIco:'⚠️',com:'WorkNest raises conference room prices. <strong>One simple update: conference room → 4 credits/hour, effective June 1.</strong> May invoices use the old rate. June invoices use the new rate. Zero migration work. No customer contract changes needed.',
    ovTitle:'Rate Change',ovSub:'Effective June 1 · Old Rate Preserved'},
   {id:'invoice',eye:'ACT 5 OF 5',title:'Price Change Captured in New Invoice',desc:'May vs June · correct rates applied',dur:7000,color:'green',termMode:'inv',
-   comIco:'🧾',com:'<strong>Two billing periods. Two rates. Both invoiced correctly — automatically.</strong> May: room = 20 credits (30 min rate). June: room = 40 credits (15 min rate). Units360 applied the right version to each period. Zero manual work.',
+   comIco:'🧾',com:'<strong>Two billing periods. Two rates. Both invoiced correctly — automatically.</strong> May: conference_room_hour = 20 credits (2 cr/hr). June: conference_room_hour = 40 credits (4 cr/hr). Units360 applied the right version to each period. Zero manual work.',
    ovTitle:'Invoices Generated',ovSub:'Both Periods · Zero Manual Work'},
 ];
 
@@ -904,7 +902,7 @@ const MDT_U=[
 ];
 const MDT_C=[
   {id:'mf-c0',val:'1 hot_desk_hour'},
-  {id:'mf-c1',val:'30 min room_hour (0.5 hr)'},
+  {id:'mf-c1',val:'0.5 conference_room_hour'},
   {id:'mf-c2',val:'10 print_pages'},
   {id:'mf-c3',val:'2024-05-01 · version 1'},
 ];
@@ -913,10 +911,10 @@ const MDT_C=[
 const USAGE_EVTS=[
   {t:1500,type:'desk',qty:1,cr:1,msg:'hot_desk_hour × 1',desk:1,room:0,print:0},
   {t:3200,type:'desk',qty:1,cr:1,msg:'hot_desk_hour × 1',desk:1,room:0,print:0},
-  {t:5000,type:'room',qty:1,cr:2,msg:'room_hour × 1',desk:0,room:1,print:0},
+  {t:5000,type:'room',qty:1,cr:2,msg:'conference_room_hour × 1',desk:0,room:1,print:0},
   {t:7000,type:'print',qty:20,cr:2,msg:'print_page × 20',desk:0,room:0,print:20},
   {t:8800,type:'desk',qty:2,cr:2,msg:'hot_desk_hour × 2',desk:2,room:0,print:0},
-  {t:10200,type:'room',qty:1,cr:2,msg:'room_hour × 1',desk:0,room:1,print:0},
+  {t:10200,type:'room',qty:1,cr:2,msg:'conference_room_hour × 1',desk:0,room:1,print:0},
 ];
 
 // ── STATE ──
@@ -1015,8 +1013,8 @@ function addEvent(ev){
   $('kiosk-bar').setAttribute('width',(34*(1-pct)).toFixed(1));
   // Scene highlights
   if(ev.type==='desk'){$('desk1-glow').setAttribute('opacity','0.8');setTimeout(()=>$('desk1-glow').setAttribute('opacity','0'),800);}
-  if(ev.type==='room'){$('room-glow-rect').setAttribute('opacity','0.06');$('room-dot').setAttribute('fill','#f59e0b');$('room-status').textContent='OCCUPIED';setTimeout(()=>{$('room-glow-rect').setAttribute('opacity','0');$('room-dot').setAttribute('fill','#10b981');$('room-status').textContent='AVAILABLE';},2000);}
-  if(ev.type==='print'){$('printer-status').textContent='PRINTING';$('printer-paper').setAttribute('opacity','0.9');$('printer-light').setAttribute('fill','#f59e0b');$('printer-light').setAttribute('opacity','0.8');setTimeout(()=>{$('printer-status').textContent='DONE';$('printer-paper').setAttribute('opacity','0');$('printer-light').setAttribute('fill','#10b981');$('printer-light').setAttribute('opacity','0.5');},1200);}
+  if(ev.type==='room'){$('room-glow-rect').setAttribute('opacity','0.06');setTimeout(()=>{$('room-glow-rect').setAttribute('opacity','0');},2000);}
+  if(ev.type==='print'){$('printer-paper').setAttribute('opacity','0.9');setTimeout(()=>{$('printer-paper').setAttribute('opacity','0');},1200);}
   // Colors
   const colors={desk:'#2563eb',room:'#7c3aed',print:'#d97706'};
   const cls={desk:'desk-ev',room:'room-ev',print:'print-ev'};
@@ -1070,7 +1068,7 @@ function setAct(idx,fromNav=false){
   $('prog-fill').style.width=pct+'%';
   document.querySelectorAll('.p-act').forEach((el,i)=>el.classList.toggle('active',i===idx));
   $('btn-prev').disabled=idx===0;$('btn-next').disabled=idx===ACTS.length-1;
-  const modeLabel={mdt:'MDT',event:'EVENTS',sum:'SUMMARY',change:'CHANGE',inv:'INVOICE'};
+  const modeLabel={mdt:'SETUP',event:'EVENTS',sum:'SUMMARY',change:'CHANGE',inv:'INVOICE'};
   const modeCls={mdt:'mdt',event:'event',sum:'event',change:'change',inv:'inv'};
   $('term-badge').textContent=modeLabel[a.termMode]||'MDT';
   $('term-badge').className=modeCls[a.termMode]||'mdt';
