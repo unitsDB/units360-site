@@ -284,6 +284,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .inv-dc-table td{padding:6px 12px;border-bottom:1px solid var(--border);color:var(--text)}
 .inv-dc-table td.changed-row{color:var(--amber);font-weight:600;background:#fef9c3}
 .inv-dc-table td.changed-badge::after{content:'↑';font-size:8px;margin-left:3px;color:var(--amber)}
+@keyframes confRowPulseTeal{0%,100%{background-color:rgba(0,212,180,.22)}50%{background-color:rgba(0,212,180,.05)}}
+@keyframes confRowPulseAmber{0%,100%{background-color:#fcd34d}50%{background-color:#fef9c3}}
+.inv-dc-table td.conf-room-hl{background-color:rgba(0,212,180,.22);color:#0891b2;font-weight:700;animation:confRowPulseTeal 1.4s ease-in-out infinite}
+.inv-dc-table td.changed-row.conf-room-pulse{animation:confRowPulseAmber 1.4s ease-in-out infinite}
 .inv-dc-total{display:flex;justify-content:space-between;padding:8px 14px;font-size:12px;font-weight:800;border-top:1px solid var(--border);margin-top:auto}
 .inv-dc-total .may-total{color:var(--teal)}.inv-dc-total .jun-total{color:var(--amber)}
 .inv-dc-rate{padding:5px 14px;font-size:8.5px;color:var(--muted);background:var(--surface2);border-top:1px solid var(--border);font-family:'SF Mono','Fira Code',monospace}
@@ -663,7 +667,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
             <thead><tr><th>Service</th><th>Qty</th><th>Rate</th><th>Credits</th></tr></thead>
             <tbody>
               <tr><td>Hot Desk</td><td>60 hr</td><td>1cr/hr</td><td>60</td></tr>
-              <tr><td>Conf Room</td><td>10 hr</td><td>2cr/hr</td><td>20</td></tr>
+              <tr><td class="conf-room-hl">Conf Room</td><td class="conf-room-hl">10 hr</td><td class="conf-room-hl">2cr/hr</td><td class="conf-room-hl">20</td></tr>
               <tr><td>Printing</td><td>120 pg</td><td>0.1/pg</td><td>12</td></tr>
             </tbody>
           </table>
@@ -693,7 +697,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
             <thead><tr><th>Service</th><th>Qty</th><th>Rate</th><th>Credits</th></tr></thead>
             <tbody>
               <tr><td>Hot Desk</td><td>60 hr</td><td>1cr/hr</td><td>60</td></tr>
-              <tr><td class="changed-row">Conf Room</td><td class="changed-row">10 hr</td><td class="changed-row">4cr/hr</td><td class="changed-row changed-badge">40</td></tr>
+              <tr><td class="changed-row conf-room-pulse">Conf Room</td><td class="changed-row conf-room-pulse">10 hr</td><td class="changed-row conf-room-pulse">4cr/hr</td><td class="changed-row changed-badge conf-room-pulse">40</td></tr>
               <tr><td>Printing</td><td>120 pg</td><td>0.1/pg</td><td>12</td></tr>
             </tbody>
           </table>
