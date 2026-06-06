@@ -267,7 +267,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #event-view,#summary-view,#change-view,#inv-view{position:absolute;inset:0;overflow:hidden}
 
 /* REAL INVOICE — dual comparison */
-.inv-doc-pair{display:flex;flex-direction:column;gap:10px;height:100%;padding:12px 16px;overflow-y:auto}
+.inv-doc-pair{display:flex;flex-direction:column;gap:0;height:100%;padding:12px 16px;overflow-y:auto}
+.inv-sep{display:flex;align-items:center;gap:8px;padding:10px 0}
+.inv-sep::before,.inv-sep::after{content:'';flex:1;height:2px;background:rgba(100,130,220,.45)}
+.inv-sep-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .inv-doc-card{flex:0 0 auto;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;font-family:'SF Pro Display',system-ui,sans-serif}
 .inv-dc-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
 .inv-dc-month{text-align:center;font-size:20px;font-weight:900;letter-spacing:4px;text-transform:uppercase}
@@ -676,6 +679,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <div class="inv-dc-total"><span>Total Used</span><span class="may-total">92 cr</span></div>
           <div class="inv-dc-rate">conference_room_hour rule: 2cr/hr · v1 · May 2024</div>
         </div>
+
+        <div class="inv-sep"><span class="inv-sep-label">rate change · june 1</span></div>
 
         <!-- JUNE INVOICE -->
         <div class="inv-doc-card" id="inv-jun">
