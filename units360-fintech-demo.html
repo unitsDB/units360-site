@@ -3,23 +3,21 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Units360 · Fintech &amp; Banking Demo</title>
+<link rel="stylesheet" href="demo-shared.css">
 <style>
 :root {
-  --bg: #06030f; --surface: #0e0920; --surface2: #150d2a;
   --gold: #ffd700; --gold-glow: #ffd70033;
   --purple: #a855f7; --purple-glow: #a855f733;
   --pink: #f472b6; --pink-glow: #f472b633;
-  --teal: #00d4ff; --teal-glow: #00d4ff33;
-  --green: #10b981; --green-glow: #10b98133;
-  --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444;
-  --text: #f0e6ff; --muted: #6b5a8a;
+  --green-glow: #10b98133;
+  --muted: #64748b;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden;font-size:15px}
 #app{display:flex;flex-direction:column;height:100vh;max-width:1280px;margin:0 auto;padding:10px 16px 0}
 
 #overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(6,3,15,0.92);opacity:0;pointer-events:none;transition:opacity .35s}
+  background:rgba(15,23,42,0.88);opacity:0;pointer-events:none;transition:opacity .35s}
 #overlay.show{opacity:1;pointer-events:auto;backdrop-filter:blur(8px)}
 #overlay-eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
 #overlay-title{font-size:clamp(28px,5vw,54px);font-weight:800;letter-spacing:-1px;color:var(--text);text-align:center}
@@ -39,16 +37,17 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 #main{display:flex;gap:12px;flex:1;min-height:0}
 #left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
-#right-panel{display:flex;flex-direction:column;flex:1;min-width:280px;max-width:420px;background:var(--surface);border:1px solid #2a1a4a;border-radius:10px;overflow:hidden}
+#right-panel{display:flex;flex-direction:column;flex:1;min-width:280px;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+#right-panel.inv-wide{max-width:none;flex:2.4;transition:flex .35s ease}
 
-#scene-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid #2a1a4a;flex-shrink:0;height:165px}
+#scene-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);flex:1;min-height:100px}
 #scene-svg{width:100%;height:100%;display:block}
 
-#flow-wrap{background:var(--surface);border:1px solid #2a1a4a;border-radius:10px;padding:10px 14px 8px;flex-shrink:0}
+#flow-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px 8px;flex-shrink:0}
 #flow-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
 #flow-svg{width:100%;display:block}
 
-#pts-row{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid #2a1a4a;border-radius:10px;padding:8px 14px;flex-shrink:0}
+#pts-row{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;flex-shrink:0}
 #pts-balance{font-size:clamp(22px,3.5vw,38px);font-weight:800;font-variant-numeric:tabular-nums;transition:color .6s;min-width:130px}
 #pts-balance.earning{color:var(--gold)}
 #pts-balance.bonus{color:var(--pink)}
@@ -68,18 +67,18 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #pts-rate-pill.bonus{background:#f472b620;color:var(--pink);border:1px solid #f472b640}
 #pts-rate-pill.redeeming{background:#a855f720;color:var(--purple);border:1px solid #a855f740}
 #pts-rate-pill.done{background:#10b98120;color:var(--green);border:1px solid #10b98140}
-#pts-rate-pill.zero{background:#2a1a4a;color:var(--muted);border:1px solid #2a1a4a}
+#pts-rate-pill.zero{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
 #pts-today{font-size:10px;color:var(--muted)}
 
 #prog-wrap{flex-shrink:0;padding:0 2px}
-#prog-bar{height:3px;background:#2a1a4a;border-radius:2px;overflow:hidden}
+#prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
 #prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--purple),var(--pink));border-radius:2px;transition:width .1s linear}
 #prog-acts{display:flex;justify-content:space-between;margin-top:4px}
 .prog-act{font-size:9px;color:var(--muted);letter-spacing:.3px;cursor:pointer;transition:color .2s}
 .prog-act:hover{color:var(--gold)}
 .prog-act.active{color:var(--gold)}
 
-#term-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;border-bottom:1px solid #2a1a4a;flex-shrink:0}
+#term-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
 #term-dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444}
 #term-dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b}
 #term-dot-g{width:10px;height:10px;border-radius:50%;background:#10b981}
@@ -89,17 +88,17 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #term-mode-badge.event{background:#a855f720;color:var(--purple);border:1px solid #a855f740}
 #term-mode-badge.invoice{background:#10b98120;color:var(--green);border:1px solid #10b98140}
 
-#term-tabs{display:flex;border-bottom:1px solid #2a1a4a;flex-shrink:0}
-.term-tab{font-size:10px;padding:6px 14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+#term-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.term-tab{font-size:10px;padding:6px 14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;display:none}
 .term-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 
-#term-body{flex:1;overflow:hidden;position:relative;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+#term-body{flex:1;overflow:hidden;display:flex;flex-direction:column;font-family:'SF Mono','Fira Code',monospace;font-size:11.5px}
 
-#fmt-view{position:absolute;inset:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-.fmt-section{background:var(--surface2);border:1px solid #2a1a4a;border-radius:6px;overflow:hidden}
-.fmt-section-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);padding:6px 10px;background:#ffd70008;border-bottom:1px solid #2a1a4a}
+#fmt-view{padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.fmt-section{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.fmt-section-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);padding:6px 10px;background:#ffd70008;border-bottom:1px solid var(--border)}
 .fmt-fields{display:flex;flex-direction:column}
-.fmt-field{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #0e0920}
+.fmt-field{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--border)}
 .fmt-field:last-child{border-bottom:none}
 .fmt-field-label{font-size:10px;color:var(--muted);min-width:88px;letter-spacing:.3px}
 .fmt-field-value{font-size:11px;color:var(--text);font-family:'SF Mono','Fira Code',monospace;flex:1;min-height:16px}
@@ -108,8 +107,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .fmt-field-value.done{color:var(--gold)}
 
 #event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;display:none}
-#event-stream{flex:1;overflow:hidden;padding:0;font-size:10.5px}
-.event-block{padding:5px 10px;font-size:10.5px;line-height:1.55;border-bottom:1px solid #0e092040;animation:slideIn .3s ease}
+#event-stream{flex:1;overflow:hidden;padding:0;font-size:11.5px}
+.event-block{padding:5px 10px;font-size:11.5px;line-height:1.6;border-bottom:1px solid var(--border);animation:slideIn .3s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .ev-key{color:#c084fc}.ev-str{color:#86efac}.ev-num{color:#fbbf24}.ev-bool{color:#f472b6}.ev-null{color:var(--muted)}.ev-brace{color:var(--muted)}
 .ev-changed{border-radius:2px;outline:1px solid #ffd70080;background:#ffd70012;padding:0 2px}
@@ -122,83 +121,83 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .inv-json-line{font-size:11px;line-height:1.6;white-space:pre}
 .inv-json-line.reveal{animation:slideIn .25s ease}
 
-#commentary{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;background:var(--surface);border-top:1px solid #2a1a4a;border-left:3px solid var(--gold);flex-shrink:0;min-height:38px;transition:border-color .4s}
+#commentary{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;background:var(--surface);border-top:1px solid var(--border);border-left:3px solid var(--gold);flex-shrink:0;min-height:38px;transition:border-color .4s}
 #commentary.pink{border-left-color:var(--pink)}
 #commentary.purple{border-left-color:var(--purple)}
 #commentary.green{border-left-color:var(--green)}
 #commentary-icon{font-size:14px;flex-shrink:0;margin-top:1px}
-#commentary-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
+#commentary-text{font-size:13px;color:var(--text);line-height:1.5;flex:1}
 #commentary-text strong{color:var(--gold)}
 #commentary.pink #commentary-text strong{color:var(--pink)}
 #commentary.purple #commentary-text strong{color:var(--purple)}
 #commentary.green #commentary-text strong{color:var(--green)}
 
 #act-header{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
-#act-eyebrow{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-#act-title{font-size:15px;font-weight:700;color:var(--text);transition:color .4s}
+#act-eyebrow{font-size:10.5px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+#act-title{font-size:18px;font-weight:700;color:var(--text);transition:color .4s}
 #act-title.gold{color:var(--gold)}
 #act-title.pink{color:var(--pink)}
 #act-title.purple{color:var(--purple)}
 #act-title.green{color:var(--green)}
-#act-desc{font-size:11px;color:var(--muted);margin-left:auto}
+#act-desc{font-size:13px;color:var(--muted);margin-left:auto}
 
-#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid #2a1a4a;margin-top:4px}
-.ctrl-btn{background:var(--surface2);border:1px solid #2a1a4a;color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid var(--border);margin-top:4px}
+.ctrl-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .ctrl-btn:hover{border-color:var(--gold);color:var(--gold)}
 .ctrl-btn:active{transform:scale(.97)}
-#btn-play{background:var(--gold);border-color:var(--gold);color:#06030f;font-weight:600;min-width:64px}
+#btn-play{background:var(--gold);border-color:var(--gold);color:#000;font-weight:600;min-width:64px}
 #btn-play:hover{background:#e6c200;border-color:#e6c200}
 #speed-label{font-size:11px;color:var(--muted);margin-left:4px}
 #speed-val{font-size:11px;color:var(--gold);min-width:24px}
-.ctrl-sep{width:1px;height:18px;background:#2a1a4a;margin:0 4px}
-#kbd-hint{font-size:10px;color:var(--muted);margin-left:auto;letter-spacing:.3px}
+.ctrl-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+#kbd-hint{font-size:11.5px;color:var(--muted);margin-left:auto;letter-spacing:.3px}
 
 #btn-info{background:linear-gradient(135deg,#ffd70022,#a855f722);border:1px solid var(--gold);
   border-radius:20px;color:var(--gold);font-size:11px;font-weight:700;padding:5px 14px;
   cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;
   box-shadow:0 0 10px #ffd70022}
-#btn-info:hover{background:var(--gold);color:#06030f;box-shadow:0 0 18px #ffd70055}
+#btn-info:hover{background:var(--gold);color:#000;box-shadow:0 0 18px #ffd70055}
 #btn-info:active{transform:scale(.97)}
 
-#info-backdrop{position:fixed;inset:0;z-index:205;background:rgba(6,3,15,.65);backdrop-filter:blur(3px);
+#info-backdrop{position:fixed;inset:0;z-index:205;background:rgba(15,23,42,0.65);backdrop-filter:blur(3px);
   opacity:0;pointer-events:none;transition:opacity .3s}
 #info-backdrop.show{opacity:1;pointer-events:auto}
 #info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:210;
-  background:#080512;border-left:1px solid #2a1a4a;
+  background:var(--surface);border-left:1px solid var(--border);
   transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);
   display:flex;flex-direction:column;overflow:hidden}
 #info-drawer.open{transform:translateX(0)}
-#drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid #2a1a4a;flex-shrink:0;background:linear-gradient(135deg,#12082a,#0e0620)}
+#drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:linear-gradient(135deg,#111,#0a0a0a)}
 #drawer-logo{font-size:16px;font-weight:800;color:var(--text)}
 #drawer-logo span{color:var(--gold)}
 #drawer-subtitle{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
-#drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#2a1a4a;border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-#drawer-close:hover{background:#3d2560;color:var(--text)}
-#drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;scroll-behavior:smooth}
+#drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:var(--surface2);border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#drawer-close:hover{background:var(--border);color:var(--text)}
+#drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;scroll-behavior:smooth;gap:0}
 #drawer-body::-webkit-scrollbar{width:4px}
-#drawer-body::-webkit-scrollbar-thumb{background:#2a1a4a;border-radius:2px}
-#drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid #2a1a4a;flex-shrink:0}
-.dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:#2a1a4a;color:var(--muted);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
-.dnav-pill:hover{background:#3d2560;color:var(--text)}
+#drawer-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:var(--surface2);color:var(--muted);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
+.dnav-pill:hover{background:var(--border);color:var(--text)}
 .dnav-pill.active{background:#ffd70015;color:var(--gold);border-color:#ffd70040}
 
-.dsec{padding:18px 0;border-bottom:1px solid #0e0920}
+.dsec{padding:18px 0;border-bottom:1px solid var(--border)}
 .dsec:last-child{border-bottom:none;padding-bottom:8px}
 .dsec-eyebrow{font-size:8px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;opacity:.7}
 .dsec-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .dsec-icon{font-size:18px}
-.dsec-body{font-size:12px;color:#a892c8;line-height:1.7;display:flex;flex-direction:column;gap:8px}
+.dsec-body{font-size:12px;color:var(--muted);line-height:1.7;display:flex;flex-direction:column;gap:8px}
 .dsec-body p{margin:0}
 .dsec-body strong{color:var(--text);font-weight:600}
 .dsec-body em{color:var(--gold);font-style:normal}
-.dfield-table{background:var(--surface2);border:1px solid #2a1a4a;border-radius:6px;overflow:hidden;margin-top:4px}
-.dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid #0e0920;align-items:flex-start;gap:10px;font-size:11px}
+.dfield-table{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:4px}
+.dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid var(--border);align-items:flex-start;gap:10px;font-size:11px}
 .dfield-row:last-child{border-bottom:none}
 .dfield-key{color:var(--gold);min-width:110px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
-.dfield-val{color:#a892c8;line-height:1.5}
+.dfield-val{color:var(--muted);line-height:1.5}
 .dfield-val strong{color:var(--text)}
-.dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;background:var(--surface2);border:1px solid #2a1a4a;border-radius:6px;font-size:11px}
-.dflow-node{padding:4px 10px;border-radius:4px;background:#2a1a4a;color:var(--text);text-align:center;font-size:10px;line-height:1.4}
+.dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:11px}
+.dflow-node{padding:4px 10px;border-radius:4px;background:var(--surface2);color:var(--text);text-align:center;font-size:10px;line-height:1.4}
 .dflow-node.highlight{background:#ffd70015;border:1px solid #ffd70040;color:var(--gold)}
 .dflow-arrow{color:var(--muted);font-size:14px}
 .dtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
@@ -208,20 +207,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .dtag.green{background:#10b98115;color:var(--green);border:1px solid #10b98130}
 .dtag.pink{background:#f472b615;color:var(--pink);border:1px solid #f472b630}
 .dtag.teal{background:#00d4ff15;color:var(--teal);border:1px solid #00d4ff30}
-.dcode{background:#030108;border:1px solid #2a1a4a;border-radius:6px;padding:10px 12px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#c084fc;overflow-x:auto;margin-top:6px}
-.dcode .ck{color:#c084fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#6b5a8a}
-.dcallout{background:linear-gradient(135deg,#ffd70008,#a855f708);border:1px solid #ffd70025;border-radius:6px;padding:10px 12px;font-size:11px;color:#a892c8;line-height:1.6;margin-top:6px}
+.dcode{background:#050505;border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#c084fc;overflow-x:auto;margin-top:6px}
+.dcode .ck{color:#c084fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:var(--muted)}
+.dcallout{background:linear-gradient(135deg,#ffd70008,#a855f708);border:1px solid #ffd70025;border-radius:6px;padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.6;margin-top:6px}
 .dcallout strong{color:var(--gold)}
 
 /* Dashboard — bigger */
-#ev-dashboard{padding:10px 12px 8px;background:#040210;border-bottom:1px solid #2a1a4a;flex-shrink:0}
+#ev-dashboard{padding:10px 12px 8px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0}
 .ev-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
-.ev-metric{background:#0e0920;border:1px solid #2a1a4a;border-radius:9px;padding:9px 12px;transition:border-color .4s}
+.ev-metric{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 12px;transition:border-color .4s}
 .ev-metric-top{display:flex;align-items:center;gap:4px;margin-bottom:3px}
 .ev-metric-icon{font-size:13px}
-.ev-metric-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.ev-metric-val{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .5s;line-height:1}
-.ev-metric-unit{font-size:9px;color:var(--muted);margin-top:2px}
+.ev-metric-label{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.ev-metric-val{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .5s;line-height:1}
+.ev-metric-unit{font-size:9px;color:var(--muted);margin-top:2px;font-size:9px}
 .ev-metric.pts{border-color:#ffd70035}
 .ev-metric.pts .ev-metric-val{color:var(--gold)}
 .ev-metric.mult{border-color:#f472b635}
@@ -235,20 +234,105 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 #ev-tier-bar-wrap{display:flex;flex-direction:column;gap:3px}
 #ev-tier-title{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between}
-#ev-tier-track{height:9px;border-radius:5px;background:#2a1a4a;position:relative;overflow:hidden}
+#ev-tier-track{height:9px;border-radius:5px;background:var(--border);position:relative;overflow:hidden}
 #ev-tier-fill{position:absolute;top:0;left:0;height:100%;border-radius:5px;transition:width .4s,background .5s}
 #ev-tier-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}
 #ev-tier-rate-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-align:center;margin-top:2px;transition:color .4s}
 
-#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid #2a1a4a;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
-#ev-footer{padding:4px 10px;border-top:1px solid #2a1a4a;font-size:8.5px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
+#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+#ev-footer{padding:4px 10px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
 .ev-legend{display:inline-flex;align-items:center;gap:3px}
 .ev-leg-box{width:8px;height:8px;border-radius:1px;display:inline-block}
+
+/* ACT FLASH */
+@keyframes actFlash{0%,15%{background:rgba(255,215,0,0.10);box-shadow:inset 0 0 0 1px rgba(255,215,0,0.2);border-radius:6px}100%{background:transparent;box-shadow:none}}
+#act-header.flash{animation:actFlash 1.4s ease forwards}
+
+/* MDT ALWAYS-VISIBLE */
+#mdt-always{flex-shrink:0;border-bottom:1px solid var(--border);overflow:hidden}
+#mdt-full{padding:10px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:280px}
+#mdt-compact{padding:6px 10px;display:none;flex-direction:column;gap:4px}
+.mc-chip{font-size:10.5px;padding:5px 10px;border-radius:5px;font-family:'SF Mono','Fira Code',monospace;letter-spacing:.2px;display:flex;align-items:center;gap:6px}
+.mc-chip.gold{background:#ffd70010;border:1px solid #ffd70035;color:var(--gold)}
+.mc-chip.purple{background:#a855f710;border:1px solid #a855f735;color:var(--purple)}
+.mc-chip-key{color:var(--muted);font-size:9.5px}
+
+/* DYNAMIC AREA */
+#dyn-area{flex:1;min-height:0;overflow:hidden;position:relative}
+#event-view,#invoice-view{position:absolute;inset:0;overflow:hidden}
+
+/* INVOICE DOCUMENT */
+.inv-doc{background:#0a0a0a;border:1px solid #333;border-radius:8px;overflow:hidden;font-family:'SF Pro Display',system-ui,sans-serif;font-size:11.5px;height:100%;display:flex;flex-direction:column}
+.inv-lh{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px 12px;background:linear-gradient(135deg,#ffd70012,#a855f708);border-bottom:1px solid #2a2a2a}
+.inv-logo-txt{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+.inv-logo-txt span{color:var(--gold)}
+.inv-tagline{font-size:8.5px;color:var(--muted);letter-spacing:.5px;margin-top:1px}
+.inv-lh-right{text-align:right}
+.inv-doc-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.inv-doc-num{font-size:11px;font-weight:700;color:var(--gold);font-family:'SF Mono','Fira Code',monospace;margin-top:2px}
+.inv-meta{display:flex;border-bottom:1px solid #2a2a2a}
+.inv-meta-cell{flex:1;padding:7px 16px;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;gap:1px}
+.inv-meta-cell:last-child{border-right:none}
+.inv-meta-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.inv-meta-val{font-size:10.5px;font-weight:600;color:var(--text)}
+.inv-meta-val.mono{font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;color:var(--gold)}
+.inv-meta-val.sent{color:var(--green)}
+.inv-parties{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #2a2a2a}
+.inv-party{padding:9px 16px;border-right:1px solid #2a2a2a}
+.inv-party:last-child{border-right:none}
+.inv-party-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:3px}
+.inv-party-name{font-size:12px;font-weight:700;color:var(--text)}
+.inv-party-sub{font-size:9.5px;color:var(--muted);margin-top:1px}
+.inv-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.inv-table thead tr{background:#111;border-bottom:1px solid #333}
+.inv-table th{padding:6px 16px;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.inv-table th:last-child,.inv-table td:last-child{text-align:right}
+.inv-table td{padding:8px 16px;border-bottom:1px solid #181818}
+.inv-earn-row td{color:var(--text)}
+.inv-earn-row td:last-child{color:var(--gold);font-weight:700;font-size:13px}
+.inv-earn-row td small{display:block;font-size:8.5px;color:var(--muted);margin-top:1px}
+.inv-bonus-row td{color:var(--pink)}
+.inv-bonus-row td:last-child{color:var(--pink);font-weight:700;font-size:13px}
+.inv-redeem-row td{color:var(--purple);font-size:9.5px}
+.inv-redeem-row td:last-child{color:var(--purple);font-weight:700;font-style:normal}
+.inv-totals{padding:10px 18px;flex-shrink:0}
+.inv-t-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.inv-t-row span:first-child{color:var(--muted)}
+.inv-t-gold{color:var(--gold);font-weight:600}
+.inv-t-pink{color:var(--pink);font-weight:600}
+.inv-t-purple{color:var(--purple);font-weight:600}
+.inv-t-final{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800;padding:7px 0 4px;margin-top:3px;border-top:1px solid #333}
+.inv-t-final span:first-child{color:var(--text)}
+.inv-t-green{color:var(--green)}
+.inv-t-pct{font-size:9px;font-weight:500;color:var(--muted);margin-left:6px}
+.inv-footer{padding:7px 18px;background:#080808;border-top:1px solid #222;font-size:8.5px;color:var(--muted);font-family:'SF Mono','Fira Code',monospace;margin-top:auto}
+.inv-footer span{color:var(--gold)}
+@keyframes invRowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.inv-reveal{animation:invRowIn .3s ease forwards}
+
+/* LEFT PANEL INVOICE CARD */
+#left-inv{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;flex-shrink:0;display:none;animation:invIn .5s ease}
+#left-inv.show{display:block}
+@keyframes invIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.li-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.li-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--gold);font-weight:700}
+.li-badge{background:#ffd70020;color:var(--gold);padding:2px 9px;border-radius:10px;font-size:9px;font-weight:700;border:1px solid #ffd70040;letter-spacing:.5px}
+.li-rows{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.li-row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px}
+.li-row-k{color:var(--muted)}.li-row-v{font-weight:600}
+.li-divider{height:1px;background:var(--border);margin:5px 0}
+.li-totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.li-tot{background:var(--surface2);border-radius:7px;padding:7px 8px;text-align:center}
+.li-tot.gold-card{background:linear-gradient(135deg,#ffd7000a,#a855f70a);border:1px solid #ffd70030}
+.li-tot-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px}
+.li-tot-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.li-tot-val.gold{color:var(--gold)}.li-tot-val.purple{color:var(--purple)}.li-tot-val.green{color:var(--green)}
+
 </style>
 </head>
 <body>
 
-<a href="index.html" style="position:fixed;top:14px;left:18px;z-index:9999;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(14,9,32,0.82);backdrop-filter:blur(16px);border:1px solid rgba(42,26,74,0.9);color:#6b5a8a;font-family:system-ui,sans-serif;font-size:12px;font-weight:500;text-decoration:none;transition:color .2s,border-color .2s;" onmouseover="this.style.color='#f0e6ff';this.style.borderColor='#ffd700'" onmouseout="this.style.color='#6b5a8a';this.style.borderColor='rgba(42,26,74,0.9)'">← Units360.ai</a>
+<a href="index.html" style="position:fixed;top:14px;left:18px;z-index:9999;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(15,23,42,0.82);backdrop-filter:blur(16px);border:1px solid rgba(44,44,44,0.9);color:#64748b;font-family:system-ui,sans-serif;font-size:12px;font-weight:500;text-decoration:none;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='#ffd700'" onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(44,44,44,0.9)'">← Units360.ai</a>
 
 <div id="app">
 
@@ -270,15 +354,15 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
   <div id="clock-wrap">
     <div id="clock-time-label">9:00 AM</div>
     <svg id="clock-svg" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="28" cy="28" r="26" fill="#0e0920" stroke="#2a1a4a" stroke-width="1.5"/>
-      <g stroke="#3d2560" stroke-width="1">
+      <circle cx="28" cy="28" r="26" fill="#111111" stroke="#2c2c2c" stroke-width="1.5"/>
+      <g stroke="#2c2c2c" stroke-width="1">
         <line x1="28" y1="4" x2="28" y2="8"/>
         <line x1="28" y1="48" x2="28" y2="52"/>
         <line x1="4" y1="28" x2="8" y2="28"/>
         <line x1="48" y1="28" x2="52" y2="28"/>
       </g>
-      <line id="hand-hour" x1="28" y1="28" x2="28" y2="14" stroke="#6b5a8a" stroke-width="3.5" stroke-linecap="round"/>
-      <line id="hand-min"  x1="28" y1="28" x2="28" y2="7"  stroke="#f0e6ff" stroke-width="2"   stroke-linecap="round"/>
+      <line id="hand-hour" x1="28" y1="28" x2="28" y2="14" stroke="#64748b" stroke-width="3.5" stroke-linecap="round"/>
+      <line id="hand-min"  x1="28" y1="28" x2="28" y2="7"  stroke="#e0f2fe" stroke-width="2"   stroke-linecap="round"/>
       <line id="hand-sec"  x1="28" y1="28" x2="28" y2="5"  stroke="#ffd700" stroke-width="1.2" stroke-linecap="round"/>
       <line id="hand-sec-tail" x1="28" y1="28" x2="28" y2="36" stroke="#ffd700" stroke-width="1.8" stroke-linecap="round"/>
       <circle cx="28" cy="28" r="2.5" fill="#ffd700"/>
@@ -308,16 +392,16 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
             <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
           </radialGradient>
           <linearGradient id="bg-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#06030f"/>
-            <stop offset="100%" stop-color="#0e0920"/>
+            <stop offset="0%" stop-color="#000000"/>
+            <stop offset="100%" stop-color="#0a0a0a"/>
           </linearGradient>
           <linearGradient id="card-body-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#1a0d38"/>
-            <stop offset="100%" stop-color="#2d1060"/>
+            <stop offset="0%" stop-color="#1a1020"/>
+            <stop offset="100%" stop-color="#2a1050"/>
           </linearGradient>
           <linearGradient id="wallet-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#0a1520"/>
-            <stop offset="100%" stop-color="#102040"/>
+            <stop offset="0%" stop-color="#080808"/>
+            <stop offset="100%" stop-color="#101010"/>
           </linearGradient>
         </defs>
 
@@ -330,24 +414,24 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <!-- Left: POS/Merchant Terminal -->
         <g id="merchant-terminal" transform="translate(18, 20)">
           <!-- Terminal body -->
-          <rect x="0" y="0" width="110" height="120" rx="8" fill="#0d0a20" stroke="#2a1a4a" stroke-width="1.5"/>
+          <rect x="0" y="0" width="110" height="120" rx="8" fill="#0a0a0a" stroke="#2c2c2c" stroke-width="1.5"/>
           <!-- Screen -->
-          <rect x="8" y="8" width="94" height="62" rx="4" fill="#080614" stroke="#3d2560" stroke-width="1"/>
+          <rect x="8" y="8" width="94" height="62" rx="4" fill="#080614" stroke="#2c2c2c" stroke-width="1"/>
           <!-- Screen glow -->
-          <rect x="8" y="8" width="94" height="62" rx="4" fill="#a855f705"/>
+          <rect x="8" y="8" width="94" height="62" rx="4" fill="#a855f708"/>
           <!-- Screen content -->
           <text x="55" y="26" font-size="7.5" fill="#a892c8" text-anchor="middle" letter-spacing="1">MERCHANT POS</text>
-          <rect x="16" y="30" width="78" height="1" fill="#2a1a4a"/>
+          <rect x="16" y="30" width="78" height="1" fill="#2c2c2c"/>
           <text id="merch-amount" x="55" y="48" font-size="13" fill="#ffd700" text-anchor="middle" font-weight="700">$0.00</text>
-          <text id="merch-label" x="55" y="60" font-size="7" fill="#6b5a8a" text-anchor="middle">AWAITING TXN</text>
+          <text id="merch-label" x="55" y="60" font-size="7" fill="#64748b" text-anchor="middle">AWAITING TXN</text>
           <!-- Keypad dots -->
-          <g fill="#2a1a4a">
+          <g fill="#2c2c2c">
             <circle cx="20" cy="84" r="5"/><circle cx="35" cy="84" r="5"/><circle cx="50" cy="84" r="5"/>
             <circle cx="20" cy="98" r="5"/><circle cx="35" cy="98" r="5"/><circle cx="50" cy="98" r="5"/>
             <circle cx="20" cy="112" r="5"/><circle cx="35" cy="112" r="5"/>
           </g>
           <!-- Green confirm button -->
-          <rect x="62" y="88" width="38" height="28" rx="4" fill="#0f2a1a" stroke="#10b98140" stroke-width="1"/>
+          <rect x="62" y="88" width="38" height="28" rx="4" fill="#0a1a0f" stroke="#10b98140" stroke-width="1"/>
           <text x="81" y="106" font-size="9" fill="#10b981" text-anchor="middle">PAY</text>
           <!-- Active LED -->
           <circle id="merch-led" cx="100" cy="10" r="3" fill="#10b981" opacity="0.8"/>
@@ -381,28 +465,28 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <circle cx="136" cy="82" r="9" fill="#ef444420" stroke="#ef444440" stroke-width="1"/>
           <circle cx="144" cy="82" r="9" fill="#f59e0b20" stroke="#f59e0b40" stroke-width="1"/>
           <!-- Card status -->
-          <text id="card-status" x="80" y="118" font-size="7.5" fill="#6b5a8a" text-anchor="middle" letter-spacing="1.5"></text>
+          <text id="card-status" x="80" y="118" font-size="7.5" fill="#64748b" text-anchor="middle" letter-spacing="1.5"></text>
         </g>
 
         <!-- Right: Digital Wallet / Rewards Display -->
         <g id="wallet-display" transform="translate(415, 15)">
           <!-- Wallet frame -->
-          <rect x="0" y="0" width="200" height="130" rx="8" fill="url(#wallet-grad)" stroke="#1e3050" stroke-width="1.5"/>
+          <rect x="0" y="0" width="200" height="130" rx="8" fill="#0d0d0d" stroke="#2c2c2c" stroke-width="1.5"/>
           <!-- Purple glow top -->
           <rect x="0" y="0" width="200" height="30" rx="8" fill="#a855f710"/>
           <!-- Header -->
-          <text x="100" y="16" font-size="8" fill="#6b9aaa" text-anchor="middle" letter-spacing="1.5">REWARDS WALLET</text>
+          <text x="100" y="16" font-size="8" fill="#64748b" text-anchor="middle" letter-spacing="1.5">REWARDS WALLET</text>
           <rect x="0" y="22" width="200" height="1" fill="#1e3050"/>
           <!-- Points balance big -->
-          <text x="100" y="50" font-size="8" fill="#6b5a8a" text-anchor="middle" letter-spacing="1">AVAILABLE POINTS</text>
+          <text x="100" y="50" font-size="8" fill="#64748b" text-anchor="middle" letter-spacing="1">AVAILABLE POINTS</text>
           <text id="wallet-pts" x="100" y="76" font-size="26" fill="#ffd700" text-anchor="middle" font-weight="800">0</text>
-          <text x="100" y="88" font-size="7" fill="#6b5a8a" text-anchor="middle">reward_points · APEX GOLD</text>
+          <text x="100" y="88" font-size="7" fill="#64748b" text-anchor="middle">reward_points · APEX GOLD</text>
           <rect x="10" y="96" width="180" height="1" fill="#1e3050"/>
           <!-- Value line -->
-          <text x="20" y="112" font-size="7.5" fill="#6b5a8a">Cash Value</text>
+          <text x="20" y="112" font-size="7.5" fill="#64748b">Cash Value</text>
           <text id="wallet-val" x="180" y="112" font-size="9" fill="#10b981" text-anchor="end" font-weight="600">$0.00</text>
           <!-- Tier line -->
-          <text x="20" y="124" font-size="7.5" fill="#6b5a8a">Member Tier</text>
+          <text x="20" y="124" font-size="7.5" fill="#64748b">Member Tier</text>
           <text id="wallet-tier" x="180" y="124" font-size="9" fill="#a855f7" text-anchor="end" font-weight="600">STANDARD</text>
           <!-- Pulse ring on earn -->
           <circle id="wallet-ring" cx="100" cy="70" r="40" fill="none" stroke="#ffd700" stroke-width="1.5" opacity="0"/>
@@ -436,25 +520,25 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
             <stop offset="0%" stop-color="#10b98120"/><stop offset="100%" stop-color="#10b98108"/>
           </linearGradient>
         </defs>
-        <path id="path-0" d="M 148 36 Q 197 20 242 36" fill="none" stroke="#2a1a4a" stroke-width="1.5"/>
-        <path id="path-1" d="M 348 36 Q 397 20 442 36" fill="none" stroke="#2a1a4a" stroke-width="1.5"/>
-        <path id="path-2" d="M 548 36 Q 580 20 610 36" fill="none" stroke="#2a1a4a" stroke-width="1.5"/>
-        <rect x="4"   y="14" width="144" height="44" rx="8" fill="url(#ng-gold)"   stroke="#2a1a4a" stroke-width="1"/>
+        <path id="path-0" d="M 148 36 Q 197 20 242 36" fill="none" stroke="#2c2c2c" stroke-width="1.5"/>
+        <path id="path-1" d="M 348 36 Q 397 20 442 36" fill="none" stroke="#2c2c2c" stroke-width="1.5"/>
+        <path id="path-2" d="M 548 36 Q 580 20 610 36" fill="none" stroke="#2c2c2c" stroke-width="1.5"/>
+        <rect x="4"   y="14" width="144" height="44" rx="8" fill="url(#ng-gold)"   stroke="#2c2c2c" stroke-width="1"/>
         <text x="76"  y="32" font-size="14" text-anchor="middle">💳</text>
-        <text x="76"  y="45" font-size="9" fill="#f0e6ff" text-anchor="middle" letter-spacing=".5">Card Transaction</text>
-        <text id="node-val-1" x="76" y="56" font-size="8" fill="#6b5a8a" text-anchor="middle">IDLE</text>
-        <rect x="244" y="14" width="104" height="44" rx="8" fill="#0e0920" stroke="#ffd70040" stroke-width="1"/>
+        <text x="76"  y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Card Transaction</text>
+        <text id="node-val-1" x="76" y="56" font-size="8" fill="#64748b" text-anchor="middle">IDLE</text>
+        <rect x="244" y="14" width="104" height="44" rx="8" fill="#0a0a0a" stroke="#ffd70040" stroke-width="1"/>
         <text x="296" y="32" font-size="14" text-anchor="middle">⚡</text>
-        <text x="296" y="45" font-size="9" fill="#f0e6ff" text-anchor="middle" letter-spacing=".5">Points Engine</text>
-        <text id="node-val-2" x="296" y="56" font-size="8" fill="#6b5a8a" text-anchor="middle">READY</text>
+        <text x="296" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Points Engine</text>
+        <text id="node-val-2" x="296" y="56" font-size="8" fill="#64748b" text-anchor="middle">READY</text>
         <rect x="444" y="14" width="104" height="44" rx="8" fill="url(#ng-purple)" stroke="#a855f740" stroke-width="1"/>
         <text x="496" y="32" font-size="14" text-anchor="middle">🏦</text>
-        <text x="496" y="45" font-size="9" fill="#f0e6ff" text-anchor="middle" letter-spacing=".5">Units360 Ledger</text>
-        <text id="node-val-3" x="496" y="56" font-size="8" fill="#6b5a8a" text-anchor="middle">ACTIVE</text>
+        <text x="496" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Units360 Ledger</text>
+        <text id="node-val-3" x="496" y="56" font-size="8" fill="#64748b" text-anchor="middle">ACTIVE</text>
         <rect x="590" y="14" width="46" height="44" rx="8" fill="url(#ng-green)"   stroke="#10b98140" stroke-width="1"/>
         <text x="613" y="32" font-size="14" text-anchor="middle">🎁</text>
-        <text x="613" y="45" font-size="7" fill="#f0e6ff" text-anchor="middle" letter-spacing=".2">Wallet</text>
-        <text id="node-val-4" x="613" y="56" font-size="7" fill="#6b5a8a" text-anchor="middle">0 pts</text>
+        <text x="613" y="45" font-size="7" fill="#e0f2fe" text-anchor="middle" letter-spacing=".2">Wallet</text>
+        <text id="node-val-4" x="613" y="56" font-size="7" fill="#64748b" text-anchor="middle">0 pts</text>
         <g id="flow-particles"></g>
       </svg>
     </div>
@@ -474,6 +558,27 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <div id="pts-today">Rate Plan: Apex-Gold-1x</div>
       </div>
     </div>
+
+  <!-- Invoice summary card (Act 5) -->
+  <div id="left-inv">
+    <div class="li-hdr">
+      <div class="li-title">⭐ Statement · STMT-2024-06-APEX4291</div>
+      <span class="li-badge">✓ SETTLED</span>
+    </div>
+    <div class="li-rows">
+      <div class="li-row"><span class="li-row-k">Member</span><span class="li-row-v">Cardholder APEX-4291</span></div>
+      <div class="li-row"><span class="li-row-k">Period</span><span class="li-row-v">June 2024</span></div>
+      <div class="li-row"><span class="li-row-k">Tier</span><span class="li-row-v" style="color:var(--gold)">GOLD</span></div>
+      <div class="li-divider"></div>
+      <div class="li-row"><span class="li-row-k">Total Earned</span><span class="li-row-v" style="color:var(--gold)">+9,820 pts</span></div>
+      <div class="li-row"><span class="li-row-k">Redeemed</span><span class="li-row-v" style="color:var(--purple)">−5,000 pts</span></div>
+    </div>
+    <div class="li-totals">
+      <div class="li-tot"><div class="li-tot-lbl">Earned</div><div class="li-tot-val gold">9,820</div></div>
+      <div class="li-tot"><div class="li-tot-lbl">Redeemed</div><div class="li-tot-val purple">5,000</div></div>
+      <div class="li-tot gold-card"><div class="li-tot-lbl">Balance</div><div class="li-tot-val green">4,820</div></div>
+    </div>
+  </div>
 
     <!-- Progress -->
     <div id="prog-wrap">
@@ -503,90 +608,187 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     </div>
     <div id="term-body">
 
-      <!-- FMT View (Act 1) -->
-      <div id="fmt-view">
-        <div class="fmt-section">
-          <div class="fmt-section-hdr">Unit Definition</div>
-          <div class="fmt-fields">
-            <div class="fmt-field"><span class="fmt-field-label">Unit ID</span><span class="fmt-field-value" id="ff-unit-id"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Display Name</span><span class="fmt-field-value" id="ff-display"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Direction</span><span class="fmt-field-value" id="ff-direction"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Reset Period</span><span class="fmt-field-value" id="ff-reset"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Precision</span><span class="fmt-field-value" id="ff-precision"></span></div>
+      <!-- ── ALWAYS-VISIBLE FMT UNIT ── -->
+      <div id="mdt-always">
+
+        <!-- Full typewriter form (Act 1 only) -->
+        <div id="mdt-full">
+          <div class="fmt-section">
+            <div class="fmt-section-hdr">Unit Definition</div>
+            <div class="fmt-fields">
+              <div class="fmt-field"><span class="fmt-field-label">Unit ID</span><span class="fmt-field-value" id="ff-unit-id"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Display Name</span><span class="fmt-field-value" id="ff-display"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Direction</span><span class="fmt-field-value" id="ff-direction"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Reset Period</span><span class="fmt-field-value" id="ff-reset"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Precision</span><span class="fmt-field-value" id="ff-precision"></span></div>
+            </div>
+          </div>
+          <div class="fmt-section">
+            <div class="fmt-section-hdr">Member Account</div>
+            <div class="fmt-fields">
+              <div class="fmt-field"><span class="fmt-field-label">Account ID</span><span class="fmt-field-value" id="ff-acct-id"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Card Type</span><span class="fmt-field-value" id="ff-card"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Rate Plan</span><span class="fmt-field-value" id="ff-rate"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Tier</span><span class="fmt-field-value" id="ff-tier"></span></div>
+            </div>
+          </div>
+          <div class="fmt-section">
+            <div class="fmt-section-hdr">Earn &amp; Redeem Rules</div>
+            <div class="fmt-fields">
+              <div class="fmt-field"><span class="fmt-field-label">Base Earn</span><span class="fmt-field-value" id="ff-base"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Dining Bonus</span><span class="fmt-field-value" id="ff-dining"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Redeem Rate</span><span class="fmt-field-value" id="ff-redeem"></span></div>
+            </div>
           </div>
         </div>
-        <div class="fmt-section">
-          <div class="fmt-section-hdr">Member Account</div>
-          <div class="fmt-fields">
-            <div class="fmt-field"><span class="fmt-field-label">Account ID</span><span class="fmt-field-value" id="ff-acct-id"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Card Type</span><span class="fmt-field-value" id="ff-card"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Rate Plan</span><span class="fmt-field-value" id="ff-rate"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Tier</span><span class="fmt-field-value" id="ff-tier"></span></div>
-          </div>
+
+        <!-- Compact chips (Acts 2–5) -->
+        <div id="mdt-compact">
+          <div class="mc-chip gold"><span>⭐</span><span>reward_points</span><span class="mc-chip-key">BIDIRECTIONAL</span><span>·</span><span>1 pt / $1</span><span class="mc-chip-key">APEX-4291</span></div>
+          <div class="mc-chip purple"><span>🏷️</span><span>Apex-Gold-1x</span><span class="mc-chip-key">RATE PLAN</span><span>·</span><span>3× dining</span><span class="mc-chip-key">2× travel</span></div>
         </div>
-        <div class="fmt-section">
-          <div class="fmt-section-hdr">Earn &amp; Redeem Rules</div>
-          <div class="fmt-fields">
-            <div class="fmt-field"><span class="fmt-field-label">Base Earn</span><span class="fmt-field-value" id="ff-base"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Dining Bonus</span><span class="fmt-field-value" id="ff-dining"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Redeem Rate</span><span class="fmt-field-value" id="ff-redeem"></span></div>
-          </div>
-        </div>
+
       </div>
 
-      <!-- Event View (Acts 2–4) -->
-      <div id="event-view" style="display:none;position:absolute;inset:0;overflow:hidden;flex-direction:column;">
-        <div id="ev-dashboard">
-          <div class="ev-dash-grid">
-            <div class="ev-metric pts">
-              <div class="ev-metric-top"><span class="ev-metric-icon">⭐</span><span class="ev-metric-label">Points Balance</span></div>
-              <div class="ev-metric-val" id="ev-pts-val">0</div>
-              <div class="ev-metric-unit">reward_points earned</div>
-            </div>
-            <div class="ev-metric mult" id="ev-mult-card">
-              <div class="ev-metric-top"><span class="ev-metric-icon">✨</span><span class="ev-metric-label">Multiplier</span></div>
-              <div class="ev-metric-val" id="ev-mult-val">1×</div>
-              <div class="ev-metric-unit">current earn rate</div>
-            </div>
-            <div class="ev-metric tier">
-              <div class="ev-metric-top"><span class="ev-metric-icon">👑</span><span class="ev-metric-label">Member Tier</span></div>
-              <div class="ev-metric-val" id="ev-tier-val">STANDARD</div>
-              <div class="ev-metric-unit" id="ev-tier-unit">pts to next tier</div>
-            </div>
-            <div class="ev-metric val">
-              <div class="ev-metric-top"><span class="ev-metric-icon">💵</span><span class="ev-metric-label">Cash Value</span></div>
-              <div class="ev-metric-val" id="ev-val-val">$0.00</div>
-              <div class="ev-metric-unit">@ $0.01 per point</div>
-            </div>
-          </div>
-          <div id="ev-tier-bar-wrap">
-            <div id="ev-tier-title">
-              <span>Progress to GOLD Elite</span>
-              <span id="event-segment" style="color:var(--gold)">EARN ↑</span>
-            </div>
-            <div id="ev-tier-track">
-              <div id="ev-tier-fill" style="width:0%;background:linear-gradient(90deg,#ffd700,#a855f7)"></div>
-            </div>
-            <div id="ev-tier-labels"><span>0</span><span>2,500</span><span>5,000</span><span>7,500</span><span>10K Elite</span></div>
-            <div id="ev-tier-rate-label" style="color:var(--gold)">⭐ Earning · Standard-1× · 1 pt per $1 spent</div>
-          </div>
-        </div>
-        <div id="ev-json-hdr">
-          <div class="pulse-dot" id="event-pulse"></div>
-          <span>Live Transaction CloudEvent</span>
-          <span id="event-count" style="color:var(--gold);font-weight:700">0</span>
-          <span style="font-size:8px;margin-left:auto;opacity:.6">→ Units360 RTE</span>
-        </div>
-        <div id="event-stream"></div>
-        <div id="ev-footer">
-          <span class="ev-legend"><span class="ev-leg-box" style="background:#ffd70012;outline:1px solid #ffd70080"></span> pts Δ</span>
-          <span class="ev-legend"><span class="ev-leg-box" style="background:#f472b612;outline:1px solid #f472b680"></span> mult Δ</span>
-          <span class="ev-legend"><span class="ev-leg-box" style="background:#10b98112;outline:1px solid #10b98180"></span> val Δ</span>
-        </div>
-      </div>
+      <!-- ── DYNAMIC AREA: events / invoice ── -->
+      <div id="dyn-area">
 
-      <!-- Invoice / Statement View (Act 5) -->
-      <div id="invoice-view" style="display:none;position:absolute;inset:0;overflow:hidden;padding:10px 14px;flex-direction:column;"></div>
+        <!-- Event View (Acts 2–4) -->
+        <div id="event-view" style="display:none;flex-direction:column">
+          <div id="ev-dashboard">
+            <div class="ev-dash-grid">
+              <div class="ev-metric pts">
+                <div class="ev-metric-top"><span class="ev-metric-icon">⭐</span><span class="ev-metric-label">Points Balance</span></div>
+                <div class="ev-metric-val" id="ev-pts-val">0</div>
+                <div class="ev-metric-unit">reward_points earned</div>
+              </div>
+              <div class="ev-metric mult" id="ev-mult-card">
+                <div class="ev-metric-top"><span class="ev-metric-icon">✨</span><span class="ev-metric-label">Multiplier</span></div>
+                <div class="ev-metric-val" id="ev-mult-val">1×</div>
+                <div class="ev-metric-unit">current earn rate</div>
+              </div>
+              <div class="ev-metric tier">
+                <div class="ev-metric-top"><span class="ev-metric-icon">👑</span><span class="ev-metric-label">Member Tier</span></div>
+                <div class="ev-metric-val" id="ev-tier-val">STANDARD</div>
+                <div class="ev-metric-unit" id="ev-tier-unit">pts to next tier</div>
+              </div>
+              <div class="ev-metric val">
+                <div class="ev-metric-top"><span class="ev-metric-icon">💵</span><span class="ev-metric-label">Cash Value</span></div>
+                <div class="ev-metric-val" id="ev-val-val">$0.00</div>
+                <div class="ev-metric-unit">@ $0.01 per point</div>
+              </div>
+            </div>
+            <div id="ev-tier-bar-wrap">
+              <div id="ev-tier-title">
+                <span>Progress to GOLD Elite</span>
+                <span id="event-segment" style="color:var(--gold)">EARN ↑</span>
+              </div>
+              <div id="ev-tier-track">
+                <div id="ev-tier-fill" style="width:0%;background:linear-gradient(90deg,#ffd700,#a855f7)"></div>
+              </div>
+              <div id="ev-tier-labels"><span>0</span><span>2,500</span><span>5,000</span><span>7,500</span><span>10K Elite</span></div>
+              <div id="ev-tier-rate-label" style="color:var(--gold)">⭐ Earning · Standard-1× · 1 pt per $1 spent</div>
+            </div>
+          </div>
+          <div id="ev-json-hdr">
+            <div class="pulse-dot" id="event-pulse"></div>
+            <span>Live Transaction CloudEvent</span>
+            <span id="event-count" style="color:var(--gold);font-weight:700">0</span>
+            <span style="font-size:8px;margin-left:auto;opacity:.6">→ Units360 Live</span>
+          </div>
+          <div id="event-stream"></div>
+          <div id="ev-footer">
+            <span class="ev-legend"><span class="ev-leg-box" style="background:#ffd70012;outline:1px solid #ffd70080"></span> pts Δ</span>
+            <span class="ev-legend"><span class="ev-leg-box" style="background:#f472b612;outline:1px solid #f472b680"></span> mult Δ</span>
+            <span class="ev-legend"><span class="ev-leg-box" style="background:#10b98112;outline:1px solid #10b98180"></span> val Δ</span>
+          </div>
+        </div>
+
+        <!-- Invoice / Statement View (Act 5) -->
+        <div id="invoice-view" style="display:none;padding:14px 18px;overflow-y:auto">
+          <div class="inv-doc" id="inv-doc">
+            <!-- Letterhead -->
+            <div class="inv-lh inv-reveal" style="opacity:0">
+              <div>
+                <div class="inv-logo-txt">Apex<span>Rewards</span></div>
+                <div class="inv-tagline">Loyalty Points Program · Monthly Statement</div>
+              </div>
+              <div class="inv-lh-right">
+                <div class="inv-doc-label">Statement</div>
+                <div class="inv-doc-num">#STMT-2024-06-APEX4291</div>
+              </div>
+            </div>
+            <!-- Meta -->
+            <div class="inv-meta inv-reveal" style="opacity:0">
+              <div class="inv-meta-cell">
+                <div class="inv-meta-lbl">Period</div>
+                <div class="inv-meta-val">June 2024</div>
+              </div>
+              <div class="inv-meta-cell">
+                <div class="inv-meta-lbl">Member ID</div>
+                <div class="inv-meta-val mono">APEX-4291</div>
+              </div>
+              <div class="inv-meta-cell">
+                <div class="inv-meta-lbl">Status</div>
+                <div class="inv-meta-val sent">✓ SETTLED</div>
+              </div>
+            </div>
+            <!-- Parties -->
+            <div class="inv-parties inv-reveal" style="opacity:0">
+              <div class="inv-party">
+                <div class="inv-party-lbl">Issuer</div>
+                <div class="inv-party-name">Apex Financial</div>
+                <div class="inv-party-sub">Loyalty Rewards Program</div>
+              </div>
+              <div class="inv-party">
+                <div class="inv-party-lbl">Member</div>
+                <div class="inv-party-name">Cardholder APEX-4291</div>
+                <div class="inv-party-sub">Apex Rewards Gold · GOLD tier</div>
+              </div>
+            </div>
+            <!-- Line items -->
+            <table class="inv-table">
+              <thead class="inv-reveal" style="opacity:0">
+                <tr><th>Description</th><th>Qty</th><th>Rate</th><th>Points</th></tr>
+              </thead>
+              <tbody>
+                <tr class="inv-earn-row inv-reveal" style="opacity:0">
+                  <td>Base Spending (1× earn)<br><small>Grocery, Retail, Fuel · June 2024</small></td>
+                  <td>$4,250</td><td>1 pt/$1</td><td>+4,250</td>
+                </tr>
+                <tr class="inv-earn-row inv-reveal" style="opacity:0">
+                  <td>Travel Purchases (2× earn)<br><small>Delta Air, Marriott · June 2024</small></td>
+                  <td>$975</td><td>2 pts/$1</td><td>+1,950</td>
+                </tr>
+                <tr class="inv-bonus-row inv-reveal" style="opacity:0">
+                  <td>Dining Bonus Promo (3× earn)<br><small>Nobu NYC, Chipotle · June 2024</small></td>
+                  <td>$520</td><td>3 pts/$1</td><td>+3,120</td>
+                </tr>
+                <tr class="inv-bonus-row inv-reveal" style="opacity:0">
+                  <td colspan="3">✨ Promotional Bonus — June Dining Campaign</td>
+                  <td>+500</td>
+                </tr>
+                <tr class="inv-redeem-row inv-reveal" style="opacity:0">
+                  <td colspan="3">✈ Redemption — Flight Credit (Jun 15)</td>
+                  <td>−5,000</td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- Totals -->
+            <div class="inv-totals inv-reveal" style="opacity:0">
+              <div class="inv-t-row"><span>Total Earned</span><span class="inv-t-gold">+9,820 pts</span></div>
+              <div class="inv-t-row"><span>Promo Bonus</span><span class="inv-t-pink">+500 pts</span></div>
+              <div class="inv-t-row"><span>Redeemed</span><span class="inv-t-purple">−5,000 pts</span></div>
+              <div class="inv-t-final"><span>Closing Balance</span><div><span class="inv-t-green">4,820 pts</span><span class="inv-t-pct">= $48.20 value</span></div></div>
+            </div>
+            <!-- Footer -->
+            <div class="inv-footer inv-reveal" style="opacity:0">
+              Powered by <span>Units360.ai</span> · Loyalty Metering Engine · member: APEX-4291
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dyn-area -->
 
     </div>
   </div>
@@ -630,7 +832,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     <span class="dnav-pill" data-target="sec-account">Account</span>
     <span class="dnav-pill" data-target="sec-txn">Transaction</span>
     <span class="dnav-pill" data-target="sec-fmt">FMT</span>
-    <span class="dnav-pill" data-target="sec-rte">RTE</span>
+    <span class="dnav-pill" data-target="sec-rte">Live Processing</span>
     <span class="dnav-pill" data-target="sec-cloud">CloudEvents</span>
   </div>
   <div id="drawer-body">
@@ -644,7 +846,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <div class="dflow">
           <div class="dflow-node highlight">1. Define<br><small>FMT</small></div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node">2. Deploy<br><small>RTE</small></div>
+          <div class="dflow-node">2. Deploy<br><small>Live</small></div>
           <span class="dflow-arrow">→</span>
           <div class="dflow-node">3. Stream<br><small>Txn Events</small></div>
           <span class="dflow-arrow">→</span>
@@ -743,9 +945,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
     <div class="dsec" id="sec-rte">
       <div class="dsec-eyebrow">Runtime Engine</div>
-      <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
+      <div class="dsec-title"><span class="dsec-icon">⚙️</span> Live Processing Engine</div>
       <div class="dsec-body">
-        <p>The <strong>RTE</strong> is the live processing layer. It ingests transaction events, resolves multipliers, updates the points ledger atomically, and triggers tier-change notifications in real time.</p>
+        <p>The <strong>Live Processing</strong> layer It ingests transaction events, resolves multipliers, updates the points ledger atomically, and triggers tier-change notifications in real time.</p>
         <div class="dfield-table">
           <div class="dfield-row"><span class="dfield-key">Txn ingestion</span><span class="dfield-val">Accepts CloudEvents from card network via REST POST</span></div>
           <div class="dfield-row"><span class="dfield-key">Multiplier resolver</span><span class="dfield-val">Reads MCC code → applies matching rate rule from FMT</span></div>
@@ -756,7 +958,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <div class="dflow">
           <div class="dflow-node">Card Network</div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node highlight">RTE</div>
+          <div class="dflow-node highlight">Live Processing</div>
           <span class="dflow-arrow">→</span>
           <div class="dflow-node">Ledger</div>
           <span class="dflow-arrow">→</span>
@@ -769,8 +971,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-eyebrow">Event Protocol</div>
       <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The Transaction Payload</div>
       <div class="dsec-body">
-        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong>. Every card transaction is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
-        <div class="dcode"><span class="cc">// Card Network → Units360 RTE (one transaction)</span>
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong>. Every card transaction is formatted as a CloudEvent JSON payload and POSTed to the Units360 Live Processing endpoint.</p>
+        <div class="dcode"><span class="cc">// Card Network → Units360 Live Processing (one transaction)</span>
 POST /api/v1/events/APEX-4291
 Content-Type: application/cloudevents+json
 
@@ -792,8 +994,8 @@ Content-Type: application/cloudevents+json
         <div class="dfield-table" style="margin-top:10px">
           <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match FMT unit_id — "reward_points" here</span></div>
           <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">Points earned or redeemed this transaction</span></div>
-          <div class="dfield-row"><span class="dfield-key">data.direction</span><span class="dfield-val">EARN or REDEEM — RTE applies balance guard on REDEEM</span></div>
-          <div class="dfield-row"><span class="dfield-key">data.multiplier</span><span class="dfield-val">Applied by RTE from FMT rules — 1×, 2×, or 3× here</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.direction</span><span class="dfield-val">EARN or REDEEM — Live Processing applies balance guard on REDEEM</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.multiplier</span><span class="dfield-val">Applied by Live Processing from FMT rules — 1×, 2×, or 3× here</span></div>
         </div>
       </div>
     </div>
@@ -864,7 +1066,7 @@ const ACTS = [
     desc:'Cardholder redeems 6,500 pts for a $65 flight credit',
     ptsRate:-55, duration:9000, color:'purple',
     commentaryIcon:'✈️',
-    commentary:'<strong>Redemption in progress</strong>. Units360 posts a negative-quantity transaction — points are debited from the ledger. The RTE enforces the balance guard, preventing over-redemption.',
+    commentary:'<strong>Redemption in progress</strong>. Units360 posts a negative-quantity transaction — points are debited from the ledger. Live Processing enforces the balance guard, preventing over-redemption.',
     overlayTitle:'REDEEM · FLIGHT CREDIT',
     overlayTime:'11:00 AM',
     overlaySub:'Redeeming 6,500 pts → $65 flight credit',
@@ -935,25 +1137,6 @@ const MERCHANTS = [
   {name:'United Air',  mcc:'4511', cat:'TRAVEL',   amt:'198.00', mult:2},
 ];
 
-const INVOICE_LINES = [
-  {txt:'{',                                                    color:'ev-brace'},
-  {txt:'  "statement_id": "STMT-2024-06-APEX4291",',          color:'ev-str'},
-  {txt:'  "member":       "APEX-4291",',                      color:'ev-str'},
-  {txt:'  "period":       "2024-06-01 → 2024-06-30",',        color:'ev-str'},
-  {txt:'  "earn_summary": {',                                  color:'ev-brace'},
-  {txt:'    "base_earn":    4250,',                            color:'ev-num'},
-  {txt:'    "dining_3x":   3120,',                             color:'ev-num'},
-  {txt:'    "travel_2x":   1950,',                             color:'ev-num'},
-  {txt:'    "promo_bonus":  500',                              color:'ev-num'},
-  {txt:'  },',                                                 color:'ev-brace'},
-  {txt:'  "total_earned":  9820,',                             color:'ev-num'},
-  {txt:'  "total_redeemed": 5000,',                            color:'ev-num'},
-  {txt:'  "closing_balance": 4820,',                           color:'ev-num'},
-  {txt:'  "cash_value":   "$48.20",',                         color:'ev-str'},
-  {txt:'  "tier":         "GOLD",',                           color:'ev-str'},
-  {txt:'  "status":       "SETTLED"',                         color:'ev-bool'},
-  {txt:'}',                                                    color:'ev-brace'},
-];
 
 const state = {
   actIndex:0, actElapsed:0, playing:false, speed:1,
@@ -961,7 +1144,7 @@ const state = {
 };
 
 let flowParticles=[], fmtTimers=[], fmtDone=new Set();
-let invoiceLineIdx=0, overlayTimer=0, secondHand=0, _secPrev=null;
+let secondHand=0, _secPrev=null;
 let flowSpawnTimer=0;
 let txnParticles=[], txnSpawnTimer=0;
 let walletRingAnim=null;
@@ -1300,16 +1483,15 @@ function updateEventDashboard() {
   $('node-val-4').textContent=Math.round(bal).toLocaleString()+' pts';
 }
 
-// Invoice / Statement
-function renderInvoice() {
-  const container=$('invoice-view');
-  if(invoiceLineIdx>=INVOICE_LINES.length)return;
-  const line=INVOICE_LINES[invoiceLineIdx++];
-  const el=document.createElement('div');
-  el.className=`inv-json-line ${line.color} reveal`;
-  el.textContent=line.txt;
-  container.appendChild(el);
-  if(invoiceLineIdx<INVOICE_LINES.length) setTimeout(renderInvoice,280/state.speed);
+// Invoice reveal (staggered row fade-in)
+function revealInvoice() {
+  const rows = document.querySelectorAll('.inv-reveal');
+  rows.forEach((el, i) => {
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transition = 'opacity 0.3s ease';
+    }, i * 180 / state.speed);
+  });
 }
 
 // Overlay
@@ -1357,16 +1539,32 @@ function setupAct(idx, fromOverlay=true) {
   $('term-mode-badge').className=idx===0?'fmt':idx===4?'invoice':'event';
   $('term-mode-badge').textContent=idx===0?'FMT':idx===4?'STMT':'TXN';
 
-  $('fmt-view').style.display=idx===0?'flex':'none';
+  // MDT: full form in act 0, compact chips after
+  const isAct0 = idx === 0;
+  $('mdt-full').style.display = isAct0 ? 'flex' : 'none';
+  $('mdt-compact').style.display = isAct0 ? 'none' : 'flex';
+
+  // Dynamic area views
   $('event-view').style.display=(idx>=1&&idx<=3)?'flex':'none';
-  $('invoice-view').style.display=idx===4?'flex':'none';
+  $('invoice-view').style.display=idx===4?'block':'none';
+
+  // Widen right panel for invoice
+  if(idx===4) $('right-panel').classList.add('inv-wide');
+  else $('right-panel').classList.remove('inv-wide');
+
+  // Left panel invoice card
+  const li=$('left-inv');
+  if(idx>=4){li.classList.add('show');li.style.display='block';}
+  else{li.classList.remove('show');li.style.display='none';}
 
   if(idx===0) startFMTTyping();
-  if(idx===4){invoiceLineIdx=0;$('invoice-view').innerHTML='';setTimeout(renderInvoice,400);}
   if(idx===4){
     state.ptsBalance=4820;
     $('pts-balance').textContent='4,820';
     $('pts-balance').className='done';
+    // Reset and reveal invoice
+    document.querySelectorAll('.inv-reveal').forEach(el=>{el.style.opacity='0';});
+    setTimeout(revealInvoice, 400);
   }
   if(idx>=1&&idx<=3){updateEventDashboard();$('event-count').textContent=state.eventCount;}
 
@@ -1406,11 +1604,10 @@ function loop(ts) {
         const nextIdx=state.actIndex+1;
         state.playing=false;
         $('btn-play').textContent='▶ Play';
-        showOverlay(ACTS[nextIdx],()=>{
-          setupAct(nextIdx,false);
-          state.playing=true;
-          $('btn-play').textContent='⏸ Pause';
-        });
+        setupAct(nextIdx,false);
+        const ah=$('act-header');
+        ah.classList.remove('flash');void ah.offsetWidth;ah.classList.add('flash');
+        setTimeout(()=>{state.playing=true;$('btn-play').textContent='⏸ Pause';},1000);
       } else {
         state.playing=false;
         $('btn-play').textContent='▶ Play';
@@ -1435,26 +1632,25 @@ $('btn-play').addEventListener('click',()=>{
 
 $('btn-next').addEventListener('click',()=>{
   if(state.actIndex<ACTS.length-1){
-    clearTimeout(overlayTimer);$('overlay').classList.remove('show');
     state.playing=false;$('btn-play').textContent='▶ Play';
     const next=state.actIndex+1;
-    showOverlay(ACTS[next],()=>setupAct(next,false));
+    setupAct(next,false);
+    const ah=$('act-header');ah.classList.remove('flash');void ah.offsetWidth;ah.classList.add('flash');
   }
 });
 
 $('btn-prev').addEventListener('click',()=>{
   if(state.actIndex>0){
-    clearTimeout(overlayTimer);$('overlay').classList.remove('show');
     state.playing=false;$('btn-play').textContent='▶ Play';
     const prev=state.actIndex-1;
     const ptsAtAct=[0,0,1800,5200,4820];
     state.ptsBalance=ptsAtAct[prev];
     setupAct(prev,false);
+    const ah=$('act-header');ah.classList.remove('flash');void ah.offsetWidth;ah.classList.add('flash');
   }
 });
 
 $('btn-reset').addEventListener('click',()=>{
-  clearTimeout(overlayTimer);$('overlay').classList.remove('show');
   state.playing=false;state.ptsBalance=0;state.eventCount=0;
   $('btn-play').textContent='▶ Play';
   flowParticles.forEach(p=>p.el.remove());flowParticles=[];
