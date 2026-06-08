@@ -861,9 +861,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
     <div class="dsec" id="sec-mdt">
       <div class="dsec-ey">Platform Component</div>
-      <div class="dsec-ttl"><span class="dsec-ico">📋</span>MDT — Metering Definition Template</div>
+      <div class="dsec-ttl"><span class="dsec-ico">📋</span>Usage Configuration</div>
       <div class="dsec-body">
-        <p>The <strong>MDT</strong> is a declarative YAML/JSON template that describes your entire metering model. You define it once; Units360 auto-provisions the API endpoints, ledger tables, alert rules, and billing logic.</p>
+        <p>The <strong>Usage Configuration</strong> is a declarative template that describes your entire metering model. You define it once; Units360 auto-provisions the API endpoints, ledger tables, alert rules, and billing logic.</p>
         <div class="dcode"><span class="ck">"units"</span>: [<br>  { <span class="ck">"id"</span>: <span class="cv">"audio_minute"</span>, <span class="ck">"type"</span>: <span class="cv">"REVENUE"</span>,<br>    <span class="ck">"rate"</span>: <span class="cn">0.50</span>, <span class="ck">"account"</span>: <span class="cv">"hospital-001"</span> },<br>  { <span class="ck">"id"</span>: <span class="cv">"llm_token"</span>, <span class="ck">"type"</span>: <span class="cv">"COST"</span>,<br>    <span class="ck">"rate"</span>: <span class="cn">0.0005</span>, <span class="ck">"account"</span>: <span class="cv">"llm-openai"</span> }<br>]</div>
         <div class="dtags"><span class="dtag teal">Declarative</span><span class="dtag blue">Version-controlled</span><span class="dtag green">Auto-provisions API</span></div>
       </div>
@@ -871,10 +871,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
     <div class="dsec" id="sec-rte">
       <div class="dsec-ey">Platform Component</div>
-      <div class="dsec-ttl"><span class="dsec-ico">⚙️</span>RTE — Real-Time Engine</div>
+      <div class="dsec-ttl"><span class="dsec-ico">⚙️</span>Live Processing Engine</div>
       <div class="dsec-body">
-        <p>The <strong>RTE</strong> is the serverless runtime that processes incoming CloudEvents. It validates events against the MDT schema, writes transactions to the ledger, evaluates alert rules, and triggers webhooks — all in under 50ms.</p>
-        <div class="dcallout"><strong>No infrastructure to manage.</strong> The RTE scales automatically with your event volume. A startup doing 100 sessions/day and an enterprise doing 100,000 use the same deployment model.</div>
+        <p>The <strong>Live Processing Engine</strong> is the serverless runtime that processes incoming CloudEvents. It validates events against the configured schema, writes transactions to the ledger, evaluates alert rules, and triggers webhooks — all in under 50ms.</p>
+        <div class="dcallout"><strong>No infrastructure to manage.</strong> It scales automatically with your event volume. A startup doing 100 sessions/day and an enterprise doing 100,000 use the same deployment model.</div>
         <div class="dtags"><span class="dtag teal">&lt;50ms p99</span><span class="dtag blue">Auto-scale</span><span class="dtag amber">Alert evaluation</span></div>
       </div>
     </div>

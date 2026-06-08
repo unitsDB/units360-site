@@ -4,30 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Units360.ai — Live AI Token Metering Demo</title>
+<link rel="stylesheet" href="demo-shared.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
   :root {
-    --bg:       #070c18;
-    --surface:  #0d1526;
-    --surface2: #131e35;
-    --surface3: #1a2844;
-    --border:   #1e3058;
-    --border2:  #243660;
-    --teal:     #00d4ff;
-    --teal-dim: #0098bb;
-    --teal-glow:#00d4ff33;
-    --blue:     #3b82f6;
+    --surface3: #edf2f7;
+    --border2:  #cbd5e1;
+    --teal-dim: #0e7490;
     --purple:   #8b5cf6;
-    --amber:    #f59e0b;
-    --amber-glow:#f59e0b33;
-    --red:      #ef4444;
-    --red-glow: #ef444433;
-    --green:    #10b981;
-    --green-glow:#10b98133;
-    --text:     #f0f6ff;
-    --text-dim: #4a6080;
-    --text-mid: #8099bb;
+    --amber-glow:#d9770633;
+    --red-glow: #dc262633;
+    --text-dim: #94a3b8;
+    --text-mid: #64748b;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -737,7 +726,7 @@
     border-radius:20px;color:var(--teal);font-size:11px;font-weight:700;padding:5px 14px;
     cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;font-family:'Inter',sans-serif;
     box-shadow:0 0 10px #00d4ff22}
-  #btn-guide:hover{background:var(--teal);color:#070c18;box-shadow:0 0 18px #00d4ff55}
+  #btn-guide:hover{background:var(--teal);color:var(--surface);box-shadow:0 0 18px var(--teal-glow)}
   #btn-guide:active{transform:scale(.97)}
 
   /* ── INFO DRAWER ── */
@@ -771,7 +760,7 @@
   .dnav-pill:hover{background:#2a3f5f;color:var(--text)}
   .dnav-pill.active{background:#00d4ff15;color:var(--teal);border-color:#00d4ff40}
 
-  .dsec{padding:18px 0;border-bottom:1px solid #0d1526}
+  .dsec{padding:18px 0;border-bottom:1px solid var(--border)}
   .dsec:last-child{border-bottom:none;padding-bottom:8px}
   .dsec-eyebrow{font-size:8px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:6px;opacity:.7}
   .dsec-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
@@ -781,16 +770,16 @@
   .dsec-body strong{color:var(--text);font-weight:600}
   .dsec-body em{color:var(--teal);font-style:normal}
 
-  .dfield-table{background:#0d1526;border:1px solid #1e2d4a;border-radius:6px;overflow:hidden;margin-top:4px}
-  .dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid #0d1526;align-items:flex-start;gap:10px;font-size:11px}
+  .dfield-table{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:4px}
+  .dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid var(--border);align-items:flex-start;gap:10px;font-size:11px}
   .dfield-row:last-child{border-bottom:none}
   .dfield-key{color:var(--teal);min-width:110px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
   .dfield-val{color:#94a3b8;line-height:1.5}
   .dfield-val strong{color:var(--text)}
 
   .dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;
-    background:#0d1526;border:1px solid #1e2d4a;border-radius:6px;font-size:11px}
-  .dflow-node{padding:4px 10px;border-radius:4px;background:#1e2d4a;color:var(--text);text-align:center;font-size:10px;line-height:1.4}
+    background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:11px}
+  .dflow-node{padding:4px 10px;border-radius:4px;background:var(--border);color:var(--text);text-align:center;font-size:10px;line-height:1.4}
   .dflow-node.highlight{background:#00d4ff15;border:1px solid #00d4ff40;color:var(--teal)}
   .dflow-arrow{color:#64748b;font-size:14px}
 
@@ -817,12 +806,12 @@
   position:fixed;top:14px;left:18px;z-index:9999;
   display:inline-flex;align-items:center;gap:6px;
   padding:7px 14px;border-radius:100px;
-  background:rgba(13,21,38,0.82);backdrop-filter:blur(16px);
-  border:1px solid rgba(30,48,88,0.9);
-  color:#8099bb;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
+  background:rgba(241,245,249,0.9);backdrop-filter:blur(16px);
+  border:1px solid rgba(226,232,240,0.9);
+  color:#64748b;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
   text-decoration:none;transition:color .2s,border-color .2s;
-" onmouseover="this.style.color='#f0f6ff';this.style.borderColor='#3b82f6'"
-   onmouseout="this.style.color='#8099bb';this.style.borderColor='rgba(30,48,88,0.9)'">
+" onmouseover="this.style.color='#0f172a';this.style.borderColor='#2563eb'"
+   onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(226,232,240,0.9)'">
   ← Units360.ai
 </a>
 
@@ -2121,7 +2110,7 @@ drawerBody.addEventListener('scroll', () => {
           <div class="dfield-row"><span class="dfield-key">Rate plan used</span><span class="dfield-val">Tiered — first 50K tokens/mo free, then $0.002 per 1K</span></div>
           <div class="dfield-row"><span class="dfield-key">Their customer</span><span class="dfield-val">Developer tenant <strong>dev-42</strong> on the Pro plan</span></div>
         </div>
-        <p>The AI company logs into Units360, creates a <em>Metadata Template (MDT)</em> for AI tokens, and configures their rate tiers. Units360 then handles all real-time metering, threshold alerts, and invoice generation automatically.</p>
+        <p>The AI company logs into Units360, defines their <em>usage configuration</em> for AI tokens, and sets up their rate tiers. Units360 then handles all real-time metering, threshold alerts, and invoice generation automatically.</p>
       </div>
     </div>
 
@@ -2177,7 +2166,7 @@ drawerBody.addEventListener('scroll', () => {
           <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Running total updated after each event</span></div>
           <div class="dfield-row"><span class="dfield-key">timestamp</span><span class="dfield-val">ISO 8601 UTC — every event is time-stamped precisely</span></div>
         </div>
-        <p>Transaction rules — set up in the MDT — define how to price each event based on model tier, feature type, and account plan. Units360 applies these rules automatically at ingestion time, with no custom code required.</p>
+        <p>Transaction rules — set up in your usage configuration — define how to price each event based on model tier, feature type, and account plan. Units360 applies these rules automatically at ingestion time, with no custom code required.</p>
         <div class="dcallout"><strong>At month end,</strong> all transactions are summed. If the tenant exceeded 100K tokens, the overage is calculated and the invoice is generated automatically.</div>
       </div>
     </div>
@@ -2185,29 +2174,29 @@ drawerBody.addEventListener('scroll', () => {
     <!-- SECTION 6 -->
     <div class="dsec" id="sec-mdt">
       <div class="dsec-eyebrow">Configuration Layer</div>
-      <div class="dsec-title"><span class="dsec-icon">📐</span> MDT — Metadata Template</div>
+      <div class="dsec-title"><span class="dsec-icon">📐</span> Usage Configuration</div>
       <div class="dsec-body">
-        <p>The <strong>MDT (Metadata Template)</strong> is Units360's low-code configuration builder. It's where the AI company defines everything about their metering model — with no code, no database schemas, no infrastructure setup.</p>
-        <p>Think of the MDT as a blueprint: define it once, and it governs every API call, every balance update, and every invoice for that unit type.</p>
+        <p>The <strong>Usage Configuration</strong> is Units360's low-code setup builder. It's where the AI company defines everything about their metering model — with no code, no database schemas, no infrastructure setup.</p>
+        <p>Define it once, and it governs every API call, every balance update, and every invoice for that unit type.</p>
         <div class="dfield-table">
           <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define the unit (ai-token), direction (inbound), reset period (monthly)</span></div>
           <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Set plan tiers, included quotas, hard limits, and overage rates</span></div>
           <div class="dfield-row"><span class="dfield-key">Transaction tab</span><span class="dfield-val">Configure feature tagging, model-tier pricing, threshold webhooks</span></div>
         </div>
-        <div class="dcallout"><strong>MDT outputs:</strong> Once saved, Units360 auto-generates a REST API endpoint, a CloudEvent schema for your AI gateway, and a live analytics dashboard. No DevOps team required.</div>
+        <div class="dcallout"><strong>Once saved,</strong> Units360 auto-generates a REST API endpoint, a CloudEvent schema for your AI gateway, and a live analytics dashboard. No DevOps team required.</div>
       </div>
     </div>
 
     <!-- SECTION 7 -->
     <div class="dsec" id="sec-rte">
-      <div class="dsec-eyebrow">Runtime Engine</div>
-      <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
+      <div class="dsec-eyebrow">Live Processing</div>
+      <div class="dsec-title"><span class="dsec-icon">⚙️</span> Live Processing Engine</div>
       <div class="dsec-body">
-        <p>The <strong>RTE (Run Time Engine)</strong> is the live processing layer that runs once an MDT is deployed. It continuously ingests API call events, applies rate rules, updates balances, and fires alerts — all in real time.</p>
+        <p>The <strong>Live Processing Engine</strong> is the layer that runs once your configuration is deployed. It continuously ingests API call events, applies rate rules, updates balances, and fires alerts — all in real time.</p>
         <div class="dfield-table">
           <div class="dfield-row"><span class="dfield-key">Event ingestion</span><span class="dfield-val">Accepts CloudEvents from your AI gateway via REST POST</span></div>
           <div class="dfield-row"><span class="dfield-key">Balance engine</span><span class="dfield-val">Atomic ledger update per event — millisecond-accurate</span></div>
-          <div class="dfield-row"><span class="dfield-key">Rate application</span><span class="dfield-val">Reads MDT rules; applies tier pricing and overage logic per event</span></div>
+          <div class="dfield-row"><span class="dfield-key">Rate application</span><span class="dfield-val">Applies tier pricing and overage logic per event</span></div>
           <div class="dfield-row"><span class="dfield-key">Threshold alerts</span><span class="dfield-val">Fires webhooks at 80% usage — notifies dev before hitting hard limit</span></div>
           <div class="dfield-row"><span class="dfield-key">Hard limit enforce</span><span class="dfield-val">Returns 429 to AI gateway when quota is exhausted</span></div>
           <div class="dfield-row"><span class="dfield-key">Invoice trigger</span><span class="dfield-val">At period end, aggregates all transactions → auto-generates invoice</span></div>
@@ -2215,7 +2204,7 @@ drawerBody.addEventListener('scroll', () => {
         <div class="dflow">
           <div class="dflow-node">AI Gateway</div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node highlight">RTE</div>
+          <div class="dflow-node highlight">Live Engine</div>
           <span class="dflow-arrow">→</span>
           <div class="dflow-node">Ledger</div>
           <span class="dflow-arrow">→</span>
@@ -2229,8 +2218,8 @@ drawerBody.addEventListener('scroll', () => {
       <div class="dsec-eyebrow">Event Protocol</div>
       <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The JSON Payload</div>
       <div class="dsec-body">
-        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong> — an open industry standard for describing event data. Every API call your AI gateway makes is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
-        <div class="dcode"><span class="cc">// AI gateway → Units360 RTE (one API call)</span>
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong> — an open industry standard for describing event data. Every API call your AI gateway makes is formatted as a CloudEvent JSON payload and POSTed to the Units360 live endpoint.</p>
+        <div class="dcode"><span class="cc">// AI gateway → Units360 (one API call)</span>
 POST /api/v1/events/dev-42
 Content-Type: application/cloudevents+json
 
@@ -2250,7 +2239,7 @@ Content-Type: application/cloudevents+json
           <div class="dfield-row"><span class="dfield-key">specversion</span><span class="dfield-val">Always "1.0" — CloudEvents standard version</span></div>
           <div class="dfield-row"><span class="dfield-key">type</span><span class="dfield-val">Namespaced event type — identifies the metering category</span></div>
           <div class="dfield-row"><span class="dfield-key">source</span><span class="dfield-val">Gateway + account ID — where the call originated</span></div>
-          <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match the MDT unit_id — "ai-token" here</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match the configured unit_id — "ai-token" here</span></div>
           <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">Total tokens for this call — RTE adds this to the balance</span></div>
           <div class="dfield-row"><span class="dfield-key">data.model</span><span class="dfield-val">LLM used — enables per-model cost breakdown in analytics</span></div>
           <div class="dfield-row"><span class="dfield-key">data.feature</span><span class="dfield-val">Feature tag — enables per-feature usage reporting</span></div>

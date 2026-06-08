@@ -563,7 +563,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <!-- Smart meter box -->
         <rect x="316" y="100" width="28" height="24" rx="2" fill="#0e0e0e" stroke="#00d4ff60" stroke-width="1"/>
         <rect x="320" y="104" width="20" height="10" rx="1" fill="#000000" stroke="#00d4ff30" stroke-width=".5"/>
-        <text x="330" y="113" font-size="7" fill="#00d4ff" text-anchor="middle">MDT</text>
+        <text x="330" y="113" font-size="7" fill="#00d4ff" text-anchor="middle">kWh</text>
         <text x="330" y="121" font-size="6" fill="#64748b" text-anchor="middle">METER</text>
         <!-- Meter LED -->
         <circle id="meter-led" cx="330" cy="127" r="2" fill="#10b981" opacity="0.8"/>
@@ -1011,7 +1011,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <div class="dfield-row"><span class="dfield-key">Rate plan used</span><span class="dfield-val">Time-of-Use <strong>E-TOU-C</strong> — price varies by time of day</span></div>
           <div class="dfield-row"><span class="dfield-key">Their customer</span><span class="dfield-val">Homeowner at <strong>RES-CA-94102</strong> with rooftop solar</span></div>
         </div>
-        <p>The power provider logs into Units360, creates a <em>Metadata Template (MDT)</em> for kWh, and configures all their rate rules. Units360 then handles all the real-time metering, net balance tracking, and invoice generation automatically.</p>
+        <p>The power provider logs into Units360, defines their <em>usage configuration</em> for kWh, and sets up all their rate rules. Units360 then handles all the real-time metering, net balance tracking, and invoice generation automatically.</p>
         <div class="dcallout"><strong>Net Metering:</strong> When the home's solar panels produce more than it consumes, the excess goes back to the grid — and the utility credits the customer. Units360 tracks both directions in real time using a single bidirectional unit.</div>
       </div>
     </div>
@@ -1068,7 +1068,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Running net total updated after each event</span></div>
           <div class="dfield-row"><span class="dfield-key">timestamp</span><span class="dfield-val">ISO 8601 UTC — every event is time-stamped precisely</span></div>
         </div>
-        <p>Transaction rules — set up in the MDT — define how to price each event based on direction, time of day, and account plan. Units360 applies these rules automatically at ingestion time, with no custom code required.</p>
+        <p>Transaction rules — set up in your usage configuration — define how to price each event based on direction, time of day, and account plan. Units360 applies these rules automatically at ingestion time, with no custom code required.</p>
         <div class="dcallout"><strong>At month end,</strong> all transactions are summed: exported kWh earn credits, imported kWh incur charges. The net produces the invoice automatically.</div>
       </div>
     </div>
@@ -1078,14 +1078,14 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-eyebrow">Configuration Layer</div>
       <div class="dsec-title"><span class="dsec-icon">📐</span> MDT — Metadata Template</div>
       <div class="dsec-body">
-        <p>The <strong>MDT (Metadata Template)</strong> is Units360's low-code configuration builder. It's where the power provider defines everything about their metering model — with no code, no database schemas, no infrastructure setup.</p>
-        <p>Think of the MDT as a blueprint: define it once, and it governs every meter event, every balance update, and every invoice for that unit type.</p>
+        <p>The <strong>Usage Configuration</strong> is Units360's low-code setup builder. It's where the power provider defines everything about their metering model — with no code, no database schemas, no infrastructure setup.</p>
+        <p>Define it once, and it governs every meter event, every balance update, and every invoice for that unit type.</p>
         <div class="dfield-table">
           <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define the unit (kWh), direction, precision, and reset period</span></div>
           <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Set account types, rate plans, solar export eligibility, peak windows</span></div>
           <div class="dfield-row"><span class="dfield-key">Transaction tab</span><span class="dfield-val">Configure pricing rules: export rate, import rate, peak surcharges</span></div>
         </div>
-        <p>In the demo, you see the MDT form fill in during Act 1 (6 AM). That represents a power provider logging into Units360 and configuring their metering system in <em>minutes</em> — not months of custom development.</p>
+        <p>In the demo, you see the configuration form fill in during Act 1 (6 AM). That represents a power provider logging into Units360 and setting up their metering system in <em>minutes</em> — not months of custom development.</p>
         <div class="dcallout"><strong>MDT outputs:</strong> Once saved, Units360 auto-generates a REST API endpoint, a CloudEvent schema for the smart meter, and a live analytics dashboard. No DevOps team required.</div>
       </div>
     </div>
@@ -1095,7 +1095,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-eyebrow">Runtime Engine</div>
       <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
       <div class="dsec-body">
-        <p>The <strong>RTE (Run Time Engine)</strong> is the live processing layer that runs once an MDT is deployed. It continuously ingests meter events, applies rate rules, updates balances, and maintains the audit ledger — all in real time.</p>
+        <p>The <strong>Live Processing Engine</strong> is the layer that runs once your configuration is deployed. It continuously ingests meter events, applies rate rules, updates balances, and maintains the audit ledger — all in real time.</p>
         <div class="dfield-table">
           <div class="dfield-row"><span class="dfield-key">Event ingestion</span><span class="dfield-val">Accepts CloudEvents from smart meters via REST POST</span></div>
           <div class="dfield-row"><span class="dfield-key">Balance engine</span><span class="dfield-val">Atomic ledger update per event — bidirectional, millisecond-accurate</span></div>
@@ -1113,7 +1113,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <span class="dflow-arrow">→</span>
           <div class="dflow-node">Dashboard</div>
         </div>
-        <p>The RTE is provisioned automatically when you click "Deploy" in Units360 — it's a fully managed, isolated cloud infrastructure per organization. No Kafka configuration, no ClickHouse setup, no DevOps work.</p>
+        <p>The live engine is provisioned automatically when you click "Deploy" in Units360 — it's a fully managed, isolated cloud infrastructure per organization. No Kafka configuration, no ClickHouse setup, no DevOps work.</p>
       </div>
     </div>
 
@@ -1122,7 +1122,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-eyebrow">Event Protocol</div>
       <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The JSON Payload</div>
       <div class="dsec-body">
-        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong> — an open industry standard for describing event data. Every meter reading the smart meter sends is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong> — an open industry standard for describing event data. Every meter reading the smart meter sends is formatted as a CloudEvent JSON payload and POSTed to the Units360 live endpoint.</p>
         <div class="dcode"><span class="cc">// Smart meter → Units360 RTE (one reading)</span>
 POST /api/v1/events/RES-CA-94102
 Content-Type: application/cloudevents+json
@@ -1148,7 +1148,7 @@ Content-Type: application/cloudevents+json
           <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">The reading amount — RTE adds this to the account balance</span></div>
           <div class="dfield-row"><span class="dfield-key">data.direction</span><span class="dfield-val">EXPORT = solar generating; IMPORT = consuming from grid</span></div>
         </div>
-        <p>The RTE validates the payload against the MDT schema, applies the correct rate, updates the balance atomically, and returns a <em>202 Accepted</em> response in under 10ms — at scale, across millions of meters.</p>
+        <p>The live engine validates the payload against the configured schema, applies the correct rate, updates the balance atomically, and returns a <em>202 Accepted</em> response in under 10ms — at scale, across millions of meters.</p>
       </div>
     </div>
 
@@ -1177,7 +1177,7 @@ const ACTS = [
     desc:'Defining the unit, account & rate plan',
     time:'6:00 AM', kwhRate:0, duration:7000, color:'teal',
     commentaryIcon:'☀️',
-    commentary:'Define the <strong>kWh unit</strong> — Units360 configures bidirectional metering for solar net metering. The MDT (Metadata Template) sets up export pricing, peak windows, and rate plans in seconds.',
+    commentary:'Define the <strong>kWh unit</strong> — Units360 configures bidirectional metering for solar net metering. Export pricing, peak windows, and rate plans set up in seconds.',
     overlayTitle:'DAWN · METER DEFINITION',
     overlayTime:'6:00 AM',
     overlaySub:'Configuring the Solar Net Metering unit · Account RES-CA-94102',
@@ -1814,7 +1814,7 @@ function switchTerminalView(actIdx) {
   if (actIdx === 0) {
     evView.style.display = 'none';
     invView.style.display = 'none';
-    badge.className = 'mdt'; badge.textContent = 'MDT';
+    badge.className = 'mdt'; badge.textContent = 'Usage Event';
     startMDTTyping();
   } else if (actIdx >= 1 && actIdx <= 3) {
     evView.style.display = 'flex';
@@ -2027,20 +2027,20 @@ function resetAll() {
 // ════════════════════════════════════════════════════════════
 const FLOW_EXPLAINS = {
   mdt: {
-    title: '📐 Step 1 · MDT — Metadata Template',
-    body: 'The <strong>Metadata Template (MDT)</strong> is where the power provider defines their metering model in Units360 — no code required. They specify the unit (kWh), direction (bidirectional), rate plan, peak pricing windows, and account types. Once saved, Units360 auto-generates the REST API, event schema, and analytics dashboard. <em>Think of it as the blueprint that drives everything downstream.</em>'
+    title: '📐 Step 1 · Usage Configuration',
+    body: 'The <strong>Usage Configuration</strong> is where the power provider defines their metering model in Units360 — no code required. They specify the unit (kWh), direction (bidirectional), rate plan, peak pricing windows, and account types. Once saved, Units360 auto-generates the REST API, event schema, and analytics dashboard. <em>Think of it as the blueprint that drives everything downstream.</em>'
   },
   rte: {
-    title: '⚙️ Step 2 · RTE — Run Time Engine',
-    body: 'Clicking "Deploy" spins up the <strong>Run Time Engine (RTE)</strong> — a fully managed, isolated cloud infrastructure instance for this organization. The RTE opens a live CloudEvent endpoint, starts an atomic ledger for kWh balances, and begins applying the MDT rules in real time. <em>No Kafka. No ClickHouse. No DevOps team. All provisioned automatically.</em>'
+    title: '⚙️ Step 2 · Live Processing Engine',
+    body: 'Clicking "Deploy" spins up the <strong>Live Processing Engine</strong> — a fully managed, isolated cloud infrastructure instance for this organization. It opens a live CloudEvent endpoint, starts an atomic ledger for kWh balances, and begins applying the configured rules in real time. <em>No Kafka. No ClickHouse. No DevOps team. All provisioned automatically.</em>'
   },
   stream: {
     title: '📡 Step 3 · CloudEvent Stream',
-    body: `The smart meter sends a <strong>CloudEvent JSON payload</strong> to the RTE endpoint every few seconds — each one carries a qty, direction (EXPORT or IMPORT), and timestamp. The RTE validates it against the MDT schema, looks up the current TOU rate, and atomically updates the account&#39;s kWh balance. <em>The dashboard and ledger update in under 10 ms per event, at any scale.</em>`
+    body: `The smart meter sends a <strong>CloudEvent JSON payload</strong> to the live endpoint every few seconds — each one carries a qty, direction (EXPORT or IMPORT), and timestamp. It validates it against the configured schema, looks up the current TOU rate, and atomically updates the account&#39;s kWh balance. <em>The dashboard and ledger update in under 10 ms per event, at any scale.</em>`
   },
   invoice: {
     title: '🧾 Step 4 · Automatic Invoice',
-    body: 'At the billing period end, the RTE aggregates all transactions for the account — total kWh exported, total imported — and applies the net metering rules. The result is a <strong>structured invoice JSON</strong> generated automatically. Credits for solar export offset grid import charges. If net export exceeds import, the customer receives a credit. <em>Zero manual reconciliation.</em>'
+    body: 'At the billing period end, the live engine aggregates all transactions for the account — total kWh exported, total imported — and applies the net metering rules. The result is a <strong>structured invoice JSON</strong> generated automatically. Credits for solar export offset grid import charges. If net export exceeds import, the customer receives a credit. <em>Zero manual reconciliation.</em>'
   }
 };
 

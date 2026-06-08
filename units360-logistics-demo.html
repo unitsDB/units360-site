@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Units360 · Mobility &amp; Logistics Demo</title>
+<link rel="stylesheet" href="demo-shared.css">
 <style>
 :root {
-  --bg: #000000; --surface: #0e0e0e; --surface2: #181818;
-  --teal: #00d4ff; --teal-glow: #00d4ff33;
-  --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444; --green: #10b981;
-  --orange: #f97316; --orange-glow: #f9731640;
-  --text: #e0f2fe; --muted: #64748b;
+  --orange: #ea580c; --orange-glow: #ea580c40;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden;font-size:15px}
@@ -1098,7 +1095,7 @@ const ACTS = [
     commentary:'Truck <strong>TRK-CA-10023 dispatched</strong>. GPS CloudEvents stream to Units360 every 30 seconds — each ping adds to the running km total. Base rate $0.42/km applied automatically.',
     overlayTitle:'DISPATCH · EN ROUTE',
     overlayTime:'6:00 AM',
-    overlaySub:'GPS active · Streaming to Units360 RTE · Base rate $0.42/km',
+    overlaySub:'GPS active · Live tracking · Base rate $0.42/km',
     sceneStatus:'EN ROUTE ↗',
     nodeVals:['GPS LIVE','ACTIVE','STREAMING','$0.00'],
     kmStatus:'DISPATCH', kmClass:'moving',
