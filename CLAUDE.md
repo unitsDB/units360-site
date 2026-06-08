@@ -12,10 +12,15 @@ Deploy command (from this folder): `vercel --prod`
 ## File structure
 ```
 units360-site/
-├── index.html                   ← Landing page (everything lives here)
-├── units360-token-demo.html     ← Live demo: AI & LLM token metering
-├── units360-energy-demo.html    ← Live demo: Solar net metering / utilities
-└── CLAUDE.md                    ← This file
+├── index.html                      ← Landing page
+├── demo-shared.css                 ← Shared light-theme tokens + base styles (link from every demo)
+├── units360-token-demo.html        ← Live demo: AI & LLM token metering
+├── units360-energy-demo.html       ← Live demo: Solar net metering / utilities
+├── units360-logistics-demo.html    ← Live demo: Mobility & logistics
+├── units360-fintech-demo.html      ← Live demo: Fintech & banking
+├── units360-scribe-demo.html       ← Live demo: Healthcare AI scribe
+├── units360-cowork-demo.html       ← Live demo: Co-working space (light-theme reference)
+└── CLAUDE.md                       ← This file
 ```
 
 ---
@@ -83,6 +88,60 @@ Clicking a card calls `pickIndustry(name, el)` which transitions the Three.js pa
 6. `#compare-teaser` — comparison table vs OpenMeter
 7. `#signup` — early access form
 8. Footer
+
+---
+
+## Demo quality rules (apply to every demo, new or upgraded)
+
+These rules were established while building the Co-working Space demo and must be carried forward to all demos.
+
+### 1. Color schema — always use `demo-shared.css`
+Every demo HTML file must link `demo-shared.css` before its own `<style>` block:
+```html
+<link rel="stylesheet" href="demo-shared.css">
+```
+Override only demo-specific colors in the local `<style>`. Never hard-code the light-theme palette inline — change it in one place.
+
+Key tokens:
+| Token | Value | Meaning |
+|---|---|---|
+| `--bg` | `#f1f5f9` | Page background (light slate) |
+| `--surface` | `#ffffff` | Card / panel |
+| `--surface2` | `#f8fafc` | Recessed surface |
+| `--teal` | `#0891b2` | Primary accent |
+| `--text` | `#0f172a` | Body text |
+| `--muted` | `#64748b` | Labels / secondary |
+| `--border` | `#e2e8f0` | Borders |
+
+### 2. No engineering jargon in the UI
+These terms are internal to Units360's engine. They must **never appear as visible UI labels** — replace them everywhere (nav pills, badges, tab labels, log lines, tooltips).
+
+| Banned term | Replace with |
+|---|---|
+| MDT | "Usage Event" or "Live Reading" |
+| RTE | (hide entirely — it's infrastructure, not user-facing) |
+| Unit Definition | "What you're measuring" |
+| Account Mapping | "Who gets billed" |
+| Transaction Log | "Usage Log" |
+| Metering Pipeline | "Live Tracking" |
+
+If a term must appear in a code/API snippet for developer audiences, it's fine in a `<code>` block — just not as a UI label.
+
+### 3. New-user onboarding principle
+Every act / panel must answer **"what just happened, in plain English"** before showing numbers. Concretely:
+- The **commentary strip** at the bottom of the demo must always explain the current act in one plain sentence (no jargon, no acronyms).
+- Act labels in the progress bar should use business language: "A booking is made", "Usage is tracked", "Invoice is generated" — not "Event ingestion", "MDT flush", "RTE dispatch".
+- The **first act** of every demo should orient the user: who is the customer, what are they paying for, what does one unit mean.
+- Numbers should always carry a unit label next to them (e.g. "42 credits", "3.2 kWh", "$18.40") — never a bare number.
+
+### 4. Demo structure checklist (before shipping)
+- [ ] `demo-shared.css` linked
+- [ ] No MDT / RTE in any visible label
+- [ ] Act 1 explains the business scenario in plain English
+- [ ] Commentary strip present and populated for every act
+- [ ] All metric values carry a unit label
+- [ ] `← Units360.ai` back-nav present (fixed, top-left)
+- [ ] Tested at 1280px wide (the design target)
 
 ---
 

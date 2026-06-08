@@ -1,0 +1,113 @@
+/*
+ * Units360 Demo Shared Styles
+ * Light theme established in the Co-working Space demo (2026-06).
+ * All demo HTML files should link this sheet:
+ *   <link rel="stylesheet" href="demo-shared.css">
+ * then override only what is truly demo-specific in a local <style> block.
+ */
+
+/* ── Color tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg:      #f1f5f9;   /* page background — light slate */
+  --surface: #ffffff;   /* card / panel surface */
+  --surface2:#f8fafc;   /* recessed / secondary surface */
+
+  /* Brand colors */
+  --teal:    #0891b2;   /* primary accent — cyan-600 */
+  --teal-glow:#0891b233;
+  --blue:    #2563eb;   /* secondary accent — blue-600 */
+  --purple:  #7c3aed;   /* tertiary — violet-700 */
+  --credit:  #0891b2;   /* billing / credit color (same as teal) */
+
+  /* Semantic colors */
+  --green:   #059669;   --green-glow:#05996933;
+  --amber:   #d97706;   --amber-glow:#d9770633;
+  --red:     #dc2626;
+
+  /* Typography */
+  --text:    #0f172a;   /* primary text — slate-900 */
+  --muted:   #64748b;   /* secondary / label text — slate-500 */
+
+  /* Borders */
+  --border:  #e2e8f0;   /* default border — slate-200 */
+}
+
+/* ── Base reset ───────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'SF Pro Display', system-ui, sans-serif;
+  overflow: hidden;
+  font-size: 15px;
+}
+
+/* ── Back-nav ─────────────────────────────────────────────────────────────── */
+.back-nav {
+  position: fixed;
+  top: 12px; left: 16px;
+  z-index: 100;
+  font-size: 12px;
+  color: var(--teal);
+  text-decoration: none;
+  letter-spacing: .3px;
+  opacity: .8;
+  transition: opacity .2s;
+}
+.back-nav:hover { opacity: 1; }
+
+/* ── Shared badge / pill typography ──────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.badge--teal  { border: 1px solid var(--teal);  color: var(--teal); }
+.badge--green { border: 1px solid var(--green); color: var(--green); }
+.badge--amber { border: 1px solid var(--amber); color: var(--amber); }
+
+/* ── Muted uppercase label (used everywhere for section headers) ─────────── */
+.label-xs {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ── Progress bar ─────────────────────────────────────────────────────────── */
+.prog-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--teal), var(--blue));
+  border-radius: 2px;
+  transition: width .12s;
+}
+
+/* ── Commentary strip (bottom of demo) ───────────────────────────────────── */
+.commentary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 14px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  flex-shrink: 0;
+  min-height: 36px;
+  transition: border-color .4s;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
