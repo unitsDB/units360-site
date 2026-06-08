@@ -5,18 +5,18 @@
 <title>Units360 · Mobility &amp; Logistics Demo</title>
 <style>
 :root {
-  --bg: #070c18; --surface: #0d1526; --surface2: #131e35;
+  --bg: #000000; --surface: #0e0e0e; --surface2: #181818;
   --teal: #00d4ff; --teal-glow: #00d4ff33;
   --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444; --green: #10b981;
   --orange: #f97316; --orange-glow: #f9731640;
   --text: #e0f2fe; --muted: #64748b;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-ui,sans-serif;overflow:hidden;font-size:15px}
 #app{display:flex;flex-direction:column;height:100vh;max-width:1280px;margin:0 auto;padding:10px 16px 0}
 
 #overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(7,12,24,0.92);opacity:0;pointer-events:none;transition:opacity .35s}
+  background:rgba(0,0,0,0.96);opacity:0;pointer-events:none;transition:opacity .35s}
 #overlay.show{opacity:1;pointer-events:auto;backdrop-filter:blur(8px)}
 #overlay-eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
 #overlay-title{font-size:clamp(28px,5vw,54px);font-weight:800;letter-spacing:-1px;color:var(--text);text-align:center}
@@ -36,16 +36,16 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 #main{display:flex;gap:12px;flex:1;min-height:0}
 #left-panel{display:flex;flex-direction:column;gap:8px;flex:1.6;min-width:0}
-#right-panel{display:flex;flex-direction:column;flex:1;min-width:280px;max-width:420px;background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;overflow:hidden}
+#right-panel{display:flex;flex-direction:column;flex:1;min-width:280px;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 
-#scene-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid #1e2d4a;flex-shrink:0;height:160px}
+#scene-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);flex:1;min-height:100px}
 #scene-svg{width:100%;height:100%;display:block}
 
-#flow-wrap{background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;padding:10px 14px 8px;flex-shrink:0}
+#flow-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px 8px;flex-shrink:0}
 #flow-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
 #flow-svg{width:100%;display:block}
 
-#km-row{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid #1e2d4a;border-radius:10px;padding:8px 14px;flex-shrink:0}
+#km-row{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;flex-shrink:0}
 #km-balance{font-size:clamp(22px,3.5vw,38px);font-weight:800;font-variant-numeric:tabular-nums;transition:color .6s;min-width:120px}
 #km-balance.moving{color:var(--orange)}
 #km-balance.done{color:var(--green)}
@@ -60,18 +60,18 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #km-rate-pill{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;letter-spacing:.5px;transition:background .5s,color .5s}
 #km-rate-pill.moving{background:#f9731620;color:var(--orange);border:1px solid #f9731640}
 #km-rate-pill.done{background:#10b98120;color:var(--green);border:1px solid #10b98140}
-#km-rate-pill.zero{background:#1e2d4a;color:var(--muted);border:1px solid #1e2d4a}
+#km-rate-pill.zero{background:var(--border);color:var(--muted);border:1px solid var(--border)}
 #km-today{font-size:10px;color:var(--muted)}
 
 #prog-wrap{flex-shrink:0;padding:0 2px}
-#prog-bar{height:3px;background:#1e2d4a;border-radius:2px;overflow:hidden}
+#prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
 #prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--orange),var(--amber));border-radius:2px;transition:width .1s linear}
 #prog-acts{display:flex;justify-content:space-between;margin-top:4px}
-.prog-act{font-size:9px;color:var(--muted);letter-spacing:.3px;cursor:pointer;transition:color .2s}
+.prog-act{font-size:10.5px;color:var(--muted);letter-spacing:.3px;cursor:pointer;transition:color .2s}
 .prog-act:hover{color:var(--orange)}
 .prog-act.active{color:var(--orange)}
 
-#term-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+#term-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
 #term-dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444}
 #term-dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b}
 #term-dot-g{width:10px;height:10px;border-radius:50%;background:#10b981}
@@ -81,27 +81,27 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #term-mode-badge.event{background:#3b82f620;color:var(--blue);border:1px solid #3b82f640}
 #term-mode-badge.invoice{background:#10b98120;color:var(--green);border:1px solid #10b98140}
 
-#term-tabs{display:flex;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+#term-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
 .term-tab{font-size:10px;padding:6px 14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .term-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
 
 #term-body{flex:1;overflow:hidden;position:relative;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
 
 #fmt-view{position:absolute;inset:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-.fmt-section{background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;overflow:hidden}
-.fmt-section-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);padding:6px 10px;background:#f9731608;border-bottom:1px solid #1e2d4a}
+.fmt-section{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.fmt-section-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);padding:6px 10px;background:#f9731608;border-bottom:1px solid var(--border)}
 .fmt-fields{display:flex;flex-direction:column}
-.fmt-field{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #0d1526}
+.fmt-field{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--border)}
 .fmt-field:last-child{border-bottom:none}
-.fmt-field-label{font-size:10px;color:var(--muted);min-width:88px;letter-spacing:.3px}
-.fmt-field-value{font-size:11px;color:var(--text);font-family:'SF Mono','Fira Code',monospace;flex:1;min-height:16px}
+.fmt-field-label{font-size:11px;color:var(--muted);min-width:88px;letter-spacing:.3px}
+.fmt-field-value{font-size:12px;color:var(--text);font-family:'SF Mono','Fira Code',monospace;flex:1;min-height:16px}
 .fmt-field-value .cursor{display:inline-block;width:7px;height:12px;background:var(--orange);margin-left:1px;animation:blink 1s step-end infinite;vertical-align:middle}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .fmt-field-value.done{color:var(--orange)}
 
 #event-view{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;display:none}
-#event-stream{flex:1;overflow:hidden;padding:0;font-size:10.5px}
-.event-block{padding:5px 10px;font-size:10.5px;line-height:1.55;border-bottom:1px solid #0d152640;animation:slideIn .3s ease}
+#event-stream{flex:1;overflow:hidden;padding:0;font-size:11.5px}
+.event-block{padding:5px 10px;font-size:11.5px;line-height:1.6;border-bottom:1px solid #1a1a1a40;animation:slideIn .3s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .ev-key{color:#7dd3fc}.ev-str{color:#86efac}.ev-num{color:#fbbf24}.ev-bool{color:#f472b6}.ev-null{color:var(--muted)}.ev-brace{color:var(--muted)}
 .ev-changed{border-radius:2px;outline:1px solid #f9731680;background:#f9731612;padding:0 2px}
@@ -114,67 +114,67 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .inv-json-line{font-size:11px;line-height:1.6;white-space:pre}
 .inv-json-line.reveal{animation:slideIn .25s ease}
 
-#commentary{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;background:var(--surface);border-top:1px solid #1e2d4a;border-left:3px solid var(--orange);flex-shrink:0;min-height:38px;transition:border-color .4s}
+#commentary{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;background:var(--surface);border-top:1px solid var(--border);border-left:3px solid var(--orange);flex-shrink:0;min-height:38px;transition:border-color .4s}
 #commentary.amber{border-left-color:var(--amber)}
 #commentary.red{border-left-color:var(--red)}
 #commentary.green{border-left-color:var(--green)}
 #commentary-icon{font-size:14px;flex-shrink:0;margin-top:1px}
-#commentary-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
+#commentary-text{font-size:13px;color:var(--text);line-height:1.5;flex:1}
 #commentary-text strong{color:var(--orange)}
 #commentary.amber #commentary-text strong{color:var(--amber)}
 #commentary.red #commentary-text strong{color:var(--red)}
 #commentary.green #commentary-text strong{color:var(--green)}
 
 #act-header{display:flex;align-items:baseline;gap:10px;flex-shrink:0;padding:2px 0}
-#act-eyebrow{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-#act-title{font-size:15px;font-weight:700;color:var(--text);transition:color .4s}
+#act-eyebrow{font-size:10.5px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+#act-title{font-size:18px;font-weight:700;color:var(--text);transition:color .4s}
 #act-title.amber{color:var(--amber)}
 #act-title.red{color:var(--red)}
 #act-title.green{color:var(--green)}
 #act-title.orange{color:var(--orange)}
-#act-desc{font-size:11px;color:var(--muted);margin-left:auto}
+#act-desc{font-size:13px;color:var(--muted);margin-left:auto}
 
-#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid #1e2d4a;margin-top:4px}
-.ctrl-btn{background:var(--surface2);border:1px solid #1e2d4a;color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+#controls{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;border-top:1px solid var(--border);margin-top:4px}
+.ctrl-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .ctrl-btn:hover{border-color:var(--orange);color:var(--orange)}
 .ctrl-btn:active{transform:scale(.97)}
-#btn-play{background:var(--orange);border-color:var(--orange);color:#070c18;font-weight:600;min-width:64px}
+#btn-play{background:var(--orange);border-color:var(--orange);color:#000000;font-weight:600;min-width:64px}
 #btn-play:hover{background:#ea6208;border-color:#ea6208}
 #speed-label{font-size:11px;color:var(--muted);margin-left:4px}
 #speed-val{font-size:11px;color:var(--orange);min-width:24px}
-.ctrl-sep{width:1px;height:18px;background:#1e2d4a;margin:0 4px}
-#kbd-hint{font-size:10px;color:var(--muted);margin-left:auto;letter-spacing:.3px}
+.ctrl-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+#kbd-hint{font-size:11.5px;color:var(--muted);margin-left:auto;letter-spacing:.3px}
 
 #btn-info{background:linear-gradient(135deg,#f9731622,#f59e0b22);border:1px solid var(--orange);
   border-radius:20px;color:var(--orange);font-size:11px;font-weight:700;padding:5px 14px;
   cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:all .2s;
   box-shadow:0 0 10px #f9731622}
-#btn-info:hover{background:var(--orange);color:#070c18;box-shadow:0 0 18px #f9731655}
+#btn-info:hover{background:var(--orange);color:#000000;box-shadow:0 0 18px #f9731655}
 #btn-info:active{transform:scale(.97)}
 
-#info-backdrop{position:fixed;inset:0;z-index:205;background:rgba(4,8,18,.65);backdrop-filter:blur(3px);
+#info-backdrop{position:fixed;inset:0;z-index:205;background:rgba(0,0,0,0.65);backdrop-filter:blur(3px);
   opacity:0;pointer-events:none;transition:opacity .3s}
 #info-backdrop.show{opacity:1;pointer-events:auto}
 #info-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:96vw;z-index:210;
-  background:#070d1c;border-left:1px solid #1e2d4a;
+  background:#050505;border-left:1px solid var(--border);
   transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);
   display:flex;flex-direction:column;overflow:hidden}
 #info-drawer.open{transform:translateX(0)}
-#drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid #1e2d4a;flex-shrink:0;background:linear-gradient(135deg,#0d1a2e,#0a1425)}
+#drawer-header{display:flex;align-items:center;gap:10px;padding:16px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:linear-gradient(135deg,#111,#0a0a0a)}
 #drawer-logo{font-size:16px;font-weight:800;color:var(--text)}
 #drawer-logo span{color:var(--teal)}
 #drawer-subtitle{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
-#drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:#1e2d4a;border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-#drawer-close:hover{background:#2a3f5f;color:var(--text)}
+#drawer-close{margin-left:auto;width:28px;height:28px;border-radius:6px;background:var(--border);border:none;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#drawer-close:hover{background:#2a2a2a;color:var(--text)}
 #drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;scroll-behavior:smooth}
 #drawer-body::-webkit-scrollbar{width:4px}
-#drawer-body::-webkit-scrollbar-thumb{background:#1e2d4a;border-radius:2px}
-#drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid #1e2d4a;flex-shrink:0}
-.dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:#1e2d4a;color:var(--muted);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
-.dnav-pill:hover{background:#2a3f5f;color:var(--text)}
+#drawer-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#drawer-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.dnav-pill{font-size:9px;padding:3px 9px;border-radius:12px;background:var(--border);color:var(--muted);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;border:1px solid transparent}
+.dnav-pill:hover{background:#2a2a2a;color:var(--text)}
 .dnav-pill.active{background:#f9731615;color:var(--orange);border-color:#f9731640}
 
-.dsec{padding:18px 0;border-bottom:1px solid #0d1526}
+.dsec{padding:18px 0;border-bottom:1px solid var(--border)}
 .dsec:last-child{border-bottom:none;padding-bottom:8px}
 .dsec-eyebrow{font-size:8px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:6px;opacity:.7}
 .dsec-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
@@ -183,14 +183,14 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .dsec-body p{margin:0}
 .dsec-body strong{color:var(--text);font-weight:600}
 .dsec-body em{color:var(--orange);font-style:normal}
-.dfield-table{background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;overflow:hidden;margin-top:4px}
-.dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid #0d1526;align-items:flex-start;gap:10px;font-size:11px}
+.dfield-table{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:4px}
+.dfield-row{display:flex;padding:6px 10px;border-bottom:1px solid var(--border);align-items:flex-start;gap:10px;font-size:11px}
 .dfield-row:last-child{border-bottom:none}
 .dfield-key{color:var(--orange);min-width:110px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;flex-shrink:0;margin-top:1px}
 .dfield-val{color:#94a3b8;line-height:1.5}
 .dfield-val strong{color:var(--text)}
-.dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;background:var(--surface2);border:1px solid #1e2d4a;border-radius:6px;font-size:11px}
-.dflow-node{padding:4px 10px;border-radius:4px;background:#1e2d4a;color:var(--text);text-align:center;font-size:10px;line-height:1.4}
+.dflow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:11px}
+.dflow-node{padding:4px 10px;border-radius:4px;background:var(--border);color:var(--text);text-align:center;font-size:10px;line-height:1.4}
 .dflow-node.highlight{background:#f9731615;border:1px solid #f9731640;color:var(--orange)}
 .dflow-arrow{color:var(--muted);font-size:14px}
 .dtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
@@ -200,20 +200,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .dtag.green{background:#10b98115;color:var(--green);border:1px solid #10b98130}
 .dtag.amber{background:#f59e0b15;color:var(--amber);border:1px solid #f59e0b30}
 .dtag.orange{background:#f9731615;color:var(--orange);border:1px solid #f9731630}
-.dcode{background:#040810;border:1px solid #1e2d4a;border-radius:6px;padding:10px 12px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:6px}
+.dcode{background:#050505;border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'SF Mono','Fira Code',monospace;font-size:10px;line-height:1.6;color:#7dd3fc;overflow-x:auto;margin-top:6px}
 .dcode .ck{color:#7dd3fc}.dcode .cv{color:#86efac}.dcode .cn{color:#fbbf24}.dcode .cc{color:#64748b}
 .dcallout{background:linear-gradient(135deg,#f9731608,#f59e0b08);border:1px solid #f9731625;border-radius:6px;padding:10px 12px;font-size:11px;color:#94a3b8;line-height:1.6;margin-top:6px}
 .dcallout strong{color:var(--orange)}
 
 /* Dashboard in event view */
-#ev-dashboard{padding:8px 10px 6px;background:#040810;border-bottom:1px solid #1e2d4a;flex-shrink:0}
+#ev-dashboard{padding:8px 10px 6px;background:#050505;border-bottom:1px solid var(--border);flex-shrink:0}
 .ev-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px}
-.ev-metric{background:#0d1526;border:1px solid #1e2d4a;border-radius:7px;padding:6px 9px;transition:border-color .4s}
+.ev-metric{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:6px 9px;transition:border-color .4s}
 .ev-metric-top{display:flex;align-items:center;gap:4px;margin-bottom:1px}
 .ev-metric-icon{font-size:11px}
-.ev-metric-label{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
-.ev-metric-val{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .5s;line-height:1}
-.ev-metric-unit{font-size:8px;color:var(--muted);margin-top:1px}
+.ev-metric-label{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.ev-metric-val{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .5s;line-height:1}
+.ev-metric-unit{font-size:9px;color:var(--muted);margin-top:1px}
 .ev-metric.dist{border-color:#f9731630}
 .ev-metric.dist .ev-metric-val{color:var(--orange)}
 .ev-metric.spd{border-color:#f59e0b30}
@@ -227,7 +227,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 @keyframes peak-pulse{from{border-color:#ef444430}to{border-color:#ef444490}}
 #ev-seg-wrap{display:flex;flex-direction:column;gap:3px}
 #ev-seg-title{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between}
-#ev-seg-track{height:8px;border-radius:4px;background:#1e2d4a;position:relative;overflow:visible}
+#ev-seg-track{height:8px;border-radius:4px;background:var(--border);position:relative;overflow:visible}
 .seg-part{position:absolute;top:0;height:100%;border-radius:4px}
 .seg-part.ramp{background:#f9731630;border:1px solid #f9731650}
 .seg-part.highway{background:#3b82f620;border:1px solid #3b82f640}
@@ -235,10 +235,98 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #ev-seg-cursor{position:absolute;top:-2px;width:3px;height:12px;background:var(--orange);border-radius:2px;transform:translateX(-50%);transition:left .5s;box-shadow:0 0 6px var(--orange)}
 #ev-seg-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}
 #ev-seg-rate-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-align:center;margin-top:2px;transition:color .4s}
-#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid #1e2d4a;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
-#ev-footer{padding:4px 10px;border-top:1px solid #1e2d4a;font-size:8.5px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
+#ev-json-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+#ev-footer{padding:4px 10px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
 .ev-legend{display:inline-flex;align-items:center;gap:3px}
 .ev-leg-box{width:8px;height:8px;border-radius:1px;display:inline-block}
+
+/* ACT FLASH */
+@keyframes actFlash{0%,15%{background:rgba(249,115,22,0.10);box-shadow:inset 0 0 0 1px rgba(249,115,22,0.2);border-radius:6px}100%{background:transparent;box-shadow:none}}
+#act-header.flash{animation:actFlash 1.4s ease forwards}
+
+/* PANEL WIDENING FOR INVOICE */
+#right-panel.inv-wide{max-width:none;flex:2.4;transition:flex .35s ease}
+
+/* MDT ALWAYS-VISIBLE */
+#term-body{flex:1;overflow:hidden;display:flex;flex-direction:column;font-family:'SF Mono','Fira Code',monospace;font-size:11.5px}
+#mdt-always{flex-shrink:0;border-bottom:1px solid var(--border);overflow:hidden;transition:max-height .4s ease}
+#mdt-full{padding:10px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:280px}
+#mdt-compact{padding:6px 10px;display:none;flex-direction:column;gap:4px}
+.mc-chip{font-size:10.5px;padding:5px 10px;border-radius:5px;font-family:'SF Mono','Fira Code',monospace;letter-spacing:.2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mc-chip.orange{background:#f9731610;border:1px solid #f9731635;color:var(--orange)}
+.mc-chip.teal{background:#00d4ff10;border:1px solid #00d4ff35;color:var(--teal)}
+.mc-chip-key{color:var(--muted);font-size:9.5px}
+
+/* DYNAMIC AREA */
+#dyn-area{flex:1;min-height:0;overflow:hidden;position:relative}
+#event-view,#invoice-view{position:absolute;inset:0;overflow:hidden}
+
+/* INVOICE DOCUMENT */
+.inv-doc{background:#0a0a0a;border:1px solid #333;border-radius:8px;overflow:hidden;font-family:'SF Pro Display',system-ui,sans-serif;font-size:11.5px;height:100%;display:flex;flex-direction:column}
+.inv-lh{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px 12px;background:linear-gradient(135deg,#f9731612,#f59e0b08);border-bottom:1px solid #2a2a2a}
+.inv-logo-txt{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+.inv-logo-txt span{color:var(--orange)}
+.inv-tagline{font-size:8.5px;color:var(--muted);letter-spacing:.5px;margin-top:1px}
+.inv-lh-right{text-align:right}
+.inv-doc-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.inv-doc-num{font-size:11px;font-weight:700;color:var(--orange);font-family:'SF Mono','Fira Code',monospace;margin-top:2px}
+.inv-meta{display:flex;border-bottom:1px solid #2a2a2a}
+.inv-meta-cell{flex:1;padding:7px 16px;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;gap:1px}
+.inv-meta-cell:last-child{border-right:none}
+.inv-meta-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.inv-meta-val{font-size:10.5px;font-weight:600;color:var(--text)}
+.inv-meta-val.mono{font-family:'SF Mono','Fira Code',monospace;font-size:9.5px;color:var(--orange)}
+.inv-meta-val.sent{color:var(--green)}
+.inv-parties{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #2a2a2a}
+.inv-party{padding:9px 16px;border-right:1px solid #2a2a2a}
+.inv-party:last-child{border-right:none}
+.inv-party-lbl{font-size:7.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:3px}
+.inv-party-name{font-size:12px;font-weight:700;color:var(--text)}
+.inv-party-sub{font-size:9.5px;color:var(--muted);margin-top:1px}
+.inv-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.inv-table thead tr{background:#111;border-bottom:1px solid #333}
+.inv-table th{padding:6px 16px;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.inv-table th:last-child,.inv-table td:last-child{text-align:right}
+.inv-table td{padding:8px 16px;border-bottom:1px solid #181818}
+.inv-main-row td{color:var(--text)}
+.inv-main-row td:last-child{color:var(--orange);font-weight:700;font-size:13px}
+.inv-main-row td small{display:block;font-size:8.5px;color:var(--muted);margin-top:1px}
+.inv-sub-row td{font-size:9.5px;color:var(--muted);background:#0d0d0d}
+.inv-sub-row td:last-child{color:var(--amber);font-weight:600}
+.inv-hi-row{background:#f9731608 !important}
+.inv-hi-row td{color:var(--text) !important}
+.inv-hi-row td:last-child{color:var(--orange) !important;font-weight:700 !important}
+.inv-totals{padding:10px 18px;flex-shrink:0}
+.inv-t-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.inv-t-row span:first-child{color:var(--muted)}
+.inv-t-orange{color:var(--orange);font-weight:600}
+.inv-t-amber{color:var(--amber);font-weight:600}
+.inv-t-final{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800;padding:7px 0 4px;margin-top:3px;border-top:1px solid #333}
+.inv-t-final span:first-child{color:var(--text)}
+.inv-t-orange-big{color:var(--orange)}
+.inv-t-pct{font-size:9px;font-weight:500;color:var(--muted);margin-left:6px}
+.inv-footer{padding:7px 18px;background:#080808;border-top:1px solid #222;font-size:8.5px;color:var(--muted);font-family:'SF Mono','Fira Code',monospace;margin-top:auto}
+.inv-footer span{color:var(--orange)}
+@keyframes invRowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.inv-reveal{animation:invRowIn .3s ease forwards}
+
+/* LEFT PANEL INVOICE CARD */
+#left-inv{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;flex-shrink:0;display:none;animation:invIn .5s ease}
+#left-inv.show{display:block}
+@keyframes invIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.li-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.li-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--orange);font-weight:700}
+.li-badge{background:#f9731620;color:var(--orange);padding:2px 9px;border-radius:10px;font-size:9px;font-weight:700;border:1px solid #f9731640;letter-spacing:.5px}
+.li-rows{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.li-row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px}
+.li-row-k{color:var(--muted)}.li-row-v{font-weight:600}
+.li-divider{height:1px;background:var(--border);margin:5px 0}
+.li-totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.li-tot{background:var(--surface2);border-radius:7px;padding:7px 8px;text-align:center}
+.li-tot.orange-card{background:linear-gradient(135deg,#f9731610,#f59e0b0a);border:1px solid #f9731630}
+.li-tot-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px}
+.li-tot-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.li-tot-val.orange{color:var(--orange)}.li-tot-val.green{color:var(--green)}.li-tot-val.amber{color:var(--amber)}
 </style>
 </head>
 <body>
@@ -265,15 +353,15 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
   <div id="clock-wrap">
     <div id="clock-time-label">5:45 AM</div>
     <svg id="clock-svg" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="28" cy="28" r="26" fill="#0d1526" stroke="#1e2d4a" stroke-width="1.5"/>
-      <g stroke="#2a3f5f" stroke-width="1">
+      <circle cx="28" cy="28" r="26" fill="#111111" stroke="#2c2c2c" stroke-width="1.5"/>
+      <g stroke="#2a2a2a" stroke-width="1">
         <line x1="28" y1="4" x2="28" y2="8"/>
         <line x1="28" y1="48" x2="28" y2="52"/>
         <line x1="4" y1="28" x2="8" y2="28"/>
         <line x1="48" y1="28" x2="52" y2="28"/>
       </g>
-      <line id="hand-hour" x1="28" y1="28" x2="28" y2="14" stroke="#64748b" stroke-width="3.5" stroke-linecap="round"/>
-      <line id="hand-min"  x1="28" y1="28" x2="28" y2="7"  stroke="#e0f2fe" stroke-width="2"   stroke-linecap="round"/>
+      <line id="hand-hour" x1="28" y1="28" x2="28" y2="14" stroke="#888888" stroke-width="3.5" stroke-linecap="round"/>
+      <line id="hand-min"  x1="28" y1="28" x2="28" y2="7"  stroke="#ffffff" stroke-width="2"   stroke-linecap="round"/>
       <line id="hand-sec"  x1="28" y1="28" x2="28" y2="5"  stroke="#ef4444" stroke-width="1.2" stroke-linecap="round"/>
       <line id="hand-sec-tail" x1="28" y1="28" x2="28" y2="36" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/>
       <circle cx="28" cy="28" r="2.5" fill="#ef4444"/>
@@ -295,8 +383,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <svg id="scene-svg" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop id="sky-top" offset="0%" stop-color="#0a0e1a"/>
-            <stop id="sky-bot" offset="100%" stop-color="#111828"/>
+            <stop id="sky-top" offset="0%" stop-color="#050508"/>
+            <stop id="sky-bot" offset="100%" stop-color="#0a0d12"/>
           </linearGradient>
           <radialGradient id="headlight-grad" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/>
@@ -309,14 +397,14 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
         <!-- Distant city silhouette -->
         <g id="city-silhouette" opacity="0.4">
-          <rect x="340" y="58" width="18" height="52" fill="#0d1828"/>
-          <rect x="362" y="45" width="22" height="65" fill="#0f1e30"/>
-          <rect x="388" y="62" width="16" height="48" fill="#0d1828"/>
-          <rect x="408" y="38" width="28" height="72" fill="#111e34"/>
-          <rect x="440" y="52" width="20" height="58" fill="#0d1828"/>
-          <rect x="464" y="68" width="14" height="42" fill="#0b1622"/>
-          <rect x="482" y="44" width="24" height="66" fill="#0f1e30"/>
-          <rect x="510" y="58" width="18" height="52" fill="#0d1828"/>
+          <rect x="340" y="58" width="18" height="52" fill="#0a0a0e"/>
+          <rect x="362" y="45" width="22" height="65" fill="#0c0c12"/>
+          <rect x="388" y="62" width="16" height="48" fill="#0a0a0e"/>
+          <rect x="408" y="38" width="28" height="72" fill="#0d0d15"/>
+          <rect x="440" y="52" width="20" height="58" fill="#0a0a0e"/>
+          <rect x="464" y="68" width="14" height="42" fill="#080808"/>
+          <rect x="482" y="44" width="24" height="66" fill="#0c0c12"/>
+          <rect x="510" y="58" width="18" height="52" fill="#0a0a0e"/>
           <!-- Window lights -->
           <rect x="366" y="50" width="3" height="2" fill="#f97316" opacity="0.5"/>
           <rect x="373" y="58" width="3" height="2" fill="#fbbf24" opacity="0.4"/>
@@ -326,70 +414,70 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         </g>
 
         <!-- Ground -->
-        <rect x="0" y="110" width="640" height="50" fill="#0a0f1a"/>
+        <rect x="0" y="110" width="640" height="50" fill="#050507"/>
         <!-- Ground top highlight -->
         <rect x="0" y="110" width="640" height="2" fill="#1a2a3a30"/>
 
         <!-- Road surface -->
-        <rect x="0" y="112" width="640" height="32" fill="#141c28"/>
+        <rect x="0" y="112" width="640" height="32" fill="#0f0f12"/>
         <!-- Road edges -->
-        <line x1="0" y1="112" x2="640" y2="112" stroke="#1e2d45" stroke-width="1"/>
-        <line x1="0" y1="144" x2="640" y2="144" stroke="#1e2d45" stroke-width="1"/>
+        <line x1="0" y1="112" x2="640" y2="112" stroke="#1e1e22" stroke-width="1"/>
+        <line x1="0" y1="144" x2="640" y2="144" stroke="#1e1e22" stroke-width="1"/>
         <!-- Road shoulder stripes -->
         <rect x="0" y="112" width="640" height="2" fill="#f9731612"/>
         <rect x="0" y="142" width="640" height="2" fill="#f9731612"/>
         <!-- Center dashes -->
-        <g stroke="#2a3a50" stroke-width="1.5" stroke-dasharray="18,12">
+        <g stroke="#1a1a28" stroke-width="1.5" stroke-dasharray="18,12">
           <line x1="0" y1="128" x2="640" y2="128"/>
         </g>
 
         <!-- Depot building (left) -->
         <g id="depot-building">
           <!-- Main warehouse body -->
-          <rect x="12" y="62" width="112" height="50" fill="#0d1828" stroke="#1e3050" stroke-width="1"/>
+          <rect x="12" y="62" width="112" height="50" fill="#0a0a0e" stroke="#1a1a22" stroke-width="1"/>
           <!-- Roof -->
-          <rect x="12" y="55" width="112" height="9" fill="#0b1420" stroke="#1e3050" stroke-width="1"/>
+          <rect x="12" y="55" width="112" height="9" fill="#080808" stroke="#1a1a22" stroke-width="1"/>
           <!-- Roof ridge -->
-          <line x1="12" y1="55" x2="124" y2="55" stroke="#243650" stroke-width="1"/>
+          <line x1="12" y1="55" x2="124" y2="55" stroke="#1a1a22" stroke-width="1"/>
           <!-- Bay doors (3 rolling doors) -->
-          <rect x="18" y="82" width="24" height="30" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
-          <line x1="18" y1="90" x2="42" y2="90" stroke="#1a2840" stroke-width=".5"/>
-          <line x1="18" y1="98" x2="42" y2="98" stroke="#1a2840" stroke-width=".5"/>
-          <line x1="18" y1="106" x2="42" y2="106" stroke="#1a2840" stroke-width=".5"/>
-          <rect x="48" y="82" width="24" height="30" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
-          <line x1="48" y1="90" x2="72" y2="90" stroke="#1a2840" stroke-width=".5"/>
-          <line x1="48" y1="98" x2="72" y2="98" stroke="#1a2840" stroke-width=".5"/>
-          <line x1="48" y1="106" x2="72" y2="106" stroke="#1a2840" stroke-width=".5"/>
-          <rect x="82" y="82" width="24" height="30" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
-          <line x1="82" y1="90" x2="106" y2="90" stroke="#1a2840" stroke-width=".5"/>
-          <line x1="82" y1="98" x2="106" y2="98" stroke="#1a2840" stroke-width=".5"/>
-          <line x1="82" y1="106" x2="106" y2="106" stroke="#1a2840" stroke-width=".5"/>
+          <rect x="18" y="82" width="24" height="30" rx="1" fill="#060608" stroke="#1e1e22" stroke-width="1"/>
+          <line x1="18" y1="90" x2="42" y2="90" stroke="#141418" stroke-width=".5"/>
+          <line x1="18" y1="98" x2="42" y2="98" stroke="#141418" stroke-width=".5"/>
+          <line x1="18" y1="106" x2="42" y2="106" stroke="#141418" stroke-width=".5"/>
+          <rect x="48" y="82" width="24" height="30" rx="1" fill="#060608" stroke="#1e1e22" stroke-width="1"/>
+          <line x1="48" y1="90" x2="72" y2="90" stroke="#141418" stroke-width=".5"/>
+          <line x1="48" y1="98" x2="72" y2="98" stroke="#141418" stroke-width=".5"/>
+          <line x1="48" y1="106" x2="72" y2="106" stroke="#141418" stroke-width=".5"/>
+          <rect x="82" y="82" width="24" height="30" rx="1" fill="#060608" stroke="#1e1e22" stroke-width="1"/>
+          <line x1="82" y1="90" x2="106" y2="90" stroke="#141418" stroke-width=".5"/>
+          <line x1="82" y1="98" x2="106" y2="98" stroke="#141418" stroke-width=".5"/>
+          <line x1="82" y1="106" x2="106" y2="106" stroke="#141418" stroke-width=".5"/>
           <!-- Office window -->
-          <rect x="110" y="68" width="10" height="8" rx="1" fill="#0a1520" stroke="#1e2d45" stroke-width=".5"/>
+          <rect x="110" y="68" width="10" height="8" rx="1" fill="#0a1520" stroke="#1e1e22" stroke-width=".5"/>
           <!-- Depot sign -->
           <text x="68" y="73" font-size="7" fill="#f97316" text-anchor="middle" letter-spacing="1.5" opacity="0.8">DEPOT</text>
           <!-- Orange indicator light -->
           <circle id="depot-led" cx="20" cy="64" r="2.5" fill="#f97316" opacity="0.7"/>
           <!-- Forklift silhouette -->
-          <rect x="15" y="100" width="18" height="10" rx="1" fill="#0f1e30"/>
-          <rect x="29" y="92" width="2" height="18" fill="#1a2a40"/>
-          <rect x="28" y="92" width="8" height="1.5" fill="#1a2a40"/>
-          <rect x="28" y="98" width="8" height="1.5" fill="#1a2a40"/>
+          <rect x="15" y="100" width="18" height="10" rx="1" fill="#0c0c12"/>
+          <rect x="29" y="92" width="2" height="18" fill="#141418"/>
+          <rect x="28" y="92" width="8" height="1.5" fill="#141418"/>
+          <rect x="28" y="98" width="8" height="1.5" fill="#141418"/>
         </g>
 
         <!-- GPS Tower (center) -->
         <g id="gps-tower">
           <!-- Pole -->
-          <line x1="318" y1="48" x2="318" y2="112" stroke="#2a3f60" stroke-width="2.5"/>
+          <line x1="318" y1="48" x2="318" y2="112" stroke="#222228" stroke-width="2.5"/>
           <!-- Cross arms -->
-          <line x1="306" y1="62" x2="330" y2="62" stroke="#2a3f60" stroke-width="1.5"/>
-          <line x1="309" y1="72" x2="327" y2="72" stroke="#2a3f60" stroke-width="1.5"/>
+          <line x1="306" y1="62" x2="330" y2="62" stroke="#222228" stroke-width="1.5"/>
+          <line x1="309" y1="72" x2="327" y2="72" stroke="#222228" stroke-width="1.5"/>
           <!-- Antenna tip -->
           <circle cx="318" cy="48" r="3" fill="#f97316" opacity="0.9"/>
           <line x1="318" y1="38" x2="318" y2="48" stroke="#f97316" stroke-width="1.5" opacity="0.7"/>
           <!-- Support cables -->
-          <line x1="318" y1="65" x2="298" y2="112" stroke="#1e2d45" stroke-width=".8"/>
-          <line x1="318" y1="65" x2="338" y2="112" stroke="#1e2d45" stroke-width=".8"/>
+          <line x1="318" y1="65" x2="298" y2="112" stroke="#1e1e22" stroke-width=".8"/>
+          <line x1="318" y1="65" x2="338" y2="112" stroke="#1e1e22" stroke-width=".8"/>
           <!-- GPS label -->
           <text x="318" y="108" font-size="6" fill="#f97316" text-anchor="middle" letter-spacing="1" opacity="0.7">GPS</text>
           <!-- Signal rings (animated via JS) -->
@@ -399,26 +487,26 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <!-- Destination warehouse (right) -->
         <g id="dest-building">
           <!-- Main body -->
-          <rect x="500" y="58" width="132" height="54" fill="#0d1828" stroke="#1e3050" stroke-width="1"/>
+          <rect x="500" y="58" width="132" height="54" fill="#0a0a0e" stroke="#1a1a22" stroke-width="1"/>
           <!-- Roof -->
-          <rect x="500" y="50" width="132" height="10" fill="#0b1420" stroke="#1e3050" stroke-width="1"/>
+          <rect x="500" y="50" width="132" height="10" fill="#080808" stroke="#1a1a22" stroke-width="1"/>
           <!-- Loading dock door (large, animates open on delivery) -->
-          <rect id="dest-door" x="506" y="76" width="38" height="36" rx="1" fill="#080f1c" stroke="#1e2d45" stroke-width="1"/>
-          <line id="dest-door-line1" x1="506" y1="86" x2="544" y2="86" stroke="#1a2840" stroke-width=".5"/>
-          <line id="dest-door-line2" x1="506" y1="96" x2="544" y2="96" stroke="#1a2840" stroke-width=".5"/>
-          <line id="dest-door-line3" x1="506" y1="106" x2="544" y2="106" stroke="#1a2840" stroke-width=".5"/>
+          <rect id="dest-door" x="506" y="76" width="38" height="36" rx="1" fill="#060608" stroke="#1e1e22" stroke-width="1"/>
+          <line id="dest-door-line1" x1="506" y1="86" x2="544" y2="86" stroke="#141418" stroke-width=".5"/>
+          <line id="dest-door-line2" x1="506" y1="96" x2="544" y2="96" stroke="#141418" stroke-width=".5"/>
+          <line id="dest-door-line3" x1="506" y1="106" x2="544" y2="106" stroke="#141418" stroke-width=".5"/>
           <!-- Dock bumpers -->
-          <rect x="504" y="108" width="4" height="4" rx="1" fill="#1a2a40"/>
-          <rect x="540" y="108" width="4" height="4" rx="1" fill="#1a2a40"/>
+          <rect x="504" y="108" width="4" height="4" rx="1" fill="#141418"/>
+          <rect x="540" y="108" width="4" height="4" rx="1" fill="#141418"/>
           <!-- Side windows -->
-          <rect x="552" y="64" width="16" height="10" rx="1" fill="#070c18" stroke="#1e2d45" stroke-width=".5"/>
-          <rect x="574" y="64" width="16" height="10" rx="1" fill="#070c18" stroke="#1e2d45" stroke-width=".5"/>
+          <rect x="552" y="64" width="16" height="10" rx="1" fill="#000000" stroke="#1e1e22" stroke-width=".5"/>
+          <rect x="574" y="64" width="16" height="10" rx="1" fill="#000000" stroke="#1e1e22" stroke-width=".5"/>
           <!-- Sign -->
           <text x="588" y="76" font-size="6" fill="#00d4ff" text-anchor="middle" letter-spacing="1" opacity="0.7">WHSE</text>
           <!-- Delivery indicator (hidden until Act 5) -->
           <circle id="dest-led" cx="502" cy="60" r="2.5" fill="#10b981" opacity="0"/>
           <!-- Dock plate -->
-          <rect x="506" y="110" width="38" height="3" fill="#1e3050"/>
+          <rect x="506" y="110" width="38" height="3" fill="#161620"/>
         </g>
 
         <!-- Road distance markers -->
@@ -431,7 +519,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <!-- Truck group (animated x position) -->
         <g id="truck-group" transform="translate(90, 100)">
           <!-- Trailer -->
-          <rect x="0" y="2" width="56" height="21" rx="2" fill="#1a2840" stroke="#253c5a" stroke-width="1"/>
+          <rect x="0" y="2" width="56" height="21" rx="2" fill="#141418" stroke="#1a1a22" stroke-width="1"/>
           <!-- Orange stripe on trailer top -->
           <rect x="2" y="3" width="52" height="3" rx="1" fill="#f97316" opacity="0.7"/>
           <!-- Cargo label -->
@@ -440,32 +528,32 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
           <rect x="1" y="6" width="2" height="4" rx=".5" fill="#ef4444" opacity="0.8"/>
           <rect x="1" y="14" width="2" height="4" rx=".5" fill="#ef4444" opacity="0.8"/>
           <!-- Cab -->
-          <rect x="56" y="1" width="22" height="22" rx="2" fill="#1e3050" stroke="#2a4570" stroke-width="1"/>
+          <rect x="56" y="1" width="22" height="22" rx="2" fill="#161620" stroke="#1a1a28" stroke-width="1"/>
           <!-- Windshield -->
-          <rect x="58" y="3" width="14" height="11" rx="1" fill="#090e1c" stroke="#2a3a55" stroke-width=".5"/>
+          <rect x="58" y="3" width="14" height="11" rx="1" fill="#090e1c" stroke="#1a1a28" stroke-width=".5"/>
           <!-- Windshield gleam -->
           <line x1="59" y1="4" x2="63" y2="9" stroke="#ffffff" stroke-width=".6" opacity="0.2"/>
           <!-- Cab top vent -->
-          <rect x="58" y="0" width="14" height="2" rx="1" fill="#253c5a"/>
+          <rect x="58" y="0" width="14" height="2" rx="1" fill="#1a1a22"/>
           <!-- Exhaust stack -->
-          <rect x="58" y="-9" width="2.5" height="10" rx="1" fill="#253c5a"/>
+          <rect x="58" y="-9" width="2.5" height="10" rx="1" fill="#1a1a22"/>
           <!-- Exhaust smoke (animated via JS) -->
           <g id="exhaust-smoke"></g>
           <!-- Front grille -->
-          <rect x="76" y="10" width="4" height="10" rx="1" fill="#0d1828"/>
-          <line x1="76" y1="12" x2="80" y2="12" stroke="#253c5a" stroke-width=".5"/>
-          <line x1="76" y1="15" x2="80" y2="15" stroke="#253c5a" stroke-width=".5"/>
-          <line x1="76" y1="18" x2="80" y2="18" stroke="#253c5a" stroke-width=".5"/>
+          <rect x="76" y="10" width="4" height="10" rx="1" fill="#0a0a0e"/>
+          <line x1="76" y1="12" x2="80" y2="12" stroke="#1a1a22" stroke-width=".5"/>
+          <line x1="76" y1="15" x2="80" y2="15" stroke="#1a1a22" stroke-width=".5"/>
+          <line x1="76" y1="18" x2="80" y2="18" stroke="#1a1a22" stroke-width=".5"/>
           <!-- Headlights -->
           <rect x="76" y="3" width="4" height="4" rx=".5" fill="#fbbf24" opacity="0.9"/>
           <ellipse id="headlight-beam" cx="82" cy="5" rx="14" ry="6" fill="url(#headlight-grad)" opacity="0"/>
           <!-- Wheels (trailer: 2 axles, cab: 1 axle) -->
-          <circle cx="13" cy="24" r="5.5" fill="#0b1525" stroke="#253c5a"/>
-          <circle cx="13" cy="24" r="2.5" fill="#1a2840"/>
-          <circle cx="43" cy="24" r="5.5" fill="#0b1525" stroke="#253c5a"/>
-          <circle cx="43" cy="24" r="2.5" fill="#1a2840"/>
-          <circle cx="65" cy="24" r="5" fill="#0b1525" stroke="#253c5a"/>
-          <circle cx="65" cy="24" r="2" fill="#1a2840"/>
+          <circle cx="13" cy="24" r="5.5" fill="#0b1525" stroke="#1a1a22"/>
+          <circle cx="13" cy="24" r="2.5" fill="#141418"/>
+          <circle cx="43" cy="24" r="5.5" fill="#0b1525" stroke="#1a1a22"/>
+          <circle cx="43" cy="24" r="2.5" fill="#141418"/>
+          <circle cx="65" cy="24" r="5" fill="#0b1525" stroke="#1a1a22"/>
+          <circle cx="65" cy="24" r="2" fill="#141418"/>
           <!-- Orange cab stripe -->
           <rect x="56" y="1" width="22" height="3" rx="1" fill="#f97316" opacity="0.6"/>
         </g>
@@ -499,16 +587,16 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
             <stop offset="100%" stop-color="#10b98108"/>
           </linearGradient>
         </defs>
-        <path id="path-0" d="M 148 36 Q 197 20 242 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
-        <path id="path-1" d="M 348 36 Q 397 20 442 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
-        <path id="path-2" d="M 548 36 Q 580 20 610 36" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+        <path id="path-0" d="M 148 36 Q 197 20 242 36" fill="none" stroke="#2c2c2c" stroke-width="1.5"/>
+        <path id="path-1" d="M 348 36 Q 397 20 442 36" fill="none" stroke="#2c2c2c" stroke-width="1.5"/>
+        <path id="path-2" d="M 548 36 Q 580 20 610 36" fill="none" stroke="#2c2c2c" stroke-width="1.5"/>
         <!-- Node 1: GPS Tracker -->
-        <rect x="4" y="14" width="144" height="44" rx="8" fill="url(#node-grad-orange)" stroke="#1e2d4a" stroke-width="1"/>
+        <rect x="4" y="14" width="144" height="44" rx="8" fill="url(#node-grad-orange)" stroke="#2c2c2c" stroke-width="1"/>
         <text x="76" y="32" font-size="14" text-anchor="middle">📍</text>
         <text x="76" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">GPS Tracker</text>
         <text id="node-val-1" x="76" y="56" font-size="8" fill="#64748b" text-anchor="middle">OFFLINE</text>
         <!-- Node 2: Fleet Gateway -->
-        <rect x="244" y="14" width="104" height="44" rx="8" fill="#0d1526" stroke="#f9731640" stroke-width="1"/>
+        <rect x="244" y="14" width="104" height="44" rx="8" fill="#111111" stroke="#f9731640" stroke-width="1"/>
         <text x="296" y="32" font-size="14" text-anchor="middle">🛡️</text>
         <text x="296" y="45" font-size="9" fill="#e0f2fe" text-anchor="middle" letter-spacing=".5">Fleet Gateway</text>
         <text id="node-val-2" x="296" y="56" font-size="8" fill="#64748b" text-anchor="middle">IDLE</text>
@@ -542,6 +630,27 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       </div>
     </div>
 
+    <!-- Invoice summary card (Act 5) -->
+    <div id="left-inv">
+      <div class="li-hdr">
+        <div class="li-title">🧾 Route Invoice · INV-2024-06-21-10023</div>
+        <span class="li-badge">✓ DELIVERED</span>
+      </div>
+      <div class="li-rows">
+        <div class="li-row"><span class="li-row-k">Carrier</span><span class="li-row-v">Pacific Coast Freight</span></div>
+        <div class="li-row"><span class="li-row-k">Route</span><span class="li-row-v">SFO-DEPOT → LA-WHSE</span></div>
+        <div class="li-row"><span class="li-row-k">Vehicle</span><span class="li-row-v" style="font-family:monospace;font-size:10px;color:var(--orange)">TRK-CA-10023</span></div>
+        <div class="li-divider"></div>
+        <div class="li-row"><span class="li-row-k">Highway: 543.8 km × $0.50</span><span class="li-row-v" style="color:var(--orange)">$271.90</span></div>
+        <div class="li-row"><span class="li-row-k">Urban: 70.5 km × $0.65</span><span class="li-row-v" style="color:var(--amber)">$45.83</span></div>
+      </div>
+      <div class="li-totals">
+        <div class="li-tot"><div class="li-tot-lbl">Highway</div><div class="li-tot-val orange">$271.90</div></div>
+        <div class="li-tot"><div class="li-tot-lbl">Urban</div><div class="li-tot-val amber">$45.83</div></div>
+        <div class="li-tot orange-card"><div class="li-tot-lbl">Total</div><div class="li-tot-val orange">$317.73</div></div>
+      </div>
+    </div>
+
     <!-- Progress -->
     <div id="prog-wrap">
       <div id="prog-bar"><div id="prog-fill"></div></div>
@@ -563,100 +672,183 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div id="term-title">Units360 · Fleet Terminal</div>
       <div id="term-mode-badge" class="fmt">FMT</div>
     </div>
-    <div id="term-tabs">
-      <div class="term-tab active" id="tab-unit">UNIT</div>
-      <div class="term-tab" id="tab-account">ACCOUNT</div>
-      <div class="term-tab" id="tab-txn">TRANSACTION</div>
-    </div>
     <div id="term-body">
 
-      <!-- FMT View (Act 1) -->
-      <div id="fmt-view">
-        <div class="fmt-section">
-          <div class="fmt-section-hdr">Unit Definition</div>
-          <div class="fmt-fields">
-            <div class="fmt-field"><span class="fmt-field-label">Unit ID</span><span class="fmt-field-value" id="ff-unit-id"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Display Name</span><span class="fmt-field-value" id="ff-display"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Direction</span><span class="fmt-field-value" id="ff-direction"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Reset Period</span><span class="fmt-field-value" id="ff-reset"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Precision</span><span class="fmt-field-value" id="ff-precision"></span></div>
+      <!-- ── ALWAYS-VISIBLE FMT DEFINITION ── -->
+      <div id="mdt-always">
+
+        <!-- Full typewriter form (Act 1 only) -->
+        <div id="mdt-full">
+          <div class="fmt-section">
+            <div class="fmt-section-hdr">Unit Definition</div>
+            <div class="fmt-fields">
+              <div class="fmt-field"><span class="fmt-field-label">Unit ID</span><span class="fmt-field-value" id="ff-unit-id"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Display Name</span><span class="fmt-field-value" id="ff-display"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Direction</span><span class="fmt-field-value" id="ff-direction"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Reset Period</span><span class="fmt-field-value" id="ff-reset"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Precision</span><span class="fmt-field-value" id="ff-precision"></span></div>
+            </div>
+          </div>
+          <div class="fmt-section">
+            <div class="fmt-section-hdr">Vehicle Account</div>
+            <div class="fmt-fields">
+              <div class="fmt-field"><span class="fmt-field-label">Account ID</span><span class="fmt-field-value" id="ff-acct-id"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Vehicle Type</span><span class="fmt-field-value" id="ff-vehicle"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Rate Plan</span><span class="fmt-field-value" id="ff-rate"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Cargo Class</span><span class="fmt-field-value" id="ff-cargo"></span></div>
+            </div>
+          </div>
+          <div class="fmt-section">
+            <div class="fmt-section-hdr">Transaction Rules</div>
+            <div class="fmt-fields">
+              <div class="fmt-field"><span class="fmt-field-label">Base Rate</span><span class="fmt-field-value" id="ff-base"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Fuel Surcharge</span><span class="fmt-field-value" id="ff-fuel"></span></div>
+              <div class="fmt-field"><span class="fmt-field-label">Urban Premium</span><span class="fmt-field-value" id="ff-urban"></span></div>
+            </div>
           </div>
         </div>
-        <div class="fmt-section">
-          <div class="fmt-section-hdr">Vehicle Account</div>
-          <div class="fmt-fields">
-            <div class="fmt-field"><span class="fmt-field-label">Account ID</span><span class="fmt-field-value" id="ff-acct-id"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Vehicle Type</span><span class="fmt-field-value" id="ff-vehicle"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Rate Plan</span><span class="fmt-field-value" id="ff-rate"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Cargo Class</span><span class="fmt-field-value" id="ff-cargo"></span></div>
-          </div>
+
+        <!-- Compact chips (Acts 2–5) -->
+        <div id="mdt-compact">
+          <div class="mc-chip orange"><span>📍</span><span>km</span><span class="mc-chip-key">UNIT</span><span>·</span><span>CUMULATIVE</span><span class="mc-chip-key">per-route reset</span></div>
+          <div class="mc-chip teal"><span>🚛</span><span>TRK-CA-10023</span><span class="mc-chip-key">ACCOUNT</span><span>·</span><span>$0.42/km base</span><span class="mc-chip-key">Standard-Fleet-KM</span></div>
         </div>
-        <div class="fmt-section">
-          <div class="fmt-section-hdr">Transaction Rules</div>
-          <div class="fmt-fields">
-            <div class="fmt-field"><span class="fmt-field-label">Base Rate</span><span class="fmt-field-value" id="ff-base"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Fuel Surcharge</span><span class="fmt-field-value" id="ff-fuel"></span></div>
-            <div class="fmt-field"><span class="fmt-field-label">Urban Premium</span><span class="fmt-field-value" id="ff-urban"></span></div>
-          </div>
-        </div>
+
       </div>
 
-      <!-- Event View (Acts 2–4) -->
-      <div id="event-view" style="display:none;position:absolute;inset:0;overflow:hidden;flex-direction:column;">
-        <div id="ev-dashboard">
-          <div class="ev-dash-grid">
-            <div class="ev-metric dist">
-              <div class="ev-metric-top"><span class="ev-metric-icon">📍</span><span class="ev-metric-label">Distance</span></div>
-              <div class="ev-metric-val" id="ev-dist-val">0.0</div>
-              <div class="ev-metric-unit">km traveled this route</div>
-            </div>
-            <div class="ev-metric spd" id="ev-speed-card">
-              <div class="ev-metric-top"><span class="ev-metric-icon">🚛</span><span class="ev-metric-label">Speed</span></div>
-              <div class="ev-metric-val" id="ev-speed-val">0</div>
-              <div class="ev-metric-unit">km/h current</div>
-            </div>
-            <div class="ev-metric cost">
-              <div class="ev-metric-top"><span class="ev-metric-icon">💰</span><span class="ev-metric-label">Route Cost</span></div>
-              <div class="ev-metric-val" id="ev-cost-val">$0.00</div>
-              <div class="ev-metric-unit">accrued this route</div>
-            </div>
-            <div class="ev-metric eta" id="ev-eta-card">
-              <div class="ev-metric-top"><span class="ev-metric-icon">🕐</span><span class="ev-metric-label">ETA</span></div>
-              <div class="ev-metric-val" id="ev-eta-val">—</div>
-              <div class="ev-metric-unit" id="ev-eta-unit">estimated arrival</div>
-            </div>
-          </div>
-          <div id="ev-seg-wrap">
-            <div id="ev-seg-title">
-              <span>Route Segments</span>
-              <span id="event-segment" style="color:var(--orange)">DISPATCH ↗</span>
-            </div>
-            <div id="ev-seg-track">
-              <div class="seg-part ramp"    style="left:0%;width:10%"></div>
-              <div class="seg-part highway" style="left:10%;width:75%"></div>
-              <div class="seg-part urban"   style="left:85%;width:15%"></div>
-              <div id="ev-seg-cursor" style="left:0%"></div>
-            </div>
-            <div id="ev-seg-labels"><span>Depot</span><span>Ramp</span><span>I-5 Hwy</span><span>Urban</span><span>WHSE</span></div>
-            <div id="ev-seg-rate-label" style="color:var(--orange)">🚛 Dispatch · Ramp-up · $0.42/km base</div>
-          </div>
-        </div>
-        <div id="ev-json-hdr">
-          <div class="pulse-dot" id="event-pulse"></div>
-          <span>Live GPS CloudEvent</span>
-          <span id="event-count" style="color:var(--orange);font-weight:700">0</span>
-          <span style="font-size:8px;margin-left:auto;opacity:.6">→ Units360 RTE</span>
-        </div>
-        <div id="event-stream"></div>
-        <div id="ev-footer">
-          <span class="ev-legend"><span class="ev-leg-box" style="background:#f9731612;outline:1px solid #f9731680"></span> qty Δ</span>
-          <span class="ev-legend"><span class="ev-leg-box" style="background:#f59e0b12;outline:1px solid #f59e0b80"></span> speed Δ</span>
-          <span class="ev-legend"><span class="ev-leg-box" style="background:#10b98112;outline:1px solid #10b98180"></span> cost Δ</span>
-        </div>
-      </div>
+      <!-- ── DYNAMIC AREA: events / invoice ── -->
+      <div id="dyn-area">
 
-      <!-- Invoice View (Act 5) -->
-      <div id="invoice-view" style="display:none;position:absolute;inset:0;overflow:hidden;padding:10px 14px;flex-direction:column;"></div>
+        <!-- Event View (Acts 2–4) -->
+        <div id="event-view" style="display:none;flex-direction:column;">
+          <div id="ev-dashboard">
+            <div class="ev-dash-grid">
+              <div class="ev-metric dist">
+                <div class="ev-metric-top"><span class="ev-metric-icon">📍</span><span class="ev-metric-label">Distance</span></div>
+                <div class="ev-metric-val" id="ev-dist-val">0.0</div>
+                <div class="ev-metric-unit">km traveled this route</div>
+              </div>
+              <div class="ev-metric spd" id="ev-speed-card">
+                <div class="ev-metric-top"><span class="ev-metric-icon">🚛</span><span class="ev-metric-label">Speed</span></div>
+                <div class="ev-metric-val" id="ev-speed-val">0</div>
+                <div class="ev-metric-unit">km/h current</div>
+              </div>
+              <div class="ev-metric cost">
+                <div class="ev-metric-top"><span class="ev-metric-icon">💰</span><span class="ev-metric-label">Route Cost</span></div>
+                <div class="ev-metric-val" id="ev-cost-val">$0.00</div>
+                <div class="ev-metric-unit">accrued this route</div>
+              </div>
+              <div class="ev-metric eta" id="ev-eta-card">
+                <div class="ev-metric-top"><span class="ev-metric-icon">🕐</span><span class="ev-metric-label">ETA</span></div>
+                <div class="ev-metric-val" id="ev-eta-val">—</div>
+                <div class="ev-metric-unit" id="ev-eta-unit">estimated arrival</div>
+              </div>
+            </div>
+            <div id="ev-seg-wrap">
+              <div id="ev-seg-title">
+                <span>Route Segments</span>
+                <span id="event-segment" style="color:var(--orange)">DISPATCH ↗</span>
+              </div>
+              <div id="ev-seg-track">
+                <div class="seg-part ramp"    style="left:0%;width:10%"></div>
+                <div class="seg-part highway" style="left:10%;width:75%"></div>
+                <div class="seg-part urban"   style="left:85%;width:15%"></div>
+                <div id="ev-seg-cursor" style="left:0%"></div>
+              </div>
+              <div id="ev-seg-labels"><span>Depot</span><span>Ramp</span><span>I-5 Hwy</span><span>Urban</span><span>WHSE</span></div>
+              <div id="ev-seg-rate-label" style="color:var(--orange)">🚛 Dispatch · Ramp-up · $0.42/km base</div>
+            </div>
+          </div>
+          <div id="ev-json-hdr">
+            <div class="pulse-dot" id="event-pulse"></div>
+            <span>Live GPS CloudEvent</span>
+            <span id="event-count" style="color:var(--orange);font-weight:700">0</span>
+            <span style="font-size:8px;margin-left:auto;opacity:.6">→ Units360 Live</span>
+          </div>
+          <div id="event-stream"></div>
+          <div id="ev-footer">
+            <span class="ev-legend"><span class="ev-leg-box" style="background:#f9731612;outline:1px solid #f9731680"></span> qty Δ</span>
+            <span class="ev-legend"><span class="ev-leg-box" style="background:#f59e0b12;outline:1px solid #f59e0b80"></span> speed Δ</span>
+            <span class="ev-legend"><span class="ev-leg-box" style="background:#10b98112;outline:1px solid #10b98180"></span> cost Δ</span>
+          </div>
+        </div>
+
+        <!-- Invoice View (Act 5) — real invoice document -->
+        <div id="invoice-view" style="display:none;padding:14px 16px;overflow-y:auto;flex-direction:column;">
+          <div class="inv-doc" id="inv-doc">
+            <!-- Letterhead -->
+            <div class="inv-lh inv-reveal" style="opacity:0">
+              <div>
+                <div class="inv-logo-txt">Pacific Coast<span> Freight</span></div>
+                <div class="inv-tagline">Fleet Route Metering · Carrier Invoice</div>
+              </div>
+              <div class="inv-lh-right">
+                <div class="inv-doc-label">Invoice</div>
+                <div class="inv-doc-num">#INV-2024-06-21-10023</div>
+              </div>
+            </div>
+            <!-- Meta -->
+            <div class="inv-meta inv-reveal" style="opacity:0">
+              <div class="inv-meta-cell">
+                <div class="inv-meta-lbl">Date</div>
+                <div class="inv-meta-val">June 21, 2024</div>
+              </div>
+              <div class="inv-meta-cell">
+                <div class="inv-meta-lbl">Vehicle ID</div>
+                <div class="inv-meta-val mono">TRK-CA-10023</div>
+              </div>
+              <div class="inv-meta-cell">
+                <div class="inv-meta-lbl">Status</div>
+                <div class="inv-meta-val sent">✓ DELIVERED</div>
+              </div>
+            </div>
+            <!-- Parties -->
+            <div class="inv-parties inv-reveal" style="opacity:0">
+              <div class="inv-party">
+                <div class="inv-party-lbl">From</div>
+                <div class="inv-party-name">Pacific Coast Freight</div>
+                <div class="inv-party-sub">Fleet Carrier · SFO–LA Route</div>
+              </div>
+              <div class="inv-party">
+                <div class="inv-party-lbl">Bill To</div>
+                <div class="inv-party-name">Westside Logistics Co.</div>
+                <div class="inv-party-sub">Shipper · Account TRK-CA-10023</div>
+              </div>
+            </div>
+            <!-- Line items -->
+            <table class="inv-table">
+              <thead class="inv-reveal" style="opacity:0">
+                <tr><th>Description</th><th>Km</th><th>Rate</th><th>Amount</th></tr>
+              </thead>
+              <tbody>
+                <tr class="inv-main-row inv-reveal" style="opacity:0">
+                  <td>Highway Transit — I-5 South<br><small>Ramp + I-5 · 543.8 km · Standard rate</small></td>
+                  <td>543.8</td><td>$0.50/km</td><td>$271.90</td>
+                </tr>
+                <tr class="inv-main-row inv-hi-row inv-reveal" style="opacity:0">
+                  <td>Urban Last Mile — Delivery Zone<br><small>City streets · 70.5 km · Premium surcharge</small></td>
+                  <td>70.5</td><td>$0.65/km</td><td>$45.83</td>
+                </tr>
+                <tr class="inv-sub-row inv-reveal" style="opacity:0">
+                  <td colspan="3">⛽ Fuel Surcharge (614.3 km × $0.00 included in rates above)</td>
+                  <td>incl.</td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- Totals -->
+            <div class="inv-totals inv-reveal" style="opacity:0">
+              <div class="inv-t-row"><span>Highway km (543.8)</span><span class="inv-t-orange">$271.90</span></div>
+              <div class="inv-t-row"><span>Urban km (70.5)</span><span class="inv-t-amber">$45.83</span></div>
+              <div class="inv-t-final"><span>Total Route Charge</span><div><span class="inv-t-orange-big">$317.73</span><span class="inv-t-pct">614.3 km</span></div></div>
+            </div>
+            <!-- Footer -->
+            <div class="inv-footer inv-reveal" style="opacity:0">
+              Powered by <span>Units360.ai</span> · Per-km metering · route: SFO-DEPOT → LA-WHSE · 2024-06-21
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dyn-area -->
 
     </div>
   </div>
@@ -700,7 +892,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     <span class="dnav-pill" data-target="sec-account">Account</span>
     <span class="dnav-pill" data-target="sec-txn">Transaction</span>
     <span class="dnav-pill" data-target="sec-fmt">FMT</span>
-    <span class="dnav-pill" data-target="sec-rte">RTE</span>
+    <span class="dnav-pill" data-target="sec-rte">Live Processing</span>
     <span class="dnav-pill" data-target="sec-cloud">CloudEvents</span>
   </div>
   <div id="drawer-body">
@@ -714,7 +906,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <div class="dflow">
           <div class="dflow-node highlight">1. Define<br><small>FMT</small></div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node">2. Deploy<br><small>RTE</small></div>
+          <div class="dflow-node">2. Deploy<br><small>Live</small></div>
           <span class="dflow-arrow">→</span>
           <div class="dflow-node">3. Stream<br><small>GPS Events</small></div>
           <span class="dflow-arrow">→</span>
@@ -813,9 +1005,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
     <div class="dsec" id="sec-rte">
       <div class="dsec-eyebrow">Runtime Engine</div>
-      <div class="dsec-title"><span class="dsec-icon">⚙️</span> RTE — Run Time Engine</div>
+      <div class="dsec-title"><span class="dsec-icon">⚙️</span> Live Processing Engine</div>
       <div class="dsec-body">
-        <p>The <strong>RTE</strong> is the live processing layer. It ingests GPS events, classifies route segments, applies pricing rules, and maintains the distance ledger — all in real time.</p>
+        <p>The <strong>Live Processing Engine</strong> is the live processing layer. It ingests GPS events, classifies route segments, applies pricing rules, and maintains the distance ledger — all in real time.</p>
         <div class="dfield-table">
           <div class="dfield-row"><span class="dfield-key">GPS ingestion</span><span class="dfield-val">Accepts CloudEvents from vehicle GPS units via REST POST</span></div>
           <div class="dfield-row"><span class="dfield-key">Segment classifier</span><span class="dfield-val">Detects highway vs urban based on speed + geofence</span></div>
@@ -826,7 +1018,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
         <div class="dflow">
           <div class="dflow-node">GPS Device</div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node highlight">RTE</div>
+          <div class="dflow-node highlight">Live</div>
           <span class="dflow-arrow">→</span>
           <div class="dflow-node">Ledger</div>
           <span class="dflow-arrow">→</span>
@@ -839,8 +1031,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
       <div class="dsec-eyebrow">Event Protocol</div>
       <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The GPS Payload</div>
       <div class="dsec-body">
-        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong>. Every GPS ping the vehicle sends is formatted as a CloudEvent JSON payload and POSTed to the Units360 RTE endpoint.</p>
-        <div class="dcode"><span class="cc">// Vehicle GPS → Units360 RTE (one ping)</span>
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong>. Every GPS ping the vehicle sends is formatted as a CloudEvent JSON payload and POSTed to the Units360 Live Processing endpoint.</p>
+        <div class="dcode"><span class="cc">// Vehicle GPS → Units360 Live (one ping)</span>
 POST /api/v1/events/TRK-CA-10023
 Content-Type: application/cloudevents+json
 
@@ -1062,7 +1254,7 @@ function updateSky() {
   const totalMin = getCurrentMinutes();
   // Simple linear day interpolation for logistics scene
   const t = Math.max(0, Math.min(1, (totalMin - 300) / 600));
-  const r1=10,g1=14,b1=26, r2=15,g2=22,b2=38;
+  const r1=5,g1=5,b1=8, r2=8,g2=8,b2=14;
   const r = Math.round(r1+(r2-r1)*t), g = Math.round(g1+(g2-g1)*t), b = Math.round(b1+(b2-b1)*t);
   $('sky-top').setAttribute('stop-color', `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`);
   $('sky-bot').setAttribute('stop-color', `#${(r+3).toString(16).padStart(2,'0')}${(g+4).toString(16).padStart(2,'0')}${(b+6).toString(16).padStart(2,'0')}`);
@@ -1328,19 +1520,7 @@ function updateEventDashboard() {
   }
 }
 
-// ── INVOICE ──
-function renderInvoice() {
-  const container = $('invoice-view');
-  if (invoiceLineIdx >= INVOICE_LINES.length) return;
-  const line = INVOICE_LINES[invoiceLineIdx++];
-  const el = document.createElement('div');
-  el.className = `inv-json-line ${line.color} reveal`;
-  el.textContent = line.txt;
-  container.appendChild(el);
-  if (invoiceLineIdx < INVOICE_LINES.length) {
-    setTimeout(renderInvoice, 280 / state.speed);
-  }
-}
+// renderInvoice replaced by revealInvoice() in setupAct
 
 // ── OVERLAY ──
 function showOverlay(act, onDone) {
@@ -1356,8 +1536,20 @@ function showOverlay(act, onDone) {
   }, 1800 / state.speed);
 }
 
+// ── INVOICE REVEAL ──
+let invRevealFired = false;
+function revealInvoice() {
+  const rows = document.querySelectorAll('.inv-reveal');
+  rows.forEach((el, i) => {
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(0)';
+    }, i * 180 / state.speed);
+  });
+}
+
 // ── ACT SETUP ──
-function setupAct(idx, fromOverlay = true) {
+function setupAct(idx, fromNav = false) {
   state.actIndex = idx;
   state.actElapsed = 0;
   const act = ACTS[idx];
@@ -1394,17 +1586,35 @@ function setupAct(idx, fromOverlay = true) {
   $('term-mode-badge').className = idx === 0 ? 'fmt' : idx === 4 ? 'invoice' : 'event';
   $('term-mode-badge').textContent = idx === 0 ? 'FMT' : idx === 4 ? 'INVOICE' : 'GPS';
 
-  // Views
-  $('fmt-view').style.display = idx === 0 ? 'flex' : 'none';
+  // MDT always: full form in act 0, compact chips in acts 1+
+  $('mdt-full').style.display = idx === 0 ? 'flex' : 'none';
+  $('mdt-compact').style.display = idx === 0 ? 'none' : 'flex';
+
+  // Dynamic area views
   $('event-view').style.display = (idx >= 1 && idx <= 3) ? 'flex' : 'none';
   $('invoice-view').style.display = idx === 4 ? 'flex' : 'none';
 
-  if (idx === 0) startFMTTyping();
-  if (idx === 4) { invoiceLineIdx = 0; $('invoice-view').innerHTML = ''; setTimeout(renderInvoice, 400); }
+  // Widen right panel for invoice act
+  if (idx === 4) $('right-panel').classList.add('inv-wide');
+  else $('right-panel').classList.remove('inv-wide');
+
+  // Left invoice card: show on act 4
+  const li = $('left-inv');
+  if (idx === 4) { li.classList.add('show'); li.style.display = 'block'; }
+  else { li.classList.remove('show'); li.style.display = 'none'; }
+
+  if (idx === 0) {
+    if (!fromNav) startFMTTyping();
+  }
   if (idx === 4) {
+    invRevealFired = false;
+    // Reset invoice rows to hidden
+    document.querySelectorAll('.inv-reveal').forEach(el => { el.style.opacity = '0'; });
     state.kmBalance = 614.3;
     $('km-balance').textContent = '614.3';
     $('km-balance').className = 'done';
+    setTimeout(revealInvoice, 400 / state.speed);
+    invRevealFired = true;
   }
   if (idx >= 1 && idx <= 3) {
     updateEventDashboard();
@@ -1451,11 +1661,10 @@ function loop(ts) {
         const nextIdx = state.actIndex + 1;
         state.playing = false;
         $('btn-play').textContent = '▶ Play';
-        showOverlay(ACTS[nextIdx], () => {
-          setupAct(nextIdx, false);
-          state.playing = true;
-          $('btn-play').textContent = '⏸ Pause';
-        });
+        setupAct(nextIdx, false);
+        const ah = $('act-header');
+        ah.classList.remove('flash'); void ah.offsetWidth; ah.classList.add('flash');
+        setTimeout(() => { state.playing = true; $('btn-play').textContent = '⏸ Pause'; }, 1000);
       } else {
         state.playing = false;
         $('btn-play').textContent = '▶ Play';
@@ -1480,39 +1689,34 @@ $('btn-play').addEventListener('click', () => {
 
 $('btn-next').addEventListener('click', () => {
   if (state.actIndex < ACTS.length - 1) {
-    clearTimeout(overlayTimer);
-    $('overlay').classList.remove('show');
     state.playing = false;
     $('btn-play').textContent = '▶ Play';
     const next = state.actIndex + 1;
-    showOverlay(ACTS[next], () => setupAct(next, false));
+    setupAct(next, true);
+    const ah = $('act-header');
+    ah.classList.remove('flash'); void ah.offsetWidth; ah.classList.add('flash');
   }
 });
 
 $('btn-prev').addEventListener('click', () => {
   if (state.actIndex > 0) {
-    clearTimeout(overlayTimer);
-    $('overlay').classList.remove('show');
     state.playing = false;
     $('btn-play').textContent = '▶ Play';
     const prev = state.actIndex - 1;
     // Restore km balance to start of prev act
     const kmAtAct = [0, 0, 45, 630, 614.3];
     state.kmBalance = kmAtAct[prev];
-    setupAct(prev, false);
+    setupAct(prev, true);
   }
 });
 
 $('btn-reset').addEventListener('click', () => {
-  clearTimeout(overlayTimer);
-  $('overlay').classList.remove('show');
   state.playing = false; state.kmBalance = 0; state.eventCount = 0;
   $('btn-play').textContent = '▶ Play';
   flowParticles.forEach(p => p.el.remove()); flowParticles = [];
   pingRings.forEach(r => r.el.remove()); pingRings = [];
   smokeParticles.forEach(p => p.el.remove()); smokeParticles = [];
   $('event-stream').innerHTML = '';
-  $('invoice-view').innerHTML = '';
   setupAct(0, false);
 });
 
