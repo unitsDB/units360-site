@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Units360.ai — Live AI Token Metering Demo</title>
+<title>Units360.ai — AI Spend Management Demo</title>
 <link rel="stylesheet" href="demo-shared.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -124,12 +124,22 @@
     min-height: 0;
   }
 
+  /* ── FLOW ROW: commentary (left) + diagram (right) ── */
+  #flow-row {
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    height: 175px;
+    gap: 10px;
+    padding: 10px 28px 0;
+  }
+
   /* ── FLOW AREA ────────────────────────────────── */
   #flow-area {
     position: relative;
-    flex-shrink: 0;
-    padding: 16px 28px 0;
-    height: 170px;
+    flex: 1;
+    min-width: 0;
+    padding: 6px 0 0;
   }
 
   #flow-svg {
@@ -293,10 +303,136 @@
   }
 
   #act-desc {
-    font-size: 13px;
-    line-height: 1.7;
+    font-size: 12px;
+    line-height: 1.6;
     color: var(--text-mid);
+    flex: 0 0 auto;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  /* ── AI SPEND MONITOR ──────────────────────────── */
+  #spend-monitor {
     flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .mon-header {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
+
+  .mon-service {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mon-svc-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-mid);
+    width: 78px;
+    flex-shrink: 0;
+  }
+
+  .mon-svc-native {
+    font-size: 9px;
+    color: var(--text-dim);
+    width: 68px;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .mon-svc-cr {
+    font-size: 15px;
+    font-weight: 800;
+    width: 44px;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    letter-spacing: -0.5px;
+  }
+
+  .mon-bar-wrap {
+    flex: 1;
+    background: var(--surface3);
+    border-radius: 3px;
+    height: 5px;
+    overflow: hidden;
+    margin-left: 4px;
+  }
+
+  .mon-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.12s linear;
+  }
+
+  .mon-total {
+    padding: 7px 0 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .mon-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .mon-total-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .mon-total-val {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mon-total-bar {
+    background: var(--surface3);
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .mon-total-fill {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--blue));
+    transition: width 0.08s linear, background 0.5s;
   }
 
   /* Event log */
@@ -514,21 +650,21 @@
     border-top: 1px solid var(--border);
   }
 
-  /* ── COMMENTARY BAR ──────────────────────────── */
+  /* ── COMMENTARY BAR (left column) ───────────── */
   #commentary {
-    flex-shrink: 0;
-    margin: 6px 28px 0;
-    padding: 10px 16px;
+    flex: 0 0 414px;
+    padding: 11px 13px;
     background: var(--surface2);
     border: 1px solid var(--border);
     border-left: 3px solid var(--teal);
     border-radius: 8px;
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    font-size: 12.5px;
-    line-height: 1.58;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 11.5px;
+    line-height: 1.52;
     color: var(--text-mid);
+    overflow: hidden;
     transition: border-color 0.5s;
   }
 
@@ -822,13 +958,13 @@
     Units360.ai
   </div>
   <div class="intro-sub">
-    Watch how a real AI SaaS company meters token usage — from first API call to auto-generated invoice — with zero engineering overhead.
+    Watch how Acme Gaming manages AI credit quotas across LLM and VR services — from setup to auto-generated usage report — with zero engineering overhead.
   </div>
   <div class="intro-use-case">
-    🤖 &nbsp; Industry Use Case: <strong style="margin-left:4px">AI &amp; LLM Platforms</strong>
+    🎮 &nbsp; Industry Use Case: <strong style="margin-left:4px">AI Spend Management · Enterprise</strong>
   </div>
   <div class="intro-acts">
-    <div class="intro-act-chip highlight">Define</div>
+    <div class="intro-act-chip highlight">Define Quota</div>
     <div class="intro-act-chip">→</div>
     <div class="intro-act-chip highlight">Consume</div>
     <div class="intro-act-chip">→</div>
@@ -836,7 +972,7 @@
     <div class="intro-act-chip">→</div>
     <div class="intro-act-chip highlight">Enforce</div>
     <div class="intro-act-chip">→</div>
-    <div class="intro-act-chip highlight">Invoice</div>
+    <div class="intro-act-chip highlight">Report</div>
   </div>
   <button class="start-btn" id="startBtn">▶ &nbsp; Start Demo</button>
 </div>
@@ -849,18 +985,18 @@
     <div class="logo">
       <div class="logo-icon">U</div>
       Units360.ai
-      <span style="color:var(--text-dim);font-weight:400;font-size:14px;margin-left:4px">/ Token Metering</span>
+      <span style="color:var(--text-dim);font-weight:400;font-size:14px;margin-left:4px">/ AI Spend</span>
     </div>
     <div class="live-token-pill">
       <div class="live-dot" id="live-dot"></div>
       <span id="live-token-val">0</span>
-      <span style="color:var(--text-dim)">/ 100,000 tokens</span>
+      <span style="color:var(--text-dim)">/ 1,000 AI credits</span>
     </div>
     <div style="display:flex;align-items:center;gap:14px">
       <button id="btn-guide">ℹ Platform Guide</button>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-        <div class="badge">Demo · AI SaaS</div>
-        <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.3px;">Token metering for an AI coding assistant startup</div>
+        <div class="badge">Demo · Enterprise AI</div>
+        <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.3px;">AI credit quota management for Acme Gaming</div>
       </div>
     </div>
   </header>
@@ -868,7 +1004,23 @@
   <!-- MAIN -->
   <main id="main">
 
-    <!-- FLOW AREA -->
+    <!-- FLOW ROW: commentary left, diagram right -->
+    <div id="flow-row">
+
+    <!-- Left column: Commentary -->
+    <div id="commentary">
+      <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+        <span class="commentary-icon" id="commentary-icon">💡</span>
+        <span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);">Commentary</span>
+      </div>
+      <div id="commentary-text"><ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;">
+        <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span><span class="commentary-callout">Acme Gaming</span> is an example of an organisation that uses two AI services — an LLM assistant and a VR video generator.</span></li>
+        <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span>Every <span class="commentary-callout">LLM token</span> and every <span class="commentary-callout">video minute</span> converts into AI credits — a single internal quota currency.</span></li>
+        <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span>The quota is enforced at the credit level, across every backend service.</span></li>
+      </ul></div>
+    </div>
+
+    <!-- Right column: Flow diagram -->
     <div id="flow-area">
       <svg id="flow-svg" viewBox="0 0 1000 150" preserveAspectRatio="xMidYMid meet">
         <defs>
@@ -912,7 +1064,7 @@
           <rect x="81" y="89" width="18" height="2" rx="1" fill="#e0d0ff"/>
           <!-- Label -->
           <text x="90" y="127" text-anchor="middle" fill="#8b5cf6" font-size="10" font-weight="700" font-family="Inter, sans-serif">AI App</text>
-          <text x="90" y="139" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter, sans-serif">gpt-4 / claude</text>
+          <text x="90" y="139" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter, sans-serif">LLM · VR Video</text>
         </g>
 
         <!-- Node 1: Units360 API (cx=387) -->
@@ -937,7 +1089,7 @@
           <ellipse cx="677" cy="71" rx="16" ry="5" fill="none" stroke="#fff5d6" stroke-width="1.3"/>
           <ellipse cx="677" cy="80" rx="16" ry="5" fill="#f59e0b60" stroke="#fff5d6" stroke-width="1.3"/>
           <!-- Label -->
-          <text x="677" y="127" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="700" font-family="Inter, sans-serif">Token Ledger</text>
+          <text x="677" y="127" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="700" font-family="Inter, sans-serif">Credit Ledger</text>
           <text x="677" y="139" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter, sans-serif">Real-time balance</text>
         </g>
 
@@ -968,15 +1120,11 @@
       <!-- Alert toast -->
       <div id="alert-toast">
         <div class="toast-icon">⚠</div>
-        80% token limit reached — customer notified
+        80% of credit quota used — employee notified
       </div>
-    </div>
+    </div><!-- /flow-area -->
 
-    <!-- COMMENTARY BAR -->
-    <div id="commentary">
-      <span class="commentary-icon" id="commentary-icon">💡</span>
-      <span id="commentary-text"><span class="commentary-callout">Most companies spend 2–3 weeks writing custom metering infrastructure.</span> Units360.ai replaces that with a 5-minute setup — no Kafka, no ClickHouse, no DevOps sprint required. Define your unit once; the platform handles everything else.</span>
-    </div>
+    </div><!-- /flow-row -->
 
     <!-- DATA AREA -->
     <div id="data-area">
@@ -1110,15 +1258,28 @@
         </svg>
         <!-- ── END SCENE ── -->
 
-        <div class="panel-label" style="margin-top:4px">Token Consumption</div>
+        <div class="panel-label" style="margin-top:4px">AI Credit Usage</div>
         <div id="token-counter">0</div>
         <div class="token-meta">
-          <span class="token-limit">/ 100,000 token limit</span>
+          <span class="token-limit">/ 1,000 AI credit quota</span>
           <span class="token-pct" id="token-pct">0%</span>
         </div>
         <div class="progress-track">
           <div id="progress-fill"></div>
-          <div class="progress-marker" title="80% warning threshold"></div>
+          <div class="progress-marker" title="80% quota threshold"></div>
+        </div>
+        <!-- Service breakdown -->
+        <div id="service-breakdown" style="display:flex;gap:8px;font-size:11px;">
+          <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;">
+            <div style="color:var(--text-dim);font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">LLM (GPT-4)</div>
+            <div style="font-weight:700;color:#60a5fa;font-size:14px;" id="llm-credits">0 cr</div>
+            <div style="color:var(--text-dim);margin-top:1px;font-size:10px;" id="llm-tokens">0 tokens @ 200:1</div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;">
+            <div style="color:var(--text-dim);font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">VR Video Gen</div>
+            <div style="font-weight:700;color:#4ade80;font-size:14px;" id="vr-credits">0 cr</div>
+            <div style="color:var(--text-dim);margin-top:1px;font-size:10px;" id="vr-minutes">0 min @ 5:1</div>
+          </div>
         </div>
         <canvas id="chart"></canvas>
       </div>
@@ -1133,13 +1294,50 @@
           <div class="act-pip" id="pip-4"></div>
         </div>
         <div class="act-eyebrow" id="act-eyebrow">ACT 1 OF 5</div>
-        <div id="act-title">Define Your Units</div>
-        <div id="act-subtitle">No code. No DevOps.</div>
-        <div id="act-desc">In under 5 minutes, define your metering model: one unit = one LLM token. Monthly limit: 100,000 tokens per customer. No database schema, no Kafka, no DevOps team.</div>
+        <div id="act-title">Set Up Credit Quota</div>
+        <div id="act-subtitle">Acme Gaming · AI Tools Budget</div>
+        <div id="act-desc">Acme Gaming assigns each team member 1,000 AI credits per month. Credits cover two services: the LLM assistant (200 tokens = 1 credit) and the VR video generator (5 video minutes = 1 credit).</div>
+
+        <!-- ── AI SPEND MONITOR ── -->
+        <div id="spend-monitor">
+          <div class="mon-header">
+            <div class="live-dot" id="mon-dot"></div>
+            AI Spend Monitor
+          </div>
+          <!-- LLM row -->
+          <div class="mon-service">
+            <div class="mon-svc-name">LLM (GPT-4)</div>
+            <div class="mon-svc-native" id="mon-llm-native">0 tokens</div>
+            <div class="mon-svc-cr" style="color:#60a5fa" id="mon-llm-cr">0 cr</div>
+            <div class="mon-bar-wrap">
+              <div class="mon-bar-fill" id="mon-llm-bar" style="background:#60a5fa"></div>
+            </div>
+          </div>
+          <!-- VR Video row -->
+          <div class="mon-service" style="border-bottom:none;">
+            <div class="mon-svc-name">VR Video Gen</div>
+            <div class="mon-svc-native" id="mon-vr-native">0 min</div>
+            <div class="mon-svc-cr" style="color:#4ade80" id="mon-vr-cr">0 cr</div>
+            <div class="mon-bar-wrap">
+              <div class="mon-bar-fill" id="mon-vr-bar" style="background:#4ade80"></div>
+            </div>
+          </div>
+          <!-- Total -->
+          <div class="mon-total">
+            <div class="mon-total-row">
+              <span class="mon-total-label">Total AI Credits</span>
+              <span class="mon-total-val" id="mon-total-val">0 / 1,000 cr</span>
+            </div>
+            <div class="mon-total-bar">
+              <div class="mon-total-fill" id="mon-total-fill"></div>
+            </div>
+          </div>
+        </div>
+
         <div id="event-log">
           <div class="log-entry">
             <span class="log-time">00:00:00</span>
-            <span class="log-msg info">units360 runtime initializing...</span>
+            <span class="log-msg info">units360 credit quota engine initializing...</span>
           </div>
         </div>
       </div>
@@ -1151,14 +1349,15 @@
   <div id="invoice-card">
     <div class="inv-header">
       <div class="inv-check">✓</div>
-      Invoice Generated
+      AI Credit Usage Report
     </div>
-    <div class="inv-row"><span>Customer</span><span style="color:var(--text)">Acme AI Corp</span></div>
+    <div class="inv-row"><span>Employee</span><span style="color:var(--text)">Jordan Chen</span></div>
     <div class="inv-row"><span>Period</span><span>May 2026</span></div>
-    <div class="inv-row"><span>Tokens consumed</span><span style="color:var(--text)">100,000</span></div>
-    <div class="inv-row"><span>Rate</span><span>$0.49 / 1K tokens</span></div>
-    <div class="inv-row"><span>Status</span><span style="color:var(--green)">● Sent</span></div>
-    <div class="inv-total"><span>Total Due</span><span style="color:var(--green)">$49.00</span></div>
+    <div class="inv-row"><span>LLM (GPT-4)</span><span style="color:var(--purple)">520 credits</span></div>
+    <div class="inv-row"><span style="color:var(--text-dim);font-size:10px;">104,000 tokens @ 200:1</span><span></span></div>
+    <div class="inv-row"><span>VR Video Gen</span><span style="color:var(--amber)">480 credits</span></div>
+    <div class="inv-row"><span style="color:var(--text-dim);font-size:10px;">2,400 min @ 5:1</span><span></span></div>
+    <div class="inv-total"><span>Total Used</span><span style="color:var(--green)">1,000 / 1,000 cr</span></div>
   </div>
 
   <!-- CONTROLS -->
@@ -1185,8 +1384,11 @@
 // ═══════════════════════════════════════════════════════════════
 //  CONFIG
 // ═══════════════════════════════════════════════════════════════
-const LIMIT   = 100000;
+const LIMIT   = 1000;  // AI credits per employee per month
 const WARN_AT = 0.80;
+// Conversion rates: 1 AI credit = 200 LLM tokens, 1 AI credit = 5 VR video minutes
+const LLM_TOKENS_PER_CREDIT = 200;
+const VR_MINS_PER_CREDIT    = 5;
 
 // SVG quadratic bezier paths: [P0, ctrl, P2]
 const PATHS = [
@@ -1202,92 +1404,105 @@ const ACTS = [
   {
     id: 'define',
     eyebrow: 'ACT 1 OF 5',
-    title: 'Define Your Units',
-    subtitle: 'No code. No DevOps.',
-    desc: 'In under 5 minutes, define your metering model in Units360.ai: one unit = one LLM token. Monthly limit: 100,000 tokens per customer. No database schema. No Kafka. No DevOps team required.',
+    title: 'Set Up Credit Quota',
+    subtitle: 'Acme Gaming · AI Tools Budget',
+    desc: 'Acme Gaming assigns each team member 1,000 AI credits per month. Credits cover two services: the LLM assistant (200 tokens = 1 credit) and the VR video generator (5 video minutes = 1 credit). Units360 enforces the shared quota automatically — no custom code, no DevOps.',
     tokenRate: 0,
     activeSegments: [],
     duration: 4500,
     color: 'teal',
     commentaryIcon: '💡',
-    commentary: '<span class="commentary-callout">Most companies spend 2–3 weeks writing custom metering infrastructure.</span> Units360.ai replaces that with a 5-minute setup — no Kafka, no ClickHouse, no DevOps sprint. Define your unit once; the platform handles everything else.',
+    commentary: `<ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;">
+      <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span><span class="commentary-callout">Acme Gaming</span> is an example of an organisation that uses two AI services — an LLM assistant and a VR video generator.</span></li>
+      <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span>Every <span class="commentary-callout">LLM token</span> and every <span class="commentary-callout">video minute</span> converts into AI credits — a single internal quota currency.</span></li>
+      <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span>The quota is enforced at the credit level, across every backend service.</span></li>
+    </ul>`,
     logs: [
-      { t:600,  msg: 'unit_type: "llm_token" → defined', type: 'info' },
-      { t:1400, msg: 'limit: 100,000 / month per account', type: 'info' },
-      { t:2300, msg: 'alert_threshold: 80% configured', type: 'info' },
-      { t:3400, msg: 'runtime provisioned ✓ → ready', type: 'success' },
+      { t:600,  msg: 'unit_type: "ai_credit" → defined', type: 'info' },
+      { t:1100, msg: 'quota: 1,000 credits / month per employee', type: 'info' },
+      { t:1800, msg: 'LLM rate: 200 tokens → 1 credit configured', type: 'info' },
+      { t:2500, msg: 'VR video rate: 5 min → 1 credit configured', type: 'info' },
+      { t:3400, msg: 'runtime provisioned ✓ → quota active', type: 'success' },
     ],
   },
   {
     id: 'consume',
     eyebrow: 'ACT 2 OF 5',
-    title: 'API Requests Flow In',
-    subtitle: 'Real-time metering. Zero configuration.',
-    desc: 'Your AI app goes live. Every API call is tracked the moment it happens — tokens consumed, account balances updated instantly. No custom code on your end. No engineering sprint.',
-    tokenRate: 6000,
+    title: 'Services Consuming Credits',
+    subtitle: 'LLM + VR video drawing from one pool.',
+    desc: 'Both the LLM assistant and VR video generator run simultaneously. Each converts its native units into AI credits on the fly. Every request updates the employee\'s shared credit balance in real time — no custom code on the app side.',
+    tokenRate: 60,
     activeSegments: [0, 1, 2],
     duration: 13000,
     color: 'teal',
     commentaryIcon: '⚡',
-    commentary: '<span class="commentary-callout">Every API call from your AI app hits the Units360 metering endpoint in real time.</span> Tokens are counted, account balances are updated, and the data flows instantly to the ledger and analytics dashboard — at any scale, with zero engineering work on your side.',
+    commentary: '<span class="commentary-callout">Every LLM token and every VR video minute converts into AI credits at the moment of use.</span> The employee sees one unified balance. The quota is enforced at the credit level, across all services — regardless of which backend generated the usage.',
     logs: null, // dynamically generated
   },
   {
     id: 'threshold',
     eyebrow: 'ACT 3 OF 5',
-    title: 'Threshold Alert Fires',
-    subtitle: '80,000 tokens — auto-flagged.',
-    desc: 'At 80% of the monthly limit, Units360.ai fires an automatic webhook. The customer receives an email notification. Your ops dashboard flags the account. No manual watching required.',
-    tokenRate: 2750,
+    title: 'Credit Quota Alert Fires',
+    subtitle: '800 AI credits used — 80% of quota.',
+    desc: 'At 800 AI credits (80% of the monthly quota), Units360 fires an automatic webhook. The employee is notified. The IT admin dashboard flags the account. Both services keep running until the hard limit.',
+    tokenRate: 25,
     activeSegments: [0, 1],
     duration: 8000,
     color: 'amber',
     commentaryIcon: '🔔',
-    commentary: '<span class="commentary-callout">Units360.ai monitors every account automatically — no manual dashboard-watching required.</span> When a customer hits 80% of their plan, a webhook fires instantly: the customer is emailed, your ops team is alerted, and the account is flagged. You never miss an upsell moment.',
+    commentary: '<span class="commentary-callout">The alert fires at the credit level — not the token or video-minute level.</span> Whether credits were burned through heavy LLM calls or long VR renders, the 80% threshold behaves the same. One policy, unified across all services.',
     logs: [
-      { t:300,  msg: '⚠ ALERT: 80% threshold breached', type: 'warning' },
-      { t:900,  msg: 'webhook fired → customer notified', type: 'warning' },
-      { t:1700, msg: 'account flagged: "approaching_limit"', type: 'warning' },
-      { t:2800, msg: 'ops dashboard alert raised', type: 'warning' },
+      { t:300,  msg: '⚠ ALERT: 80% credit quota breached', type: 'warning' },
+      { t:900,  msg: 'webhook fired → employee jordan.chen notified', type: 'warning' },
+      { t:1700, msg: 'account flagged: "approaching_quota_limit"', type: 'warning' },
+      { t:2800, msg: 'IT admin dashboard alert raised', type: 'warning' },
     ],
   },
   {
     id: 'enforce',
     eyebrow: 'ACT 4 OF 5',
-    title: 'Limits Auto-Enforced',
-    subtitle: 'API returns 429. Revenue protected.',
-    desc: 'At 100,000 tokens, all incoming API calls are automatically rejected with HTTP 429. No custom middleware. No on-call engineer. Your business rules enforced at the infrastructure level.',
+    title: 'Credit Limit Enforced',
+    subtitle: '1,000 credits — all services blocked.',
+    desc: 'At 1,000 AI credits, both the LLM endpoint and VR video API return errors. No custom middleware. No on-call engineer. The shared credit quota enforces automatically across every backend service.',
     tokenRate: 0,
     activeSegments: [],
     duration: 5500,
     color: 'red',
     commentaryIcon: '🛡️',
-    commentary: '<span class="commentary-callout">When the limit is hit, the API enforces it automatically — no custom middleware, no on-call engineer.</span> Every request beyond the limit gets HTTP 429. Your business rules are enforced at the infrastructure level. Revenue is protected, and you wrote zero lines of enforcement code.',
+    commentary: '<span class="commentary-callout">One credit quota blocks every downstream service simultaneously — no per-service configuration needed.</span> LLM calls and VR video requests are both rejected until next month\'s quota resets. Zero enforcement code written by the engineering team.',
     logs: [
-      { t:200,  msg: '🔴 ENFORCE: limit reached → 429 mode active', type: 'error' },
-      { t:700,  msg: 'POST /v1/meter → 429 Too Many Requests', type: 'error' },
-      { t:1200, msg: 'POST /v1/meter → 429 Too Many Requests', type: 'error' },
-      { t:1900, msg: 'POST /v1/meter → 429 Too Many Requests', type: 'error' },
-      { t:2800, msg: 'account_status: "limit_reached" set', type: 'error' },
+      { t:200,  msg: '🔴 QUOTA REACHED: 1,000 credits → enforce active', type: 'error' },
+      { t:700,  msg: 'POST /llm/v1/complete → 429 Quota Exceeded', type: 'error' },
+      { t:1200, msg: 'POST /vr/v1/generate → 429 Quota Exceeded', type: 'error' },
+      { t:1900, msg: 'POST /llm/v1/complete → 429 Quota Exceeded', type: 'error' },
+      { t:2800, msg: 'account_status: "quota_exhausted" set', type: 'error' },
     ],
   },
   {
     id: 'invoice',
     eyebrow: 'ACT 5 OF 5',
-    title: 'Invoice Generated',
-    subtitle: 'Usage → Revenue. Automatically.',
-    desc: 'Period closed. Units360.ai generates a complete usage report and invoice — accurate to the token. Stripe payment queued. No manual calculations. No billing disputes. Ever.',
+    title: 'Usage Report Ready',
+    subtitle: 'Breakdown by service. Zero manual effort.',
+    desc: 'Period closed. Units360 generates the AI Credit Usage Report — showing credits consumed per service, with token and video-minute breakdowns. No spreadsheets, no manual reconciliation, no billing disputes.',
     tokenRate: 0,
     activeSegments: [2],
     duration: 6500,
     color: 'green',
-    commentaryIcon: '💰',
-    commentary: '<span class="commentary-callout">Usage data automatically becomes revenue — accurate to the token, zero manual effort.</span> Units360.ai closes the billing period, generates a full usage report, creates the customer invoice, and queues the Stripe payment. No spreadsheets. No disputes. No reconciliation headaches.',
+    commentaryIcon: '📊',
+    commentary: `<ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;">
+      <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span><span class="commentary-callout">The usage report is for IT governance and budget planning</span> — not billing.</span></li>
+      <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span>Managers see exactly where AI credits were spent:</span></li>
+      <li style="display:flex;gap:7px;padding-left:16px;"><span style="color:var(--text-dim);flex-shrink:0;font-size:10px;margin-top:2px;">◦</span><span>At what conversion rates</span></li>
+      <li style="display:flex;gap:7px;padding-left:16px;"><span style="color:var(--text-dim);flex-shrink:0;font-size:10px;margin-top:2px;">◦</span><span>Can adjust per-employee quotas for next month</span></li>
+      <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span>No raw token counts.</span></li>
+      <li style="display:flex;gap:7px;"><span style="color:var(--teal);flex-shrink:0;font-size:10px;margin-top:2px;">▸</span><span>No video-minute spreadsheets.</span></li>
+    </ul>`,
     logs: [
-      { t:400,  msg: 'billing period closed: May 2026', type: 'info' },
-      { t:1100, msg: 'usage report: 100,000 tokens consumed', type: 'info' },
-      { t:2100, msg: 'invoice $49.00 generated → sent ✓', type: 'success' },
-      { t:3300, msg: 'Stripe payment queued → processing', type: 'success' },
+      { t:400,  msg: 'reporting period closed: May 2026', type: 'info' },
+      { t:1100, msg: 'LLM: 104,000 tokens → 520 AI credits', type: 'info' },
+      { t:2000, msg: 'VR video: 2,400 min → 480 AI credits', type: 'info' },
+      { t:2900, msg: 'total: 1,000 / 1,000 credits consumed', type: 'info' },
+      { t:3800, msg: 'usage report generated → sent to IT admin ✓', type: 'success' },
     ],
   },
 ];
@@ -1297,16 +1512,20 @@ const ACTS = [
 // ═══════════════════════════════════════════════════════════════
 const state = {
   actIndex:    0,
-  tokens:      0,
+  tokens:      0,      // total AI credits consumed
+  llmCredits:  0,      // credits from LLM service (60% of total)
+  vrCredits:   0,      // credits from VR video service (40% of total)
   playing:     false,
   speed:       1,
   actElapsed:  0,
   warned:      false,
   enforced:    false,
   invoiced:    false,
-  particles:   [],
-  chartData:   [],
-  logEntries:  [],
+  particles:    [],
+  chartData:    [],
+  llmChartData: [],
+  vrChartData:  [],
+  logEntries:   [],
   lastTime:    null,
   pSpawnTimer: 0,
   logTimers:   [],
@@ -1379,8 +1598,8 @@ function clearParticles() {
 // ═══════════════════════════════════════════════════════════════
 function resizeChart() {
   const rect = chartCanvas.parentElement.getBoundingClientRect();
-  // scene svg (~138) + label (~20) + counter (~56) + meta (~22) + progress (~22) + gaps (~30) = ~288
-  const h = Math.max(60, rect.height - 310);
+  // scene svg (~138) + label (~20) + counter (~56) + meta (~22) + progress (~22) + breakdown (~52) + gaps (~30) = ~340
+  const h = Math.max(60, rect.height - 370);
   chartCanvas.width  = chartCanvas.offsetWidth * window.devicePixelRatio;
   chartCanvas.height = h * window.devicePixelRatio;
   chartCanvas.style.height = h + 'px';
@@ -1394,64 +1613,88 @@ function drawChart() {
 
   ctx.clearRect(0, 0, w, h);
 
-  const data = state.chartData;
-  if (data.length < 2) return;
+  const totalData = state.chartData;
+  if (totalData.length < 2) return;
 
-  const maxT = Math.max(data[data.length-1].t, 1);
+  const LEGEND_H = 16;
+  const maxT = Math.max(totalData[totalData.length-1].t, 1);
   const maxV = LIMIT;
 
-  // Helper
-  const tx = t => (t / maxT) * (w - 10) + 5;
-  const ty = v => h - 10 - ((v / maxV) * (h - 20));
+  const tx = t => (t / maxT) * (w - 8) + 4;
+  const ty = v => h - 6 - ((v / maxV) * (h - LEGEND_H - 10));
 
-  // Warning line at 80%
+  // 80% warning line
   const warnY = ty(LIMIT * WARN_AT);
   ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = 'rgba(245,158,11,0.4)';
+  ctx.strokeStyle = 'rgba(245,158,11,0.35)';
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, warnY);
-  ctx.lineTo(w, warnY);
-  ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, warnY); ctx.lineTo(w, warnY); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(245,158,11,0.5)';
-  ctx.font = '9px Inter, sans-serif';
-  ctx.fillText('80%', w - 26, warnY - 3);
+  ctx.fillStyle = 'rgba(245,158,11,0.45)';
+  ctx.font = '8px Inter, sans-serif';
+  ctx.fillText('80%', w - 23, warnY - 2);
 
-  // Gradient fill
   const pct = state.tokens / LIMIT;
-  const gradColor = pct >= 1 ? '#ef4444' : pct >= WARN_AT ? '#f59e0b' : '#00d4ff';
-  const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, gradColor + '44');
-  grad.addColorStop(1, gradColor + '04');
+  const totalRGB = pct >= 1 ? '239,68,68' : pct >= WARN_AT ? '245,158,11' : '0,212,255';
 
-  ctx.beginPath();
-  ctx.moveTo(tx(data[0].t), h);
-  data.forEach(d => ctx.lineTo(tx(d.t), ty(d.v)));
-  ctx.lineTo(tx(data[data.length-1].t), h);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+  // Draw a data series: fill + line
+  function drawSeries(data, rgb, fillAlpha, lineW) {
+    if (data.length < 2) return;
+    // Gradient fill
+    if (fillAlpha > 0) {
+      const grad = ctx.createLinearGradient(0, LEGEND_H, 0, h);
+      grad.addColorStop(0, `rgba(${rgb},${fillAlpha})`);
+      grad.addColorStop(1, `rgba(${rgb},0.01)`);
+      ctx.beginPath();
+      ctx.moveTo(tx(data[0].t), h);
+      data.forEach(d => ctx.lineTo(tx(d.t), ty(d.v)));
+      ctx.lineTo(tx(data[data.length-1].t), h);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+    // Line
+    ctx.beginPath();
+    data.forEach((d, i) => i === 0 ? ctx.moveTo(tx(d.t), ty(d.v)) : ctx.lineTo(tx(d.t), ty(d.v)));
+    ctx.strokeStyle = `rgba(${rgb},0.88)`;
+    ctx.lineWidth = lineW;
+    ctx.lineJoin = 'round';
+    ctx.setLineDash([]);
+    ctx.stroke();
+  }
 
-  // Line
-  ctx.beginPath();
-  data.forEach((d, i) => {
-    i === 0 ? ctx.moveTo(tx(d.t), ty(d.v)) : ctx.lineTo(tx(d.t), ty(d.v));
-  });
-  ctx.strokeStyle = gradColor;
-  ctx.lineWidth = 2;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
+  // Draw VR (bright green) → LLM (hot pink) → Total (on top)
+  drawSeries(state.vrChartData,  '74,222,128',  0.16, 2.0);  // bright green
+  drawSeries(state.llmChartData, '96,165,250', 0.18, 2.0);  // electric blue
+  drawSeries(totalData, totalRGB, 0.32, 2.8);
 
-  // Current value dot
-  const last = data[data.length-1];
+  // Dot on total line tip
+  const last = totalData[totalData.length-1];
   ctx.beginPath();
   ctx.arc(tx(last.t), ty(last.v), 4, 0, Math.PI*2);
-  ctx.fillStyle = gradColor;
+  ctx.fillStyle = `rgba(${totalRGB},0.9)`;
   ctx.fill();
   ctx.strokeStyle = '#0d1526';
   ctx.lineWidth = 1.5;
   ctx.stroke();
+
+  // Legend row at top
+  const legend = [
+    { rgb: totalRGB,       label: 'Total' },
+    { rgb: '96,165,250',  label: 'LLM' },
+    { rgb: '74,222,128',   label: 'VR Video' },
+  ];
+  ctx.font = 'bold 7.5px Inter, sans-serif';
+  let lx = 5;
+  legend.forEach(item => {
+    ctx.fillStyle = `rgba(${item.rgb},0.9)`;
+    ctx.beginPath();
+    ctx.arc(lx + 3.5, 8, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(100,116,139,0.85)';
+    ctx.fillText(item.label, lx + 10, 11.5);
+    lx += ctx.measureText(item.label).width + 22;
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1491,16 +1734,16 @@ function scheduleActLogs(act) {
 // dynamic log for consume act
 let consumeLogTimer = null;
 const consumeLogs = [
-  ['POST /v1/meter → 200 OK  {tokens: 512}',    'success'],
-  ['POST /v1/meter → 200 OK  {tokens: 1,024}',  'success'],
-  ['balance updated: +2,048 tokens',            'info'],
-  ['POST /v1/meter → 200 OK  {tokens: 768}',    'success'],
-  ['POST /v1/meter → 200 OK  {tokens: 256}',    'success'],
-  ['analytics event recorded',                  'info'],
-  ['POST /v1/meter → 200 OK  {tokens: 1,536}',  'success'],
-  ['balance checkpoint: 40% consumed',          'info'],
-  ['POST /v1/meter → 200 OK  {tokens: 896}',    'success'],
-  ['rate: ~350 req/min',                        'info'],
+  ['POST /llm/v1/complete → 200 OK  {tokens: 800}',  'success'],
+  ['LLM: 800 tokens → 4 AI credits consumed',         'info'],
+  ['POST /vr/v1/generate → 200 OK  {minutes: 10}',   'success'],
+  ['VR video: 10 min → 2 AI credits consumed',        'info'],
+  ['credit balance updated: 6 credits this batch',    'info'],
+  ['POST /llm/v1/complete → 200 OK  {tokens: 1,200}', 'success'],
+  ['LLM: 1,200 tokens → 6 AI credits consumed',       'info'],
+  ['POST /vr/v1/generate → 200 OK  {minutes: 15}',   'success'],
+  ['VR video: 15 min → 3 AI credits consumed',        'info'],
+  ['credit checkpoint: 40% of quota consumed',        'info'],
 ];
 let consumeLogIdx = 0;
 
@@ -1586,6 +1829,52 @@ function updateUI() {
   commentary.className = act.color !== 'teal' ? act.color : '';
   $('commentary-icon').textContent = act.commentaryIcon || '💡';
   commentaryText.innerHTML = act.commentary || '';
+
+  // Service breakdown (left panel small widget)
+  const llmCr = Math.round(state.llmCredits);
+  const vrCr  = Math.round(state.vrCredits);
+  const llmEl = $('llm-credits');
+  const vrEl  = $('vr-credits');
+  if (llmEl) llmEl.textContent = llmCr + ' cr';
+  if ($('llm-tokens')) $('llm-tokens').textContent = (llmCr * LLM_TOKENS_PER_CREDIT).toLocaleString() + ' tokens @ 200:1';
+  if (vrEl) vrEl.textContent = vrCr + ' cr';
+  if ($('vr-minutes')) $('vr-minutes').textContent = (vrCr * VR_MINS_PER_CREDIT).toLocaleString() + ' min @ 5:1';
+
+  // AI Spend Monitor (right panel)
+  const monLlmNative = $('mon-llm-native');
+  const monLlmCr     = $('mon-llm-cr');
+  const monLlmBar    = $('mon-llm-bar');
+  const monVrNative  = $('mon-vr-native');
+  const monVrCr      = $('mon-vr-cr');
+  const monVrBar     = $('mon-vr-bar');
+  const monTotalVal  = $('mon-total-val');
+  const monTotalFill = $('mon-total-fill');
+  const monDot       = $('mon-dot');
+
+  if (monLlmCr) {
+    const total   = Math.round(state.tokens);
+    const pctTot  = Math.min(100, (state.tokens      / LIMIT) * 100);
+    const pctLlm  = Math.min(100, (state.llmCredits  / LIMIT) * 100);
+    const pctVr   = Math.min(100, (state.vrCredits   / LIMIT) * 100);
+
+    monLlmNative.textContent = (llmCr * LLM_TOKENS_PER_CREDIT).toLocaleString() + ' tokens';
+    monLlmCr.textContent     = llmCr + ' cr';
+    monLlmBar.style.width    = pctLlm + '%';
+
+    monVrNative.textContent  = (vrCr * VR_MINS_PER_CREDIT).toLocaleString() + ' min';
+    monVrCr.textContent      = vrCr + ' cr';
+    monVrBar.style.width     = pctVr + '%';
+
+    monTotalVal.textContent  = total.toLocaleString() + ' / 1,000 cr';
+    monTotalFill.style.width = pctTot + '%';
+    monTotalFill.style.background =
+      state.tokens >= LIMIT        ? 'var(--red)'   :
+      state.tokens >= LIMIT * WARN_AT ? 'linear-gradient(90deg,var(--amber),#f97316)' :
+                                    'linear-gradient(90deg,var(--teal),var(--blue))';
+
+    if (monDot) monDot.className = 'live-dot' +
+      (state.tokens >= LIMIT ? ' red' : state.tokens >= LIMIT * WARN_AT ? ' amber' : '');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1696,8 +1985,8 @@ function updateSessionDisplay() {
   if (l3) l3.style.opacity = count >= 3 ? '0.35' : '0';
 
   // Log the session escalation
-  if (count === 2 && state.playing) addLog('⚡ 2nd LLM session opened — rate doubling', 'info');
-  if (count === 3 && state.playing) addLog('⚡ 3rd session opened — token rate ×3', 'warning');
+  if (count === 2 && state.playing) addLog('⚡ VR video gen started — credit draw increasing', 'info');
+  if (count === 3 && state.playing) addLog('⚡ Both LLM + VR video active — credit rate ×3', 'warning');
 }
 
 // -- Spawn a rising token bubble from the laptop screen
@@ -1707,7 +1996,9 @@ function spawnSceneBubble() {
   const layer = $('scene-bubbles');
   if (!layer) return;
 
-  const colors = ['#00d4ff', '#8b5cf6', '#10b981'];
+  // LLM bubbles: teal/purple; VR video bubbles: amber/green
+  const colors = ['#00d4ff', '#8b5cf6', '#f59e0b'];
+  const labels = ['L', 'L', 'V'];  // L=LLM, V=VR video
   const spawnCount = Math.min(count, 3);
 
   for (let i = 0; i < spawnCount; i++) {
@@ -1733,7 +2024,7 @@ function spawnSceneBubble() {
     label.setAttribute('font-weight',        '800');
     label.setAttribute('fill',               '#000');
     label.setAttribute('font-family',        'Inter, sans-serif');
-    label.textContent = 'T';
+    label.textContent = labels[i % labels.length];
 
     el.appendChild(circle);
     el.appendChild(label);
@@ -1797,17 +2088,27 @@ function tick(ts) {
   // Advance act timer
   state.actElapsed += dt;
 
-  // Advance tokens
+  // Advance AI credits (and track per-service split: 60% LLM, 40% VR)
   if (act.tokenRate > 0) {
+    const before = state.tokens;
     state.tokens = Math.min(LIMIT, state.tokens + act.tokenRate * (dt / 1000));
+    const delta = state.tokens - before;
+    state.llmCredits += delta * 0.60;
+    state.vrCredits  += delta * 0.40;
   }
 
-  // Chart sample every ~200ms real-time
+  // Chart sample every ~150ms real-time
   chartSampleTimer += rawDt;
   if (chartSampleTimer > 150) {
     chartTime += chartSampleTimer;
     state.chartData.push({ t: chartTime, v: state.tokens });
-    if (state.chartData.length > 300) state.chartData.shift();
+    state.llmChartData.push({ t: chartTime, v: state.llmCredits });
+    state.vrChartData.push({ t: chartTime, v: state.vrCredits });
+    if (state.chartData.length > 300) {
+      state.chartData.shift();
+      state.llmChartData.shift();
+      state.vrChartData.shift();
+    }
     chartSampleTimer = 0;
   }
 
@@ -1833,13 +2134,13 @@ function tick(ts) {
   // Warning trigger
   if (!state.warned && state.tokens >= LIMIT * WARN_AT) {
     state.warned = true;
-    addLog('⚠ 80% threshold breached — alerting', 'warning');
+    addLog('⚠ 80% credit quota reached — alerting', 'warning');
   }
 
   // Enforce trigger
   if (!state.enforced && state.tokens >= LIMIT) {
     state.enforced = true;
-    addLog('🔴 Limit reached — 429 mode active', 'error');
+    addLog('🔴 Credit quota exhausted — enforce active', 'error');
     clearParticles();
   }
 
@@ -1889,11 +2190,25 @@ function goToAct(idx, preserveTokens = true) {
     state.warned   = false;
     state.enforced = false;
     state.invoiced = false;
-    if (!preserveTokens) state.tokens = 0;
+    if (!preserveTokens) {
+      state.tokens = 0;
+      state.llmCredits = 0;
+      state.vrCredits  = 0;
+    }
   }
   if (idx < 4) state.invoiced = false;
-  if (idx === 3) { state.tokens = LIMIT; state.warned = true; } // guarantee enforce fires
-  if (idx === 4) { state.invoiced = true; state.enforced = false; }
+  if (idx === 3) {
+    state.tokens = LIMIT;
+    state.llmCredits = LIMIT * 0.60;
+    state.vrCredits  = LIMIT * 0.40;
+    state.warned = true;
+  }
+  if (idx === 4) {
+    state.invoiced = true;
+    state.enforced = false;
+    state.llmCredits = LIMIT * 0.52;
+    state.vrCredits  = LIMIT * 0.48;
+  }
 
   if (act.logs) scheduleActLogs(act);
   if (act.id === 'consume') startConsumeLogs();
@@ -1928,23 +2243,27 @@ $('playBtn').addEventListener('click', () => {
 $('prevBtn').addEventListener('click', () => {
   if (state.actIndex > 0) {
     const prev = state.actIndex - 1;
-    // Rewind tokens roughly
     const tokenCheckpoints = [0, 0, LIMIT * WARN_AT, LIMIT * WARN_AT, LIMIT, LIMIT];
-    state.tokens = tokenCheckpoints[prev] || 0;
-    state.chartData = state.chartData.filter(d => d.v <= state.tokens);
-    state.warned   = state.tokens >= LIMIT * WARN_AT;
-    state.enforced = state.tokens >= LIMIT && prev >= 3;
+    state.tokens     = tokenCheckpoints[prev] || 0;
+    state.llmCredits = state.tokens * 0.60;
+    state.vrCredits  = state.tokens * 0.40;
+    state.chartData     = state.chartData.filter(d => d.v <= state.tokens);
+    state.llmChartData  = state.llmChartData.filter(d => d.v <= state.llmCredits);
+    state.vrChartData   = state.vrChartData.filter(d => d.v <= state.vrCredits);
+    state.warned     = state.tokens >= LIMIT * WARN_AT;
+    state.enforced   = state.tokens >= LIMIT && prev >= 3;
     goToAct(prev, true);
   }
 });
 
 $('nextBtn').addEventListener('click', () => {
   if (state.actIndex < ACTS.length - 1) {
-    // Fast-forward tokens to where they should be at start of next act
     const tokenCheckpoints = [0, 0, LIMIT * WARN_AT, LIMIT, LIMIT, LIMIT];
-    state.tokens = tokenCheckpoints[state.actIndex + 1];
-    state.warned   = state.tokens >= LIMIT * WARN_AT;
-    state.enforced = state.tokens >= LIMIT && state.actIndex >= 2;
+    state.tokens     = tokenCheckpoints[state.actIndex + 1];
+    state.llmCredits = state.tokens * 0.60;
+    state.vrCredits  = state.tokens * 0.40;
+    state.warned     = state.tokens >= LIMIT * WARN_AT;
+    state.enforced   = state.tokens >= LIMIT && state.actIndex >= 2;
     goToAct(state.actIndex + 1, true);
   }
 });
@@ -1956,12 +2275,16 @@ $('resetBtn').addEventListener('click', () => {
   clearSceneBubbles();
   state.playing      = false;
   state.tokens       = 0;
+  state.llmCredits   = 0;
+  state.vrCredits    = 0;
   state.actIndex     = 0;
   state.actElapsed   = 0;
   state.warned       = false;
   state.enforced     = false;
   state.invoiced     = false;
   state.chartData    = [];
+  state.llmChartData = [];
+  state.vrChartData  = [];
   state.logEntries   = [];
   chartTime          = 0;
   chartSampleTimer   = 0;
@@ -1974,7 +2297,7 @@ $('resetBtn').addEventListener('click', () => {
   if (badge) badge.textContent = '× 1 session';
   const l2 = $('session-layer-2'); if (l2) l2.style.opacity = '0';
   const l3 = $('session-layer-3'); if (l3) l3.style.opacity = '0';
-  $('event-log').innerHTML = '<div class="log-entry"><span class="log-time">00:00:00</span><span class="log-msg info">units360 runtime initializing...</span></div>';
+  $('event-log').innerHTML = '<div class="log-entry"><span class="log-time">00:00:00</span><span class="log-msg info">units360 credit quota engine initializing...</span></div>';
   updateUI();
   updateClock(0);
   drawChart();
@@ -2054,19 +2377,19 @@ drawerBody.addEventListener('scroll', () => {
   <div id="drawer-header">
     <div>
       <div id="drawer-logo">Units<span>360</span>.ai</div>
-      <div id="drawer-subtitle">Platform Guide · AI &amp; LLM Edition</div>
+      <div id="drawer-subtitle">Platform Guide · AI Spend Edition</div>
     </div>
     <button id="drawer-close">✕</button>
   </div>
 
   <div id="drawer-nav">
     <span class="dnav-pill active" data-target="sec-what">What is Units360?</span>
-    <span class="dnav-pill" data-target="sec-org">AI Company</span>
+    <span class="dnav-pill" data-target="sec-org">Acme Gaming</span>
+    <span class="dnav-pill" data-target="sec-conversion">Conversions</span>
     <span class="dnav-pill" data-target="sec-unit">Unit</span>
     <span class="dnav-pill" data-target="sec-account">Account</span>
     <span class="dnav-pill" data-target="sec-txn">Transaction</span>
-    <span class="dnav-pill" data-target="sec-mdt">MDT</span>
-    <span class="dnav-pill" data-target="sec-rte">RTE</span>
+    <span class="dnav-pill" data-target="sec-mdt">Config</span>
     <span class="dnav-pill" data-target="sec-cloud">CloudEvents</span>
   </div>
 
@@ -2077,22 +2400,22 @@ drawerBody.addEventListener('scroll', () => {
       <div class="dsec-eyebrow">Platform Overview</div>
       <div class="dsec-title"><span class="dsec-icon">🚀</span> What is Units360?</div>
       <div class="dsec-body">
-        <p>Units360.ai is a <strong>low-code usage metering platform</strong> — the operating system for any business that sells by the unit. Instead of building custom billing infrastructure, you define your unit model once, and Units360 auto-provisions everything else.</p>
-        <p>In this demo, the unit is <em>AI Token</em>. But it works equally for kWh, API calls, ride credits, consultation hours — any measurable service.</p>
+        <p>Units360.ai is a <strong>low-code usage metering platform</strong> — the operating system for any business that manages services by the unit. Instead of building custom metering infrastructure, you define your unit model once, and Units360 auto-provisions everything else.</p>
+        <p>In this demo, the internal unit is <em>AI credit</em> — a company-defined quota currency that covers multiple backend services (LLM + VR video generation). But Units360 works equally for kWh, API calls, ride credits, consultation hours — any measurable service.</p>
         <div class="dflow">
-          <div class="dflow-node highlight">1. Define<br><small>MDT</small></div>
+          <div class="dflow-node highlight">1. Define<br><small>Credit quota</small></div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node">2. Deploy<br><small>RTE</small></div>
+          <div class="dflow-node">2. Deploy<br><small>Live engine</small></div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node">3. Stream<br><small>CloudEvents</small></div>
+          <div class="dflow-node">3. Consume<br><small>CloudEvents</small></div>
           <span class="dflow-arrow">→</span>
-          <div class="dflow-node">4. Invoice<br><small>Auto</small></div>
+          <div class="dflow-node">4. Report<br><small>Usage report</small></div>
         </div>
         <div class="dtags">
           <span class="dtag teal">No DevOps required</span>
           <span class="dtag blue">Auto-generated API</span>
           <span class="dtag purple">Real-time analytics</span>
-          <span class="dtag amber">Usage-based billing</span>
+          <span class="dtag amber">Internal quota mgmt</span>
         </div>
       </div>
     </div>
@@ -2100,116 +2423,111 @@ drawerBody.addEventListener('scroll', () => {
     <!-- SECTION 2 -->
     <div class="dsec" id="sec-org">
       <div class="dsec-eyebrow">Who Uses Units360 Here</div>
-      <div class="dsec-title"><span class="dsec-icon">🤖</span> The AI Company</div>
+      <div class="dsec-title"><span class="dsec-icon">🎮</span> Acme Gaming</div>
       <div class="dsec-body">
-        <p>In this demo, the <strong>Organization</strong> is an <em>AI SaaS startup</em> that provides a coding assistant powered by large language models. They are the Units360 customer.</p>
+        <p>In this demo, the <strong>Organization</strong> is <em>Acme Gaming</em> — an enterprise that provides AI tools to employees across engineering, content, and game design teams. Their IT department uses Units360 to manage AI spend.</p>
         <div class="dfield-table">
-          <div class="dfield-row"><span class="dfield-key">Organization</span><span class="dfield-val"><strong>CodeMind AI</strong> (example)</span></div>
-          <div class="dfield-row"><span class="dfield-key">Their product</span><span class="dfield-val">AI-powered coding assistant — auto-complete, code review, debugging</span></div>
-          <div class="dfield-row"><span class="dfield-key">Unit they sell</span><span class="dfield-val"><strong>AI Token</strong> — each LLM input/output token consumed</span></div>
-          <div class="dfield-row"><span class="dfield-key">Rate plan used</span><span class="dfield-val">Tiered — first 50K tokens/mo free, then $0.002 per 1K</span></div>
-          <div class="dfield-row"><span class="dfield-key">Their customer</span><span class="dfield-val">Developer tenant <strong>dev-42</strong> on the Pro plan</span></div>
+          <div class="dfield-row"><span class="dfield-key">Organization</span><span class="dfield-val"><strong>Acme Gaming</strong> — enterprise AI tools admin</span></div>
+          <div class="dfield-row"><span class="dfield-key">Use case</span><span class="dfield-val">Internal AI credit quota — not external billing</span></div>
+          <div class="dfield-row"><span class="dfield-key">Internal unit</span><span class="dfield-val"><strong>AI credit</strong> — company-defined quota currency</span></div>
+          <div class="dfield-row"><span class="dfield-key">Quota per employee</span><span class="dfield-val">1,000 AI credits / month</span></div>
+          <div class="dfield-row"><span class="dfield-key">Employee tracked</span><span class="dfield-val"><strong>Jordan Chen</strong> — data science team</span></div>
         </div>
-        <p>The AI company logs into Units360, defines their <em>usage configuration</em> for AI tokens, and sets up their rate tiers. Units360 then handles all real-time metering, threshold alerts, and invoice generation automatically.</p>
+        <p>The IT admin logs into Units360, defines the AI credit unit with conversion rates for each backend service, and sets quotas per employee. Units360 then handles real-time tracking, threshold alerts, quota enforcement, and usage report generation automatically.</p>
       </div>
     </div>
 
-    <!-- SECTION 3 -->
-    <div class="dsec" id="sec-unit">
-      <div class="dsec-eyebrow">Core Concept · 1 of 3</div>
-      <div class="dsec-title"><span class="dsec-icon">⚡</span> What is a Unit?</div>
+    <!-- SECTION 3: Conversion Rates (new) -->
+    <div class="dsec" id="sec-conversion">
+      <div class="dsec-eyebrow">Credit Conversion Table</div>
+      <div class="dsec-title"><span class="dsec-icon">🔄</span> How Credits Convert</div>
       <div class="dsec-body">
-        <p>A <strong>Unit</strong> is the fundamental thing being measured and billed. It defines <em>what</em> you are counting, how it accumulates, and when it resets.</p>
+        <p>The AI credit is an <strong>internal quota currency</strong>. Each backend service reports its native units (tokens, video minutes), and Units360 converts them into credits automatically using the conversion table configured by IT.</p>
         <div class="dfield-table">
-          <div class="dfield-row"><span class="dfield-key">unit_id</span><span class="dfield-val"><strong>ai-token</strong> — the unique identifier</span></div>
-          <div class="dfield-row"><span class="dfield-key">display_name</span><span class="dfield-val">AI Token</span></div>
-          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val"><strong>UNIDIRECTIONAL</strong> — tokens only consumed, never returned</span></div>
-          <div class="dfield-row"><span class="dfield-key">reset_period</span><span class="dfield-val">Monthly — balance resets on the 1st of each month</span></div>
-          <div class="dfield-row"><span class="dfield-key">precision</span><span class="dfield-val">0 decimal places — tokens are whole numbers</span></div>
+          <div class="dfield-row"><span class="dfield-key">LLM (GPT-4)</span><span class="dfield-val"><strong>200 tokens = 1 AI credit</strong></span></div>
+          <div class="dfield-row"><span class="dfield-key">LLM (Claude)</span><span class="dfield-val">150 tokens = 1 AI credit (higher quality tier)</span></div>
+          <div class="dfield-row"><span class="dfield-key">VR Video Gen</span><span class="dfield-val"><strong>5 video minutes = 1 AI credit</strong></span></div>
+          <div class="dfield-row"><span class="dfield-key">Reset period</span><span class="dfield-val">Monthly — credits reset on the 1st of each month</span></div>
+          <div class="dfield-row"><span class="dfield-key">Hard quota</span><span class="dfield-val">1,000 AI credits — all services blocked at quota</span></div>
         </div>
-        <p>Units can be <em>unidirectional</em> (tokens only consumed) or <em>bidirectional</em> (energy exported / imported). For AI tokens, direction is always inbound — each API call consumes tokens from the account's monthly allowance.</p>
+        <p>IT can adjust conversion rates at any time — for example, making Claude cost more credits per token than GPT-4, steering employees toward cost-effective models — without touching any application code.</p>
         <div class="dtags">
-          <span class="dtag teal">Tokens · API Calls · kWh</span>
-          <span class="dtag blue">Credits · Minutes · GB</span>
+          <span class="dtag teal">1 credit = 200 LLM tokens</span>
+          <span class="dtag amber">1 credit = 5 VR min</span>
         </div>
       </div>
     </div>
 
     <!-- SECTION 4 -->
-    <div class="dsec" id="sec-account">
-      <div class="dsec-eyebrow">Core Concept · 2 of 3</div>
-      <div class="dsec-title"><span class="dsec-icon">👤</span> What is an Account?</div>
+    <div class="dsec" id="sec-unit">
+      <div class="dsec-eyebrow">Core Concept · 1 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">⚡</span> What is a Unit?</div>
       <div class="dsec-body">
-        <p>An <strong>Account</strong> is the entity whose usage is being tracked — a customer, a tenant, a device, or a subscription. Each account gets its own running balance governed by its rate plan.</p>
+        <p>A <strong>Unit</strong> is the fundamental thing being measured. It defines <em>what</em> you are counting, how it accumulates, and when it resets.</p>
         <div class="dfield-table">
-          <div class="dfield-row"><span class="dfield-key">account_id</span><span class="dfield-val"><strong>dev-42</strong> — unique developer tenant ID</span></div>
-          <div class="dfield-row"><span class="dfield-key">plan</span><span class="dfield-val">Pro — 100,000 tokens/month included</span></div>
-          <div class="dfield-row"><span class="dfield-key">overage_rate</span><span class="dfield-val">$0.002 per 1,000 tokens above the 100K limit</span></div>
-          <div class="dfield-row"><span class="dfield-key">alert_threshold</span><span class="dfield-val">80% usage — webhook fired to notify the developer</span></div>
-          <div class="dfield-row"><span class="dfield-key">hard_limit</span><span class="dfield-val">100,000 tokens — API blocked until next billing cycle</span></div>
-          <div class="dfield-row"><span class="dfield-key">current_balance</span><span class="dfield-val">Live token count — updated per API call</span></div>
+          <div class="dfield-row"><span class="dfield-key">unit_id</span><span class="dfield-val"><strong>ai-credit</strong> — the unique identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">display_name</span><span class="dfield-val">AI Credit</span></div>
+          <div class="dfield-row"><span class="dfield-key">direction</span><span class="dfield-val"><strong>UNIDIRECTIONAL</strong> — credits only consumed, never returned</span></div>
+          <div class="dfield-row"><span class="dfield-key">reset_period</span><span class="dfield-val">Monthly — quota resets on the 1st of each month</span></div>
+          <div class="dfield-row"><span class="dfield-key">precision</span><span class="dfield-val">0 decimal places — credits are whole numbers</span></div>
         </div>
-        <p>When an API call arrives, Units360 looks up the account, checks its balance against the rate plan, updates the running total atomically, and fires threshold alerts when configured limits are crossed.</p>
+        <p>Units can be <em>unidirectional</em> (credits only consumed) or <em>bidirectional</em> (energy exported / imported). For AI credit quotas, direction is always inbound — each service call consumes credits from the employee's monthly allowance.</p>
+        <div class="dtags">
+          <span class="dtag teal">AI Credits · kWh · API Calls</span>
+          <span class="dtag blue">LLM Tokens · Video Minutes</span>
+        </div>
       </div>
     </div>
 
     <!-- SECTION 5 -->
-    <div class="dsec" id="sec-txn">
-      <div class="dsec-eyebrow">Core Concept · 3 of 3</div>
-      <div class="dsec-title"><span class="dsec-icon">📋</span> What is a Transaction?</div>
+    <div class="dsec" id="sec-account">
+      <div class="dsec-eyebrow">Core Concept · 2 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">👤</span> What is an Account?</div>
       <div class="dsec-body">
-        <p>A <strong>Transaction</strong> is a single metering event — one API call that reports "this account consumed X tokens right now." Transactions are the atomic records that build the running balance.</p>
+        <p>An <strong>Account</strong> is the entity whose usage is being tracked — an employee, a team, a device, or a tenant. Each account gets its own running credit balance governed by the configured quota.</p>
         <div class="dfield-table">
-          <div class="dfield-row"><span class="dfield-key">quantity</span><span class="dfield-val"><strong>847 tokens</strong> — input + output tokens for this call</span></div>
-          <div class="dfield-row"><span class="dfield-key">model</span><span class="dfield-val">claude-3-opus · gpt-4o · gemini-pro (any LLM)</span></div>
-          <div class="dfield-row"><span class="dfield-key">feature</span><span class="dfield-val">autocomplete · code-review · debug — tagged per call type</span></div>
-          <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Running total updated after each event</span></div>
-          <div class="dfield-row"><span class="dfield-key">timestamp</span><span class="dfield-val">ISO 8601 UTC — every event is time-stamped precisely</span></div>
+          <div class="dfield-row"><span class="dfield-key">account_id</span><span class="dfield-val"><strong>jordan.chen</strong> — employee ID</span></div>
+          <div class="dfield-row"><span class="dfield-key">quota</span><span class="dfield-val">Standard — 1,000 AI credits/month</span></div>
+          <div class="dfield-row"><span class="dfield-key">alert_threshold</span><span class="dfield-val">80% usage — webhook fired to notify IT admin</span></div>
+          <div class="dfield-row"><span class="dfield-key">hard_limit</span><span class="dfield-val">1,000 AI credits — all AI services blocked until next month</span></div>
+          <div class="dfield-row"><span class="dfield-key">current_balance</span><span class="dfield-val">Live credit count — updated per service call</span></div>
         </div>
-        <p>Transaction rules — set up in your usage configuration — define how to price each event based on model tier, feature type, and account plan. Units360 applies these rules automatically at ingestion time, with no custom code required.</p>
-        <div class="dcallout"><strong>At month end,</strong> all transactions are summed. If the tenant exceeded 100K tokens, the overage is calculated and the invoice is generated automatically.</div>
+        <p>When a service call arrives, Units360 looks up the account, converts native units to credits using the conversion table, updates the running total atomically, and fires threshold alerts when configured limits are crossed.</p>
       </div>
     </div>
 
     <!-- SECTION 6 -->
-    <div class="dsec" id="sec-mdt">
-      <div class="dsec-eyebrow">Configuration Layer</div>
-      <div class="dsec-title"><span class="dsec-icon">📐</span> Usage Configuration</div>
+    <div class="dsec" id="sec-txn">
+      <div class="dsec-eyebrow">Core Concept · 3 of 3</div>
+      <div class="dsec-title"><span class="dsec-icon">📋</span> What is a Transaction?</div>
       <div class="dsec-body">
-        <p>The <strong>Usage Configuration</strong> is Units360's low-code setup builder. It's where the AI company defines everything about their metering model — with no code, no database schemas, no infrastructure setup.</p>
-        <p>Define it once, and it governs every API call, every balance update, and every invoice for that unit type.</p>
+        <p>A <strong>Transaction</strong> is a single metering event — one service call that reports "this employee consumed X native units right now." Units360 converts native units to AI credits and updates the running balance.</p>
         <div class="dfield-table">
-          <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define the unit (ai-token), direction (inbound), reset period (monthly)</span></div>
-          <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Set plan tiers, included quotas, hard limits, and overage rates</span></div>
-          <div class="dfield-row"><span class="dfield-key">Transaction tab</span><span class="dfield-val">Configure feature tagging, model-tier pricing, threshold webhooks</span></div>
+          <div class="dfield-row"><span class="dfield-key">service</span><span class="dfield-val">llm-gpt4 · vr-video-gen — service identifier</span></div>
+          <div class="dfield-row"><span class="dfield-key">native_qty</span><span class="dfield-val"><strong>800 tokens</strong> or <strong>10 video minutes</strong> — raw service output</span></div>
+          <div class="dfield-row"><span class="dfield-key">credit_cost</span><span class="dfield-val">Calculated by Units360: 800÷200 = <strong>4 credits</strong></span></div>
+          <div class="dfield-row"><span class="dfield-key">balance_after</span><span class="dfield-val">Running credit total updated after each event</span></div>
+          <div class="dfield-row"><span class="dfield-key">timestamp</span><span class="dfield-val">ISO 8601 UTC — every event is time-stamped precisely</span></div>
         </div>
-        <div class="dcallout"><strong>Once saved,</strong> Units360 auto-generates a REST API endpoint, a CloudEvent schema for your AI gateway, and a live analytics dashboard. No DevOps team required.</div>
+        <p>Each transaction carries the native quantity (tokens or minutes) and the service type. Units360 applies the conversion rate from the configuration and updates the shared credit balance atomically.</p>
+        <div class="dcallout"><strong>At month end,</strong> all transactions are aggregated per service. The AI Credit Usage Report shows each service's native usage alongside its credit cost — no manual reconciliation needed.</div>
       </div>
     </div>
 
     <!-- SECTION 7 -->
-    <div class="dsec" id="sec-rte">
-      <div class="dsec-eyebrow">Live Processing</div>
-      <div class="dsec-title"><span class="dsec-icon">⚙️</span> Live Processing Engine</div>
+    <div class="dsec" id="sec-mdt">
+      <div class="dsec-eyebrow">Configuration Layer</div>
+      <div class="dsec-title"><span class="dsec-icon">📐</span> Usage Configuration</div>
       <div class="dsec-body">
-        <p>The <strong>Live Processing Engine</strong> is the layer that runs once your configuration is deployed. It continuously ingests API call events, applies rate rules, updates balances, and fires alerts — all in real time.</p>
+        <p>The <strong>Usage Configuration</strong> is Units360's low-code setup builder. IT defines everything about the AI credit quota model — with no code, no database schemas, no infrastructure setup.</p>
+        <p>Define it once, and it governs every service call, every balance update, and every usage report for that quota type.</p>
         <div class="dfield-table">
-          <div class="dfield-row"><span class="dfield-key">Event ingestion</span><span class="dfield-val">Accepts CloudEvents from your AI gateway via REST POST</span></div>
-          <div class="dfield-row"><span class="dfield-key">Balance engine</span><span class="dfield-val">Atomic ledger update per event — millisecond-accurate</span></div>
-          <div class="dfield-row"><span class="dfield-key">Rate application</span><span class="dfield-val">Applies tier pricing and overage logic per event</span></div>
-          <div class="dfield-row"><span class="dfield-key">Threshold alerts</span><span class="dfield-val">Fires webhooks at 80% usage — notifies dev before hitting hard limit</span></div>
-          <div class="dfield-row"><span class="dfield-key">Hard limit enforce</span><span class="dfield-val">Returns 429 to AI gateway when quota is exhausted</span></div>
-          <div class="dfield-row"><span class="dfield-key">Invoice trigger</span><span class="dfield-val">At period end, aggregates all transactions → auto-generates invoice</span></div>
+          <div class="dfield-row"><span class="dfield-key">Unit tab</span><span class="dfield-val">Define the unit (ai-credit), direction (inbound), reset period (monthly)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Services tab</span><span class="dfield-val">Add each backend service + its native unit + conversion rate to credits</span></div>
+          <div class="dfield-row"><span class="dfield-key">Account tab</span><span class="dfield-val">Set per-employee quota, alert threshold (80%), hard limit (1,000 credits)</span></div>
+          <div class="dfield-row"><span class="dfield-key">Reports tab</span><span class="dfield-val">Configure usage report format, recipients, and reporting period</span></div>
         </div>
-        <div class="dflow">
-          <div class="dflow-node">AI Gateway</div>
-          <span class="dflow-arrow">→</span>
-          <div class="dflow-node highlight">Live Engine</div>
-          <span class="dflow-arrow">→</span>
-          <div class="dflow-node">Ledger</div>
-          <span class="dflow-arrow">→</span>
-          <div class="dflow-node">Dashboard</div>
-        </div>
+        <div class="dcallout"><strong>Once saved,</strong> Units360 auto-generates REST API endpoints for each service, CloudEvent schemas, and a live IT admin dashboard. No DevOps team required.</div>
       </div>
     </div>
 
@@ -2218,31 +2536,29 @@ drawerBody.addEventListener('scroll', () => {
       <div class="dsec-eyebrow">Event Protocol</div>
       <div class="dsec-title"><span class="dsec-icon">📡</span> CloudEvents — The JSON Payload</div>
       <div class="dsec-body">
-        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong> — an open industry standard for describing event data. Every API call your AI gateway makes is formatted as a CloudEvent JSON payload and POSTed to the Units360 live endpoint.</p>
-        <div class="dcode"><span class="cc">// AI gateway → Units360 (one API call)</span>
-POST /api/v1/events/dev-42
+        <p>Units360 uses the <strong>CloudEvents 1.0 spec</strong>. Every service call is formatted as a CloudEvent JSON payload and POSTed to the Units360 live endpoint. Units360 converts to AI credits on the fly.</p>
+        <div class="dcode"><span class="cc">// LLM gateway → Units360 (one call = 800 tokens)</span>
+POST /api/v1/events/jordan.chen
 Content-Type: application/cloudevents+json
 
 {
   <span class="ck">"specversion"</span>: <span class="cv">"1.0"</span>,
-  <span class="ck">"type"</span>:        <span class="cv">"com.units360.ai.token"</span>,
-  <span class="ck">"source"</span>:      <span class="cv">"gateway/dev-42"</span>,
-  <span class="ck">"time"</span>:        <span class="cv">"2024-06-21T14:03:45Z"</span>,
+  <span class="ck">"type"</span>:        <span class="cv">"com.units360.ai.credit"</span>,
+  <span class="ck">"source"</span>:      <span class="cv">"llm-gateway/jordan.chen"</span>,
+  <span class="ck">"time"</span>:        <span class="cv">"2026-05-14T10:22:18Z"</span>,
   <span class="ck">"data"</span>: {
-    <span class="ck">"unit"</span>:     <span class="cv">"ai-token"</span>,
-    <span class="ck">"qty"</span>:      <span class="cn">847</span>,
-    <span class="ck">"model"</span>:    <span class="cv">"claude-3-opus"</span>,
-    <span class="ck">"feature"</span>:  <span class="cv">"autocomplete"</span>
+    <span class="ck">"service"</span>:  <span class="cv">"llm-gpt4"</span>,
+    <span class="ck">"native_unit"</span>: <span class="cv">"tokens"</span>,
+    <span class="ck">"qty"</span>:       <span class="cn">800</span>
   }
-}</div>
+}
+<span class="cc">// Units360 converts: 800 ÷ 200 = 4 AI credits deducted</span></div>
         <div class="dfield-table" style="margin-top:10px">
           <div class="dfield-row"><span class="dfield-key">specversion</span><span class="dfield-val">Always "1.0" — CloudEvents standard version</span></div>
-          <div class="dfield-row"><span class="dfield-key">type</span><span class="dfield-val">Namespaced event type — identifies the metering category</span></div>
-          <div class="dfield-row"><span class="dfield-key">source</span><span class="dfield-val">Gateway + account ID — where the call originated</span></div>
-          <div class="dfield-row"><span class="dfield-key">data.unit</span><span class="dfield-val">Must match the configured unit_id — "ai-token" here</span></div>
-          <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">Total tokens for this call — RTE adds this to the balance</span></div>
-          <div class="dfield-row"><span class="dfield-key">data.model</span><span class="dfield-val">LLM used — enables per-model cost breakdown in analytics</span></div>
-          <div class="dfield-row"><span class="dfield-key">data.feature</span><span class="dfield-val">Feature tag — enables per-feature usage reporting</span></div>
+          <div class="dfield-row"><span class="dfield-key">source</span><span class="dfield-val">Service gateway + employee ID — where the call originated</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.service</span><span class="dfield-val">Service identifier — maps to a conversion rate in config</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.native_unit</span><span class="dfield-val">"tokens" or "video_minutes" — the service's native measurement</span></div>
+          <div class="dfield-row"><span class="dfield-key">data.qty</span><span class="dfield-val">Native quantity — Units360 converts to AI credits automatically</span></div>
         </div>
       </div>
     </div>
