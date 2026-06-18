@@ -209,7 +209,15 @@
 <nav>
   <a href="./" class="nav-logo">
     <svg viewBox="0 0 120 120" width="38" height="38" aria-label="Units360">
-      <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(12,143,132,.35)" stroke-width="1.6" stroke-dasharray="6 7"/>
+      <!-- Outer dashed ring — rotates anticlockwise -->
+      <g><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(12,143,132,.35)" stroke-width="1.6" stroke-dasharray="6 7"/>
+        <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="-360 60 60" dur="20s" repeatCount="indefinite"/>
+      </g>
+      <!-- Radar sweep — rotates clockwise fast -->
+      <g><line x1="60" y1="60" x2="60" y2="10" stroke="rgba(12,143,132,.5)" stroke-width="1.2"/>
+        <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="7s" repeatCount="indefinite"/>
+      </g>
+      <!-- Orbit nodes — rotate clockwise slowly -->
       <g>
         <line x1="60" y1="60" x2="60" y2="14" stroke="rgba(14,19,32,.18)" stroke-width="1.6"/>
         <line x1="60" y1="60" x2="20" y2="83" stroke="rgba(14,19,32,.18)" stroke-width="1.6"/>
@@ -217,7 +225,9 @@
         <circle cx="60" cy="14" r="8" fill="#0c8f84"/>
         <circle cx="20" cy="83" r="8" fill="#0fb5a3"/>
         <circle cx="100" cy="83" r="8" fill="#2563eb"/>
+        <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="30s" repeatCount="indefinite"/>
       </g>
+      <!-- Center (static) -->
       <circle cx="60" cy="60" r="15" fill="#0c8f84"/>
       <circle cx="60" cy="60" r="8.5" fill="#faf9f5"/>
     </svg>
