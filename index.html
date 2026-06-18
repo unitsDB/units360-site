@@ -626,6 +626,17 @@
   <a href="index.html" class="nav-logo-wrap">
     <!-- Animated orbital logo mark -->
     <svg viewBox="100 100 480 480" width="44" height="44" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:block;">
+      <defs>
+        <radialGradient id="lglow-old" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(0,201,167,.14)"/>
+          <stop offset="100%" stop-color="rgba(0,201,167,0)"/>
+        </radialGradient>
+        <marker id="arr-s" markerWidth="48" markerHeight="34" refX="44" refY="17" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L0,34 L48,17 Z" fill="rgba(0,201,167,.85)"/>
+        </marker>
+      </defs>
+      <!-- Gradient glow background -->
+      <circle cx="340" cy="340" r="218" fill="url(#lglow-old)"/>
       <!-- Outer dashed ring — rotates anticlockwise -->
       <g>
         <circle cx="340" cy="340" r="220" fill="none" stroke="rgba(0,201,167,0.60)" stroke-width="3" stroke-dasharray="14 9"/>
@@ -641,13 +652,13 @@
       </g>
       <!-- Orbit nodes + flow lines — rotate clockwise slowly -->
       <g>
-        <!-- Spokes -->
-        <line x1="340" y1="340" x2="560" y2="340" stroke="rgba(30,80,100,0.85)" stroke-width="1.5"/>
-        <line x1="340" y1="340" x2="450" y2="149" stroke="rgba(30,80,100,0.85)" stroke-width="1.5"/>
-        <line x1="340" y1="340" x2="230" y2="149" stroke="rgba(30,80,100,0.85)" stroke-width="1.5"/>
-        <line x1="340" y1="340" x2="120" y2="340" stroke="rgba(30,80,100,0.85)" stroke-width="1.5"/>
-        <line x1="340" y1="340" x2="230" y2="531" stroke="rgba(30,80,100,0.85)" stroke-width="1.5"/>
-        <line x1="340" y1="340" x2="450" y2="531" stroke="rgba(30,80,100,0.85)" stroke-width="1.5"/>
+        <!-- Spokes — shortened to node edge, with directional arrows -->
+        <line x1="340" y1="340" x2="530" y2="340" stroke="rgba(0,201,167,.65)" stroke-width="2" marker-end="url(#arr-s)"/>
+        <line x1="340" y1="340" x2="438" y2="170" stroke="rgba(0,201,167,.65)" stroke-width="2" marker-end="url(#arr-s)"/>
+        <line x1="340" y1="340" x2="242" y2="170" stroke="rgba(0,201,167,.65)" stroke-width="2" marker-end="url(#arr-s)"/>
+        <line x1="340" y1="340" x2="150" y2="340" stroke="rgba(0,201,167,.65)" stroke-width="2" marker-end="url(#arr-s)"/>
+        <line x1="340" y1="340" x2="242" y2="510" stroke="rgba(0,201,167,.65)" stroke-width="2" marker-end="url(#arr-s)"/>
+        <line x1="340" y1="340" x2="438" y2="510" stroke="rgba(0,201,167,.65)" stroke-width="2" marker-end="url(#arr-s)"/>
         <!-- Flow arrows -->
         <line x1="560" y1="340" x2="237" y2="156" stroke="#00C9A7" stroke-width="2.5" opacity="0.9"/>
         <polygon points="237,156 250,172 225,167" fill="#00C9A7"/>

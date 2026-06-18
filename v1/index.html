@@ -289,6 +289,23 @@
 <nav>
   <a href="./" class="nav-logo">
     <svg viewBox="0 0 120 120" width="38" height="38" aria-label="Units360">
+      <defs>
+        <radialGradient id="lglow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(0,212,180,.18)"/>
+          <stop offset="100%" stop-color="rgba(0,212,180,0)"/>
+        </radialGradient>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L0,6 L8,3 Z" fill="#00d4b4"/>
+        </marker>
+        <marker id="arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L0,6 L8,3 Z" fill="#45b7d1"/>
+        </marker>
+        <marker id="arr3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L0,6 L8,3 Z" fill="#4f8ef7"/>
+        </marker>
+      </defs>
+      <!-- Gradient glow background -->
+      <circle cx="60" cy="60" r="58" fill="url(#lglow)"/>
       <!-- Outer dashed ring — rotates anticlockwise -->
       <g><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,212,180,.3)" stroke-width="1.6" stroke-dasharray="6 7"/>
         <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="-360 60 60" dur="20s" repeatCount="indefinite"/>
@@ -297,11 +314,11 @@
       <g><line x1="60" y1="60" x2="60" y2="10" stroke="rgba(0,212,180,.55)" stroke-width="1.2"/>
         <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="7s" repeatCount="indefinite"/>
       </g>
-      <!-- Orbit nodes — rotate clockwise slowly -->
+      <!-- Orbit spokes + nodes — rotate clockwise slowly -->
       <g>
-        <line x1="60" y1="60" x2="60" y2="14" stroke="rgba(120,140,200,.28)" stroke-width="1.6"/>
-        <line x1="60" y1="60" x2="20" y2="83" stroke="rgba(120,140,200,.28)" stroke-width="1.6"/>
-        <line x1="60" y1="60" x2="100" y2="83" stroke="rgba(120,140,200,.28)" stroke-width="1.6"/>
+        <line x1="60" y1="60" x2="60" y2="22" stroke="#00d4b4" stroke-width="1.5" stroke-opacity=".8" marker-end="url(#arr)"/>
+        <line x1="60" y1="60" x2="27" y2="79" stroke="#45b7d1" stroke-width="1.5" stroke-opacity=".8" marker-end="url(#arr2)"/>
+        <line x1="60" y1="60" x2="93" y2="79" stroke="#4f8ef7" stroke-width="1.5" stroke-opacity=".8" marker-end="url(#arr3)"/>
         <circle cx="60" cy="14" r="8" fill="#00d4b4"/>
         <circle cx="20" cy="83" r="8" fill="#45b7d1"/>
         <circle cx="100" cy="83" r="8" fill="#4f8ef7"/>
