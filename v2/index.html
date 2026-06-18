@@ -55,7 +55,7 @@
     @media(max-width:760px){.nav-links{display:none;}}
 
     /* ── Hero ── */
-    #hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;position:relative;}
+    #hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;padding:7rem 5vw 5rem;position:relative;}
     #hero::before{content:'';position:absolute;inset:0;z-index:0;background-image:radial-gradient(circle, rgba(12,143,132,.07) 1px, transparent 1px);background-size:30px 30px;-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);mask-image:radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);}
     #hero>*{position:relative;z-index:1;}
     .hero-badge{display:inline-flex;align-items:center;gap:.55rem;background:#eef3f1;border:1px solid #d7e3df;padding:.34rem 1rem;border-radius:var(--radius-pill);font-family:var(--mono);font-size:.72rem;letter-spacing:.5px;color:var(--teal);margin-bottom:2rem;}
@@ -64,14 +64,14 @@
     h1{font-family:var(--disp);font-size:clamp(2.5rem,6.4vw,5.1rem);font-weight:700;line-height:1.04;letter-spacing:-.04em;max-width:15ch;margin-bottom:1.4rem;color:var(--ink);}
     h1 .accent{color:var(--teal);}
     .hero-sub{font-size:clamp(1rem,1.8vw,1.2rem);color:var(--muted);max-width:54ch;line-height:1.7;margin-bottom:2.4rem;}
-    .hero-actions{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;}
+    .hero-actions{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:flex-start;}
     .btn-primary{background:var(--teal);color:#fff;border:none;padding:.9rem 2rem;border-radius:var(--radius-pill);font-family:var(--disp);font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:transform .2s,box-shadow .2s;}
     .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(12,143,132,.32);}
     .btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line2);padding:.9rem 1.9rem;border-radius:var(--radius-pill);font-family:var(--disp);font-size:.95rem;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block;transition:border-color .2s,box-shadow .2s;}
     .btn-ghost:hover{border-color:var(--teal);box-shadow:0 6px 18px rgba(14,19,32,.06);}
 
     /* hero dashboard "instrument" card */
-    .hero-dash{margin-top:3.4rem;width:min(680px,92vw);background:var(--panel);border:1px solid var(--panel-line);border-radius:20px;box-shadow:0 30px 70px -24px rgba(10,16,24,.5);overflow:hidden;text-align:left;}
+    .hero-dash{margin-top:2rem;width:100%;background:var(--panel);border:1px solid var(--panel-line);border-radius:20px;box-shadow:0 30px 70px -24px rgba(10,16,24,.5);overflow:hidden;text-align:left;}
     .hero-dash-top{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.2rem;border-bottom:1px solid var(--panel-line);}
     .hd-dot{display:flex;gap:6px;}
     .hd-dot span{width:9px;height:9px;border-radius:50%;background:#2a3450;}
@@ -85,6 +85,12 @@
     .hd-kpi-val .u{color:var(--teal-br);}
     .hero-dash-chart{padding:.4rem 1.3rem 1.2rem;}
     .hero-dash-chart svg{display:block;width:100%;height:64px;}
+    .hero-left{display:flex;flex-direction:column;align-items:flex-start;}
+    .hero-right{display:flex;align-items:flex-start;}
+    .hero-right .signup-box{margin-top:0;width:100%;}
+    .hero-form-title{font-family:var(--disp);font-size:1.42rem;font-weight:700;letter-spacing:-.025em;margin-bottom:.5rem;color:var(--ink);}
+    .hero-form-sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.3rem;}
+    @media(max-width:920px){#hero{grid-template-columns:1fr;gap:3rem;}.hero-left{align-items:center;text-align:center;}.hero-actions{justify-content:center;}.hero-right{display:none;}}
 
     /* ── Section shared ── */
     .sec-label{text-align:center;font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:.9rem;}
@@ -214,38 +220,75 @@
     <a href="#industries">Use Cases</a>
     <a href="#compare">Compare</a>
   </div>
-  <button class="nav-cta" onclick="smoothTo('signup')">Get Early Access</button>
+  <button class="nav-cta" onclick="smoothTo('hero-form')">Get Early Access</button>
 </nav>
 
 <!-- Hero -->
 <section id="hero" class="layer">
-  <div class="hero-badge"><span class="hero-badge-dot"></span>NOW IN BETA — JOIN THE WAITLIST</div>
-  <h1>Launch usage-based <span class="accent">billing</span> in minutes.</h1>
-  <p class="hero-sub">Define any unit of service — tokens, kWh, API calls, credits, hours. Deploy live metering APIs and analytics dashboards in minutes, not months. No DevOps. No infrastructure to babysit.</p>
-  <div class="hero-actions">
-    <a class="btn-primary" href="#signup" onclick="event.preventDefault();smoothTo('signup')">Start for free →</a>
-    <a class="btn-ghost" href="#explainer" onclick="event.preventDefault();smoothTo('explainer')">See how it works</a>
+
+  <!-- Left: headline + live dashboard -->
+  <div class="hero-left">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>NOW IN BETA — JOIN THE WAITLIST</div>
+    <h1>Launch usage-based <span class="accent">billing</span> in minutes.</h1>
+    <p class="hero-sub">Define any unit of service — tokens, kWh, API calls, credits, hours. Deploy live metering APIs and analytics dashboards in minutes, not months. No DevOps. No infrastructure to babysit.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#explainer" onclick="event.preventDefault();smoothTo('explainer')">See how it works →</a>
+      <a class="btn-ghost" href="#industries" onclick="event.preventDefault();smoothTo('industries')">Use Cases</a>
+    </div>
+
+    <!-- live instrument dashboard card -->
+    <div class="hero-dash">
+      <div class="hero-dash-top">
+        <div class="hd-dot"><span></span><span></span><span></span></div>
+        <div class="hd-live"><i></i>Live metering</div>
+      </div>
+      <div class="hero-dash-kpis">
+        <div class="hd-kpi"><div class="hd-kpi-lbl">Events ingested</div><div class="hd-kpi-val" id="tk-events">1,284,910</div></div>
+        <div class="hd-kpi"><div class="hd-kpi-lbl">Units defined</div><div class="hd-kpi-val">42<span class="u"> types</span></div></div>
+        <div class="hd-kpi"><div class="hd-kpi-lbl">p99 latency</div><div class="hd-kpi-val" id="tk-latency">38<span class="u">ms</span></div></div>
+      </div>
+      <div class="hero-dash-chart">
+        <svg viewBox="0 0 600 64" preserveAspectRatio="none">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0fb5a3" stop-opacity=".35"/><stop offset="1" stop-color="#0fb5a3" stop-opacity="0"/></linearGradient></defs>
+          <path d="M0,52 L40,46 L80,49 L120,38 L160,42 L200,30 L240,34 L280,22 L320,26 L360,18 L400,24 L440,14 L480,19 L520,10 L560,15 L600,6 L600,64 L0,64 Z" fill="url(#g)"/>
+          <path d="M0,52 L40,46 L80,49 L120,38 L160,42 L200,30 L240,34 L280,22 L320,26 L360,18 L400,24 L440,14 L480,19 L520,10 L560,15 L600,6" fill="none" stroke="#0fb5a3" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
   </div>
 
-  <!-- instrument dashboard card -->
-  <div class="hero-dash">
-    <div class="hero-dash-top">
-      <div class="hd-dot"><span></span><span></span><span></span></div>
-      <div class="hd-live"><i></i>Live metering</div>
-    </div>
-    <div class="hero-dash-kpis">
-      <div class="hd-kpi"><div class="hd-kpi-lbl">Events ingested</div><div class="hd-kpi-val" id="tk-events">1,284,910</div></div>
-      <div class="hd-kpi"><div class="hd-kpi-lbl">Units defined</div><div class="hd-kpi-val">42<span class="u"> types</span></div></div>
-      <div class="hd-kpi"><div class="hd-kpi-lbl">p99 latency</div><div class="hd-kpi-val" id="tk-latency">38<span class="u">ms</span></div></div>
-    </div>
-    <div class="hero-dash-chart">
-      <svg viewBox="0 0 600 64" preserveAspectRatio="none">
-        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0fb5a3" stop-opacity=".35"/><stop offset="1" stop-color="#0fb5a3" stop-opacity="0"/></linearGradient></defs>
-        <path d="M0,52 L40,46 L80,49 L120,38 L160,42 L200,30 L240,34 L280,22 L320,26 L360,18 L400,24 L440,14 L480,19 L520,10 L560,15 L600,6 L600,64 L0,64 Z" fill="url(#g)"/>
-        <path d="M0,52 L40,46 L80,49 L120,38 L160,42 L200,30 L240,34 L280,22 L320,26 L360,18 L400,24 L440,14 L480,19 L520,10 L560,15 L600,6" fill="none" stroke="#0fb5a3" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-      </svg>
+  <!-- Right: early access form -->
+  <div class="hero-right" id="hero-form">
+    <div class="signup-box">
+      <div class="sec-label" style="text-align:left;margin-bottom:.6rem">Early Access</div>
+      <h2 class="hero-form-title">Your usage economy starts here.</h2>
+      <p class="hero-form-sub">Join the beta. Define your first unit in under 5 minutes.</p>
+      <form id="signup-form">
+        <div class="form-row">
+          <input class="finput" type="text" placeholder="First name" required>
+          <input class="finput" type="text" placeholder="Last name" required>
+        </div>
+        <div class="fgroup"><input class="finput" type="email" placeholder="Work email" required></div>
+        <div class="fgroup"><input class="finput" type="text" placeholder="Company name"></div>
+        <div class="fgroup">
+          <select class="fselect" required>
+            <option value="" disabled selected>What's your primary use case?</option>
+            <option>AI &amp; LLM Platform</option><option>SaaS / Cloud Product</option>
+            <option>Utilities &amp; Energy</option><option>Mobility &amp; Logistics</option>
+            <option>Fintech &amp; Banking</option><option>Healthcare</option><option>Other</option>
+          </select>
+        </div>
+        <button type="submit" class="fsubmit">Get Early Access →</button>
+        <p class="fnote">No credit card required. We'll reach out within 24 hours.</p>
+      </form>
+      <div class="success" id="success">
+        <div class="success-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h3 style="font-family:var(--disp);margin-bottom:.5rem">You're on the list!</h3>
+        <p style="color:var(--muted);font-size:.88rem;line-height:1.7">We'll be in touch within 24 hours.</p>
+      </div>
     </div>
   </div>
+
 </section>
 
 <!-- Explainer (dark + Three.js) -->
@@ -414,39 +457,6 @@
   </div>
 </section>
 
-<!-- Signup -->
-<section id="signup" class="layer">
-  <div class="signup-wrap">
-    <div class="sec-label">Early Access</div>
-    <h2 class="sec-title">Your usage economy starts here.</h2>
-    <p class="sec-sub" style="margin-bottom:0">Join the beta. Define your first unit in under 5 minutes.</p>
-    <div class="signup-box">
-      <form id="signup-form">
-        <div class="form-row">
-          <input class="finput" type="text" placeholder="First name" required>
-          <input class="finput" type="text" placeholder="Last name" required>
-        </div>
-        <div class="fgroup"><input class="finput" type="email" placeholder="Work email" required></div>
-        <div class="fgroup"><input class="finput" type="text" placeholder="Company name"></div>
-        <div class="fgroup">
-          <select class="fselect" required>
-            <option value="" disabled selected>What's your primary use case?</option>
-            <option>AI &amp; LLM Platform</option><option>SaaS / Cloud Product</option>
-            <option>Utilities &amp; Energy</option><option>Mobility &amp; Logistics</option>
-            <option>Fintech &amp; Banking</option><option>Healthcare</option><option>Other</option>
-          </select>
-        </div>
-        <button type="submit" class="fsubmit">Get Early Access →</button>
-        <p class="fnote">No credit card required. We'll reach out within 24 hours.</p>
-      </form>
-      <div class="success" id="success">
-        <div class="success-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-        <h3 style="font-family:var(--disp);margin-bottom:.5rem">You're on the list!</h3>
-        <p style="color:var(--muted);font-size:.88rem;line-height:1.7">We'll be in touch within 24 hours. In the meantime, explore the docs or share this page.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- Footer -->
 <footer class="layer">
