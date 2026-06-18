@@ -88,9 +88,8 @@
 
     /* ── Hero ── */
     #hero{
-      min-height:100vh;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;text-align:center;
-      padding:7rem 2rem 3rem;
+      min-height:100vh;display:grid;grid-template-columns:1fr 1fr;gap:5rem;
+      align-items:center;padding:7rem 5vw 5rem;
     }
     .hero-badge{
       display:inline-flex;align-items:center;gap:.55rem;
@@ -113,7 +112,7 @@
       max-width:54ch;line-height:1.72;margin-bottom:2.6rem;
     }
     .hero-actions{
-      display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;
+      display:flex;gap:.85rem;flex-wrap:wrap;justify-content:flex-start;
     }
     .btn-primary{
       background:var(--teal);color:#03261f;border:none;
@@ -132,9 +131,9 @@
     }
     .btn-ghost:hover{border-color:var(--teal);background:rgba(0,212,180,.07);}
 
-    /* hero live ticker — reinforces the "metered" idea */
+    /* hero live ticker — hidden (data is not real) */
     .hero-ticker{
-      display:flex;gap:0;margin-top:3.2rem;
+      display:none;gap:0;margin-top:3.2rem;
       border:1px solid var(--line);border-radius:14px;overflow:hidden;
       background:rgba(8,11,22,.5);backdrop-filter:blur(14px);
     }
@@ -152,6 +151,12 @@
     .scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--teal),transparent);animation:scrollDown 2.2s ease-in-out infinite;}
     @keyframes scrollDown{0%{opacity:0;transform:scaleY(0) translateY(-100%);}40%{opacity:1;transform:scaleY(1) translateY(0);}100%{opacity:0;transform:scaleY(1) translateY(100%);}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+    .hero-left{display:flex;flex-direction:column;align-items:flex-start;}
+    .hero-right{display:flex;align-items:flex-start;}
+    .hero-right .signup-box{margin-top:0;width:100%;}
+    .hero-form-title{font-family:var(--disp);font-size:1.42rem;font-weight:700;letter-spacing:-.025em;margin-bottom:.5rem;color:var(--text);}
+    .hero-form-sub{font-size:.875rem;color:var(--muted2);line-height:1.6;margin-bottom:1.3rem;}
+    @media(max-width:920px){#hero{grid-template-columns:1fr;gap:3rem;}.hero-left{align-items:center;text-align:center;}.hero-actions{justify-content:center;}.hero-right{display:none;}}
 
     /* ── Explainer (scroll-pinned) ── */
     #explainer{height:500vh;}
@@ -303,24 +308,55 @@
     <a href="#industries">Use Cases</a>
     <a href="#compare">Compare</a>
   </div>
-  <button class="nav-cta" onclick="smoothTo('signup')">Get Early Access</button>
+  <button class="nav-cta" onclick="smoothTo('hero-form')">Get Early Access</button>
 </nav>
 
 <!-- Hero -->
 <section id="hero" class="layer">
-  <div class="hero-badge"><span class="hero-badge-dot"></span>NOW IN BETA — JOIN THE WAITLIST</div>
-  <h1>Launch usage-based <span class="accent">billing</span> in minutes.</h1>
-  <p class="hero-sub">Define any unit of service — tokens, kWh, API calls, credits, hours. Deploy live metering APIs and analytics dashboards in minutes, not months. No DevOps. No infrastructure to babysit.</p>
-  <div class="hero-actions">
-    <a class="btn-primary" href="#signup" onclick="event.preventDefault();smoothTo('signup')">Start for free →</a>
-    <a class="btn-ghost" href="#explainer" onclick="event.preventDefault();smoothTo('explainer')">See how it works</a>
+
+  <!-- Left: headline + CTAs -->
+  <div class="hero-left">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>NOW IN BETA — JOIN THE WAITLIST</div>
+    <h1>Launch usage-based <span class="accent">billing</span> in minutes.</h1>
+    <p class="hero-sub">Define any unit of service — tokens, kWh, API calls, credits, hours. Deploy live metering APIs and analytics dashboards in minutes, not months. No DevOps. No infrastructure to babysit.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#explainer" onclick="event.preventDefault();smoothTo('explainer')">See how it works →</a>
+      <a class="btn-ghost" href="#industries" onclick="event.preventDefault();smoothTo('industries')">Use Cases</a>
+    </div>
   </div>
-  <div class="hero-ticker">
-    <div class="tk"><span class="tk-val" id="tk-events">1,284,910</span><span class="tk-lbl">Events ingested</span></div>
-    <div class="tk"><span class="tk-val" id="tk-units">42<span class="u"> types</span></span><span class="tk-lbl">Units defined</span></div>
-    <div class="tk"><span class="tk-val" id="tk-latency">38<span class="u">ms</span></span><span class="tk-lbl">p99 ingest latency</span></div>
+
+  <!-- Right: early access form -->
+  <div class="hero-right" id="hero-form">
+    <div class="signup-box">
+      <div class="sec-label" style="text-align:left;margin-bottom:.6rem">Early Access</div>
+      <h2 class="hero-form-title">Your usage economy starts here.</h2>
+      <p class="hero-form-sub">Join the beta. Define your first unit in under 5 minutes.</p>
+      <form id="signup-form">
+        <div class="form-row">
+          <input class="finput" type="text" placeholder="First name" required>
+          <input class="finput" type="text" placeholder="Last name" required>
+        </div>
+        <div class="fgroup"><input class="finput" type="email" placeholder="Work email" required></div>
+        <div class="fgroup"><input class="finput" type="text" placeholder="Company name"></div>
+        <div class="fgroup">
+          <select class="fselect" required>
+            <option value="" disabled selected>What's your primary use case?</option>
+            <option>AI &amp; LLM Platform</option><option>SaaS / Cloud Product</option>
+            <option>Utilities &amp; Energy</option><option>Mobility &amp; Logistics</option>
+            <option>Fintech &amp; Banking</option><option>Healthcare</option><option>Other</option>
+          </select>
+        </div>
+        <button type="submit" class="fsubmit">Get Early Access →</button>
+        <p class="fnote">No credit card required. We'll reach out within 24 hours.</p>
+      </form>
+      <div class="success" id="success">
+        <div class="success-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h3 style="font-family:var(--disp);margin-bottom:.5rem">You're on the list!</h3>
+        <p style="color:var(--muted2);font-size:.88rem;line-height:1.7">We'll be in touch within 24 hours.</p>
+      </div>
+    </div>
   </div>
-  <div class="scroll-hint"><span>Scroll to explore</span><div class="scroll-line"></div></div>
+
 </section>
 
 <!-- Explainer -->
@@ -370,7 +406,6 @@
 <section id="industries" class="layer">
   <div class="sec-label">Use Cases &amp; Live Demos</div>
   <h2 class="sec-title">Any unit. Any industry.</h2>
-  <p class="sec-sub">Click any card to morph the live visualization. Three demos are ready to explore now.</p>
   <div class="industry-grid">
 
     <div class="dcard" style="--dc:rgba(0,212,180,.22);--dc-solid:#00d4b4;" onclick="pickIndustry('llm',this)">
@@ -398,62 +433,6 @@
         <div class="dcard-desc">Track audio session revenue and LLM processing costs in one platform. Real-time margin per consultation, auto-invoiced.</div>
         <div class="dcard-chips"><span class="dcard-chip hi">unit: audio_minute</span><span class="dcard-chip">Cost tracking</span><span class="dcard-chip">Dual-ledger</span></div>
         <a class="dcard-cta" href="../units360-scribe-demo.html" onclick="event.stopPropagation()">Launch Demo <span class="dcard-arrow">→</span></a>
-      </div>
-    </div>
-
-    <div class="dcard" style="--dc:rgba(69,183,209,.18);--dc-solid:#45b7d1;" onclick="pickIndustry('account',this)">
-      <div class="dcard-preview">
-        <svg class="dcard-preview-icon" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg>
-        <div class="dcard-live"><span class="dcard-live-dot"></span>Live</div>
-      </div>
-      <div class="dcard-body">
-        <span class="dcard-eyebrow">Real Estate</span>
-        <div class="dcard-title">Co-working Credits</div>
-        <div class="dcard-desc">Sell credits that convert to desk hours, room bookings, and print pages. Version your conversion rates without rebuilding billing.</div>
-        <div class="dcard-chips"><span class="dcard-chip hi">unit: credit</span><span class="dcard-chip">Conversion rules</span><span class="dcard-chip">Rate versioning</span></div>
-        <a class="dcard-cta" href="../units360-cowork-demo.html" onclick="event.stopPropagation()">Launch Demo <span class="dcard-arrow">→</span></a>
-      </div>
-    </div>
-
-    <div class="dcard dcard--soon" style="--dc:rgba(79,142,247,.16);--dc-solid:#4f8ef7;" onclick="pickIndustry('utilities',this)">
-      <div class="dcard-preview">
-        <svg class="dcard-preview-icon" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
-        <div class="dcard-badge">Coming Soon</div>
-      </div>
-      <div class="dcard-body">
-        <span class="dcard-eyebrow">Utilities &amp; Energy</span>
-        <div class="dcard-title">Solar Net Metering</div>
-        <div class="dcard-desc">Meter solar generation vs. grid consumption per property. Auto-generated ledger and threshold alerts.</div>
-        <div class="dcard-chips"><span class="dcard-chip hi">unit: kilowatt_hours</span><span class="dcard-chip">Solar + Grid</span></div>
-        <div class="dcard-cta dcard-cta--soon">In Development</div>
-      </div>
-    </div>
-
-    <div class="dcard dcard--soon" style="--dc:rgba(69,183,209,.16);--dc-solid:#45b7d1;" onclick="pickIndustry('logistics',this)">
-      <div class="dcard-preview">
-        <svg class="dcard-preview-icon" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l3 3v5h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
-        <div class="dcard-badge">Coming Soon</div>
-      </div>
-      <div class="dcard-body">
-        <span class="dcard-eyebrow">Mobility &amp; Logistics</span>
-        <div class="dcard-title">Fleet Route Metering</div>
-        <div class="dcard-desc">Per-km billing with real-time GPS CloudEvents — highway and urban rate tiers applied automatically.</div>
-        <div class="dcard-chips"><span class="dcard-chip hi">unit: km</span><span class="dcard-chip">GPS streaming</span></div>
-        <div class="dcard-cta dcard-cta--soon">In Development</div>
-      </div>
-    </div>
-
-    <div class="dcard dcard--soon" style="--dc:rgba(0,212,180,.16);--dc-solid:#00d4b4;" onclick="pickIndustry('fintech',this)">
-      <div class="dcard-preview">
-        <svg class="dcard-preview-icon" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>
-        <div class="dcard-badge">Coming Soon</div>
-      </div>
-      <div class="dcard-body">
-        <span class="dcard-eyebrow">Fintech &amp; Banking</span>
-        <div class="dcard-title">Loyalty &amp; Credit Ledger</div>
-        <div class="dcard-desc">Power virtual currencies, loyalty points, and prepaid credit systems with a full real-time ledger.</div>
-        <div class="dcard-chips"><span class="dcard-chip hi">unit: reward_points</span><span class="dcard-chip">Full ledger</span></div>
-        <div class="dcard-cta dcard-cta--soon">In Development</div>
       </div>
     </div>
 
@@ -521,39 +500,6 @@
   </div>
 </section>
 
-<!-- Signup -->
-<section id="signup" class="layer">
-  <div class="signup-wrap">
-    <div class="sec-label">Early Access</div>
-    <h2 class="sec-title">Your usage economy starts here.</h2>
-    <p class="sec-sub" style="margin-bottom:0">Join the beta. Define your first unit in under 5 minutes.</p>
-    <div class="signup-box">
-      <form id="signup-form">
-        <div class="form-row">
-          <input class="finput" type="text" placeholder="First name" required>
-          <input class="finput" type="text" placeholder="Last name" required>
-        </div>
-        <div class="fgroup"><input class="finput" type="email" placeholder="Work email" required></div>
-        <div class="fgroup"><input class="finput" type="text" placeholder="Company name"></div>
-        <div class="fgroup">
-          <select class="fselect" required>
-            <option value="" disabled selected>What's your primary use case?</option>
-            <option>AI &amp; LLM Platform</option><option>SaaS / Cloud Product</option>
-            <option>Utilities &amp; Energy</option><option>Mobility &amp; Logistics</option>
-            <option>Fintech &amp; Banking</option><option>Healthcare</option><option>Other</option>
-          </select>
-        </div>
-        <button type="submit" class="fsubmit">Get Early Access →</button>
-        <p class="fnote">No credit card required. We'll reach out within 24 hours.</p>
-      </form>
-      <div class="success" id="success">
-        <div class="success-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-        <h3 style="font-family:var(--disp);margin-bottom:.5rem">You're on the list!</h3>
-        <p style="color:var(--muted2);font-size:.88rem;line-height:1.7">We'll be in touch within 24 hours. In the meantime, explore the docs or share this page.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- Footer -->
 <footer class="layer">
